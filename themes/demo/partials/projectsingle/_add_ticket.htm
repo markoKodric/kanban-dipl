@@ -1,0 +1,17 @@
+<form method="POST" data-request="{{ __SELF__ }}::onCreateTicket" class="add-ticket-wrapper relative flex justify-center align-center flex-wrap">
+    <div class="add-ticket relative z-20 transition transform translate-x-8" data-target="#addTicketForm">
+        <a href="#" id="add-ticket" data-tooltip="Add ticket" data-tooltip-alt="Close form" class="button button-icon ">
+            <i class="text-2xl la la-plus"></i>
+            <i class="text-2xl la la-times hidden"></i>
+        </a>
+    </div>
+    <div class="save-ticket relative z-20 transition invisible transform scale-0">
+        <button type="submit" id="save-ticket" data-tooltip="Save ticket" class="button-icon bg-custom bg-green-500 hover:shadow-green">
+            <i class="text-2xl la la-check"></i>
+        </button>
+    </div>
+
+    <div class="ticket invisible opacity-0 transition transform scale-0 absolute left-6 right-6 {{ section.tickets.count() > 1 ? 'bottom-8 origin-bottom' : 'top-8 origin-top' }} shadow-md rounded-md bg-white px-4 py-3 z-10" id="addTicketForm">
+        {% partial '@__add_ticket_form' section=section %}
+    </div>
+</form>

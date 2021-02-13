@@ -1,0 +1,112 @@
+{% set projects = projectList.projects %}
+{% set project = this.page.project ?: project %}
+
+<div id="projects-sidebar" class="h-full px-6 py-10 flex flex-col border-r border-gray-200 bg-blue-50">
+    {% if project %}
+        <div id="sidebar-header" class="relative">
+            <div class="header-content flex items-center relative cursor-pointer pr-7" data-target=".sidebar-dropdown">
+                <div class="img-wrapper" style="flex-basis: 40px; min-width: 40px;">
+                    <img class="transform translate-z-0" src="{{ project.getPicture() }}" width="40" alt="{{ project.title }}">
+                </div>
+                <div class="content pl-4">
+                    <p class="text-sm leading-snug text-gray-900 font-semibold tracking-wide">
+                        <strong class="font-extrabold text-lg">{{ project.title }}</strong>
+                    </p>
+
+                    <p class="text-xs text-gray-500 font-semibold">
+                        {{ project.description|slice(0, 60) }}{{ project.description|length > 60 ? '...' }}
+                    </p>
+                </div>
+                {% if projects|length > 1 %}
+                    <span class="toggle-icon absolute right-0 top-1/2 w-6 h-full -translate-y-1/2 text-xl"></span>
+                {% endif %}
+            </div>
+
+            {% if projects|length > 1 %}
+            <div class="dropdown sidebar-dropdown absolute top left-0 right-0 px-3 py-6 bg-white rounded-md shadow-lg opacity-0 invisible scale-0 transition transform origin-top z-10">
+                <div class="search-wrapper relative cursor-pointer mb-4 w-full">
+                    <input id="search-projects"
+                           name="query"
+                           data-request="{{ projectList }}::onSearch"
+                           data-track-input
+                           type="text"
+                           placeholder="Find project..."
+                           class="form-control w-full pr-12">
+                    <i class="la la-search absolute top-1/2 -translate-y-1/2 right-3 text-2xl text-gray-500"></i>
+                </div>
+                <div id="js-project-list" class="search-results overflow-y-auto">
+                    {% partial 'projectlist/default' projects=projects currentProject=project %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    {% elseif projects.isEmpty() %}
+        <div class="text-center">
+            <p class="font-semibold mb-2 text-lg">Create your first project</p>
+
+            <div class="animate-bounce">
+                <i class="la la-long-arrow-down text-2xl"></i>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if user().can('projects.manage') %}
+    <div class="{{ projects.isEmpty() ? 'mt-2' : 'mt-6' }} flex w-full justify-center">
+        <button class="button button-primary" data-target="#createProject">
+            <span class="font-bold block px-2">Create project</span>
+        </button>
+
+        <div id="createProject" class="fixed inset-0 flex items-center justify-center z-50 opacity-0 invisible transition">
+            <div class="absolute inset-0 bg-black bg-opacity-75 z-10" data-target="#createProject"></div>
+            <div id="js-project-form" class="relative z-20 bg-white py-5 px-8 rounded-md" style="width: 100%; max-width: 640px">
+                {% partial 'projectlist/_form' projectList=projectList %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div id="sidebar-menu" class="mb-8 mt-8">
+        <ul>
+            {% for item in items %}
+                <li>
+                    <a class="{{ url().current() starts with item.url and item.url != url('/') and not item.viewBag.isHidden ? 'is-active' : '' }} {{ item.viewBag.isHidden ? 'is-disabled' : '' }} flex items-center color-gray-700 no-underline font-bold relative py-2 mb-1 rounded-md transition px-2 hover:bg-white"
+                       href="{{ item.url }}">
+                        <i class="{{ item.viewBag.cssClass }} text-2.5xl mr-5"></i>
+                        <span>{{ item.title }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+
+            <li class="divider mt-3 mb-3">
+                <hr class="border-gray-300">
+            </li>
+
+            {% for item in secondaryItems %}
+                <li>
+                    <a class="{{ url().current() starts with item.url and item.url != url('/') and not item.viewBag.isHidden ? 'is-active' : '' }} {{ item.viewBag.isHidden ? 'is-disabled' : '' }} flex items-center color-gray-700 no-underline font-bold relative py-2 mb-1 rounded-md transition px-2 hover:bg-white"
+                       href="{{ item.url }}">
+                        <i class="{{ item.viewBag.cssClass }} text-2.5xl mr-5"></i>
+                        <span>{{ item.title }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+
+            <li>
+                <a href="/logout" data-request="userSession::onLogout" data-request-data="redirect: '/'" class="flex items-center color-gray-700 no-underline font-bold relative py-2 mb-1 rounded-md px-2 hover:bg-white transition">
+                    <i class="la la-sign-out-alt  text-2.5xl mr-5" style="transform: rotate(180deg)"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <a href="#" class="mt-auto flex items-center py-2 px-3 bg-white shadow-sm rounded-md">
+        {% if user().picture %}
+            <img width="32" class="rounded-full mr-2" src="{{ user().picture }}" alt="{{ user().credentials }}">
+        {% else %}
+            <div class="w-8 h-8 rounded-full mr-2 flex justify-center items-center bg-gray-300">
+                <span class="text-sm font-bold">{{ user().credentials }}</span>
+            </div>
+        {% endif %}
+        <span class="font-semibold">{{ user().name }} {{ user().surname }}</span>
+    </a>
+</div>

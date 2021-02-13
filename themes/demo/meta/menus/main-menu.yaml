@@ -1,0 +1,106 @@
+items:
+    -
+        title: Board
+        nesting: 0
+        type: static-page
+        url: null
+        code: project-menu-item
+        reference: project
+        cmsPage: null
+        replace: 0
+        viewBag:
+            isHidden: '0'
+            cssClass: 'la la-database icon-rotate-90'
+            isExternal: '0'
+    -
+        title: 'Reports & Analytics'
+        nesting: 0
+        type: static-page
+        url: null
+        code: ''
+        reference: analytics
+        cmsPage: null
+        replace: 0
+        viewBag:
+            isHidden: '0'
+            cssClass: 'la la-chart-pie'
+            isExternal: '0'
+    -
+        title: Timeline
+        nesting: null
+        type: url
+        url: /
+        code: ''
+        reference: null
+        cmsPage: null
+        replace: null
+        viewBag:
+            isHidden: '1'
+            cssClass: 'la la-stream'
+            isExternal: '0'
+    -
+        title: 'Bug tracking'
+        nesting: null
+        type: url
+        url: /
+        code: ''
+        reference: null
+        cmsPage: null
+        replace: null
+        viewBag:
+            isHidden: '1'
+            cssClass: 'la la-bug'
+            isExternal: '0'
+    -
+        title: VCS
+        nesting: null
+        type: url
+        url: /
+        code: ''
+        reference: null
+        cmsPage: null
+        replace: null
+        viewBag:
+            isHidden: '1'
+            cssClass: 'la la-code-branch'
+            isExternal: '0'
+    -
+        title: 'Activity log'
+        nesting: null
+        type: url
+        url: /
+        code: ''
+        reference: null
+        cmsPage: null
+        replace: null
+        viewBag:
+            isHidden: '1'
+            cssClass: 'la la-history'
+            isExternal: '0'
+    -
+        title: 'Shared files'
+        nesting: null
+        type: url
+        url: /
+        code: ''
+        reference: null
+        cmsPage: null
+        replace: null
+        viewBag:
+            isHidden: '1'
+            cssClass: 'la la-file-text'
+            isExternal: '0'
+    -
+        title: Information
+        nesting: null
+        type: url
+        url: /
+        code: ''
+        reference: null
+        cmsPage: null
+        replace: null
+        viewBag:
+            isHidden: '1'
+            cssClass: 'la la-info-circle'
+            isExternal: '0'
+name: 'Main menu'

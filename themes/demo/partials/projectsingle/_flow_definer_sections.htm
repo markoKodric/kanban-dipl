@@ -1,0 +1,95 @@
+{% if flow %}
+    {% for section in flow.sections.where('parent_section_id', null).sortBy('sort_order') %}
+        <div class="mock-section mx-3 {{ section.subsections.isNotEmpty() ? 'has-children' }}" data-id="{{ section.id }}">
+            <div class="section-header">
+                <input type="text" class="custom" value="{{ section.name }}">
+            </div>
+            <div class="section-body">
+                {% for subsection in section.subsections %}
+                    <div class="mock-section inner-mock-section" data-id="{{ subsection.id }}">
+                        <div class="section-header">
+                            <input type="text" class="custom" value="{{ subsection.name }}">
+                        </div>
+                        <div class="section-body">
+                            <div class="wip-limit flex items-center justify-center">
+                                <span class="whitespace-nowrap mr-2">WIP Limit:</span>
+                                <input type="text" value="{{ subsection.wip_limit ? subsection.wip_limit : '-' }}" class="custom">
+                            </div>
+
+                            <div class="section-actions">
+                                <a class="button button-icon button-tooltip add-subsections" data-tooltip="Add subsection"><i class="text-2xl la la-plus"></i></a>
+                                <div class="all-members"></div>
+                                <div class="section-members"></div>
+                            </div>
+
+                            <a class="button button-icon bg-custom bg-red-500 hover:shadow-red button-tooltip remove-section" data-tooltip="Remove section"><i class="la la-times"></i></a>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% if section.subsections.isEmpty() %}
+                    <div class="wip-limit flex items-center justify-center">
+                        <span class="whitespace-nowrap mr-2">WIP Limit:</span>
+                        <input type="text" value="{{ section.wip_limit ? section.wip_limit : '-' }}" class="custom">
+                    </div>
+                {% endif %}
+
+                <div class="section-actions">
+                    <a class="button button-icon button-tooltip add-subsections" data-tooltip="Add subsection"><i class="text-2xl la la-plus"></i></a>
+                    <div class="all-members"></div>
+                    <div class="section-members"></div>
+                </div>
+
+                <a class="button button-icon bg-custom bg-red-500 hover:shadow-red button-tooltip remove-section" data-tooltip="Remove section"><i class="la la-times"></i></a>
+            </div>
+        </div>
+    {% endfor %}
+{% elseif defaultTemplate %}
+    {% for section in defaultTemplate %}
+        <div class="mock-section mx-3 {{ section.subsections|length > 0 ? 'has-children' }}">
+            <div class="section-header">
+                <input type="text" class="custom" value="{{ section.title }}">
+            </div>
+            <div class="section-body">
+                {% for subsection in section.subsections %}
+                    <div class="mock-section inner-mock-section">
+                        <div class="section-header">
+                            <input type="text" class="custom" value="{{ subsection.title }}">
+                        </div>
+                        <div class="section-body">
+                            <div class="wip-limit flex items-center justify-center">
+                                <span class="whitespace-nowrap mr-2">WIP Limit:</span>
+                                <input type="text" value="{{ subsection.wipLimit ? subsection.wipLimit : '-' }}" class="custom">
+                            </div>
+
+                            <div class="section-actions">
+                                <a class="button button-icon button-tooltip add-subsections" data-tooltip="Add subsection"><i class="text-2xl la la-plus"></i></a>
+                                <div class="all-members"></div>
+                                <div class="section-members"></div>
+                            </div>
+
+                            <a class="button button-icon bg-custom bg-red-500 hover:shadow-red button-tooltip remove-section" data-tooltip="Remove section"><i class="la la-times"></i></a>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% if section.subsections|length == 0 %}
+                    <div class="wip-limit flex items-center justify-center">
+                        <span class="whitespace-nowrap mr-2">WIP Limit:</span>
+                        <input type="text" value="{{ section.wipLimit ? section.wipLimit : '-' }}" class="custom">
+                    </div>
+                {% endif %}
+
+                <div class="section-actions">
+                    <a class="button button-icon button-tooltip add-subsections" data-tooltip="Add subsection"><i class="text-2xl la la-plus"></i></a>
+                    <div class="all-members"></div>
+                    <div class="section-members"></div>
+                </div>
+
+                <a class="button button-icon bg-custom bg-red-500 hover:shadow-red button-tooltip remove-section" data-tooltip="Remove section"><i class="la la-times"></i></a>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<a class="button button-icon" id="add-section" data-tooltip="Add section"><i class="text-2xl la la-plus"></i></a>

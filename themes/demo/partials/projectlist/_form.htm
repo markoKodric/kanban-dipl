@@ -1,0 +1,52 @@
+{% set projectList = projectList ?: __SELF__ %}
+
+<form data-request="{{ projectList }}::onCreateProject" >
+    <div class="flex justify-between items-center mb-8 -mr-3">
+        <h3 class="font-bold text-center text-3xl mr-16">New project</h3>
+
+        <button class="button button-icon" data-target="#createProject">
+            <i class="la la-times text-2xl"></i>
+        </button>
+    </div>
+
+    <div class="flex flex-col mt-8">
+        <label for="title" class="font-semibold">Project title <span class="text-red-500">*</span></label>
+        <input type="text" class="w-full custom not-dynamic border px-3 focus:shadow-blue {{ formErrors.get('title') ? 'border-red-500' }}" id="title" name="title" placeholder="Project title...">
+    </div>
+
+    {% if formErrors.get('title') %}
+        <div class="text-red-500 text-sm font-semibold mt-1">{{ formErrors.get('title').0 }}</div>
+    {% endif %}
+
+    <div class="flex flex-col mt-4">
+        <label for="description" class="font-semibold">Project description <span class="text-red-500">*</span></label>
+        <textarea name="description" class="custom not-dynamic border px-3 {{ formErrors.get('description') ? 'border-red-500' }}" id="description" rows="2" placeholder="Project description..."></textarea>
+    </div>
+
+    {% if formErrors.get('description') %}
+        <div class="text-red-500 text-sm font-semibold mt-1">{{ formErrors.get('description').0 }}</div>
+    {% endif %}
+
+    <div class="flex flex-col mt-4">
+        <label for="start_date" class="font-semibold">Start date</label>
+        <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Start date...">
+    </div>
+
+    <div class="flex flex-col mt-4">
+        <label for="due_date" class="font-semibold">Due date</label>
+        <input type="date" class="form-control" id="due_date" name="due_date" placeholder="Due date...">
+    </div>
+
+    <div class="flex flex-col mt-6">
+        <label class="checkbox flex items-center">
+            <input type="checkbox" name="is_default" class="w-7 h-7 mr-2">
+            <span class="font-semibold">Set as default project</span>
+        </label>
+    </div>
+
+    <div class="mt-8 flex justify-center">
+        <button type="submit" class="button button-primary mx-auto">
+            <span class="font-bold">Create project</span>
+        </button>
+    </div>
+</form>

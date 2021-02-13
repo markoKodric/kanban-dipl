@@ -1,0 +1,26 @@
+items:
+    -
+        title: Archive
+        nesting: 0
+        type: static-page
+        code: ''
+        reference: archive
+        replace: 0
+        viewBag:
+            isHidden: '0'
+            cssClass: 'la la-archive'
+            isExternal: '0'
+    -
+        title: Settings
+        nesting: 0
+        type: static-page
+        url: null
+        code: ''
+        reference: settings
+        cmsPage: null
+        replace: 0
+        viewBag:
+            isHidden: '0'
+            cssClass: 'la la-cog'
+            isExternal: '0'
+name: 'Secondary menu'

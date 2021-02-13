@@ -1,0 +1,61 @@
+{% for ticket in section.tickets.sortBy('sort_order').sortBy('priority') %}
+    <a class="ticket {{ ticket.tags ? 'with-tags' : '' }} block bg-white rounded-md mt-3 shadow-sm px-3 pt-2 pb-4 border border-white hover:shadow-blue transition duration-200"
+       data-sort-order="{{ ticket.sort_order }}"
+       href="{{ ticket.url() }}"
+       {% if __SELF__.user.team.settings.general.ticket_modal %}
+       data-request="{{ __SELF__ }}::onOpenTicket"
+       data-request-data="ticket: {{ ticket.id }}"
+       {% endif %}
+       data-id="{{ ticket.id }}"
+       id="ticket-{{ ticket.id }}">
+        <div class="ticket-footer flex items-center pb-2 border-b border-gray-200 mb-2">
+            <div class="flex items-center pr-6">
+                <img src="{{ ticket.priority_image|theme }}" alt="" title="High priority" width="20" class="mr-2 transform translate-z-0">
+                <span class="block mt-0.5 font-extrabold text-sm leading-none">{{ ticket.name }}</span>
+            </div>
+
+            <div class="ml-auto flex items-center">
+                {% for user in ticket.users.sortBy('name') %}
+                <div class="member rounded-full cursor-pointer shadow-md relative w-7 h-7 flex items-center justify-center -ml-2 hover:z-20">
+                    <img src="{{ user.picture }}" class="rounded-full relative z-10" width="28" alt="{{ user.credentials }}">
+
+                    <span class="block absolute top-full right-0 z-20 opacity-0 scale-0 invisible transition duration-200 whitespace-nowrap bg-gray-100 font-bold rounded-md text-sm px-2 py-1">
+                        {{ user.name }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if ticket.description %}
+            <p class="ticket-description text-s mb-2 mt-2.5 font-semibold">{{ ticket.description|slice(0, 255) }}{{ ticket.description | length > 254 ? '...' }}</p>
+        {% endif %}
+
+        <div class="estimation flex items-center {{ ticket.time_estimation == 0 ? 'is-not-estimated' : '' }}">
+            {% if ticket.time_estimation == 0 %}
+                <p><span class="text-sm font-semibold py-0.5 px-1 text-blue-700 rounded-md bg-blue-100">Needs estimation</span></p>
+            {% else %}
+                <p class="text-sm">
+                    <span class="text-sm font-semibold py-0.5 px-1 text-green-700 rounded-md bg-green-100">Estimated</span>:
+                    <span class="font-bold">{{ ticket.time_estimation != 0 ? ticket.estimatedTimeForHumans() : '-' }}</span>
+                </p>
+            {% endif %}
+            <div class="flex items-center py-1 px-2 bg-gray-200 rounded-md ml-auto">
+                <div class="comments flex items-center pr-1 border-r border-gray-500"><i class="la la-wechat mr-0.5"></i> <span class="text-xs">{{ ticket.comments.count() ?: '-' }}</span></div>
+                <div class="files flex items-center px-1"><i class="la la-paperclip mr-0.5"></i> <span class="text-xs">{{ ticket.files.count() ?: '-' }}</span></div>
+                <div class="checklist flex items-center pl-1 border-l border-gray-500"><i class="la la-check-square mr-0.5"></i> <span class="text-xs">{{ ticket.totalChecklistItems() > 0 ? ticket.doneChecklistItems() ~ '/' ~ ticket.totalChecklistItems() : '-' }}</span></div>
+            </div>
+        </div>
+
+        {% if ticket.tags.isNotEmpty() %}
+            <div class="ticket-tags flex items-center mt-2 -mx-1">
+                {% for tag in ticket.tags %}
+                    <div style="background: rgba({{ hex2rgb(tag.color) }}, 0.1); color: {{ tag.color }}"
+                         class="tag font-bold px-1.5 py-0.5 text-xs rounded-md mx-1 relative">
+                        <span>{{ tag.title }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </a>
+{% endfor %}

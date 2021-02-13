@@ -1,0 +1,12 @@
+package-lock.json
+gulpfile.js
+!node_modules/
+
+node_modules/*
+!node_modules/jquery/
+!node_modules/jquery-visible/
+!node_modules/jquery-countto/
+!node_modules/lightgallery/
+!node_modules/lg-video/
+!node_modules/slick-carousel/
+!node_modules/jquery-lazy/

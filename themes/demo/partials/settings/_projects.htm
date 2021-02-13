@@ -1,0 +1,31 @@
+<div id="js-settings-projects">
+    <form class="flex items-center mt-4 mb-6">
+        <div class="select mr-4">
+            <label for="selectProject" class="font-semibold mr-2">Select project:</label>
+            <select name="projects_project" id="selectProject" data-request="{{ __SELF__ }}::onProjectsChangeProject" data-track-input>
+                {% for project in __SELF__.projects %}
+                    <option {{ __SELF__.projectsProject.id == project.id ? 'selected' }} value="{{ project.id }}">{{ project.title }}</option>
+                {% endfor %}
+            </select>
+            <i class="la la-angle-down"></i>
+        </div>
+
+        {% if __SELF__.projectsProject.is_archived %}
+            <button data-request="{{ __SELF__ }}::onRestoreProject" class="button button-outline color-custom text-green-500 border-green-500 hover:shadow-green mr-4">
+                Restore project
+            </button>
+        {% else %}
+            <button data-request="{{ __SELF__ }}::onArchiveProject" class="button button-outline color-custom text-red-500 border-red-500 hover:shadow-red mr-4">
+                Move to archive
+            </button>
+        {% endif %}
+
+        <button data-request="{{ __SELF__ }}::onDeleteProject" class="button button-outline color-custom bg-red-500 text-white border-red-500 hover:shadow-red">
+            Delete project
+        </button>
+    </form>
+
+    <div id="js-project" class="flex items-start space-x-8 bg-blue-50 rounded-md pb-4">
+        {% partial '@__project_settings' %}
+    </div>
+</div>

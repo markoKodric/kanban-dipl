@@ -1,0 +1,79 @@
+description = "Default layout"
+
+[staticPage]
+useContent = 1
+default = 0
+
+[staticMenu mainMenu]
+code = "main-menu"
+
+[staticMenu secondaryMenu]
+code = "secondary-menu"
+
+[projectList]
+projectPage = "static:index"
+
+[session userSession]
+security = "all"
+==
+<?php
+function onStart()
+{
+    if (!Auth::check() && url()->current() != url('/login')) {
+        return redirect('/login');
+    }
+}
+?>
+==
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>{{ this.page.title }} | October</title>
+        <meta name="description" content="{{ this.page.meta_description }}">
+        <meta name="title" content="{{ this.page.meta_title }}">
+        <meta name="author" content="OctoberCMS">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="generator" content="OctoberCMS">
+        <link rel="icon" type="image/png" href="{{ 'assets/images/october.png'|theme }}">
+        <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+        {% if debugEnabled() %}
+            <link rel="stylesheet" href="{{ 'assets/styles/css/custom.css' | theme }}">
+        {% else %}
+            <link rel="stylesheet" href="{{ 'assets/styles/css/custom.min.css' | theme }}">
+        {% endif %}
+        {% styles %}
+    </head>
+
+    <body>
+        <div id="app" class="h-screen max-h-screen overflow-hidden {{ user() ? 'grid' }}">
+            {% if user() %}
+            <nav class="sidebar">
+                {% partial 'layout/sidebar'
+                    items=mainMenu.menuItems()
+                    secondaryItems=secondaryMenu.menuItems()
+                    projectList=projectList
+                    project=projectList.currentProject %}
+            </nav>
+            {% endif %}
+
+            <div class="content">
+                {% page %}
+            </div>
+        </div>
+
+        <div class="fixed bottom-2 right-2 text-gray-500 text-xs">
+            v1.0.0
+        </div>
+
+        <!-- Scripts -->
+        <script src="{{ [
+            'assets/vendor/node_modules/jquery/dist/jquery.js',
+            '@framework',
+            '@framework.extras',
+            'assets/scripts/jquery-ui.js',
+            'assets/scripts/app.js'
+        ]|theme }}">
+        </script>
+    </body>
+</html>

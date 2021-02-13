@@ -1,0 +1,55 @@
+{
+  "name": "october/october",
+  "description": "October CMS",
+  "homepage": "http://octobercms.com",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git@github.com:rainlab/builder-plugin.git"
+    },
+    {
+      "type": "git",
+      "url": "git@github.com:rainlab/pages-plugin.git"
+    },
+    {
+      "type": "git",
+      "url": "git@github.com:rainlab/user-plugin.git"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "october/rain": "1.0.*",
+    "october/system": "1.0.*",
+    "october/backend": "1.0.*",
+    "october/cms": "1.0.*",
+    "laravel/framework": "5.5.*",
+    "wikimedia/composer-merge-plugin": "1.4.*",
+
+    "rainlab/pages-plugin": "dev-master",
+    "rainlab/user-plugin": "dev-master"
+  },
+  "scripts": {
+    "post-create-project-cmd": [
+      "php artisan key:generate"
+    ]
+  },
+  "config": {
+    "preferred-install": "dist",
+    "secure-http": false
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "extra": {
+    "merge-plugin": {
+      "include": [
+        "plugins/*/*/composer.json"
+      ],
+      "recurse": true,
+      "replace": false,
+      "merge-dev": false
+    }
+  },
+  "require-dev": {
+    "barryvdh/laravel-debugbar": "3.0.0"
+  }
+}

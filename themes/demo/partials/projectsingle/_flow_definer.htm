@@ -1,0 +1,62 @@
+<form method="POST" data-request="{{ __SELF__ }}::{{ flow ? 'onUpdateWorkflow' : 'onSaveWorkflow' }}" class="bg-white rounded-md p-6 relative z-100">
+    <div class="absolute top-3 right-1">
+        <button class="button button-icon" data-target="{{ flow ? '#editFlow' : '#newFlow' }}">
+            <i class="la la-times text-2xl"></i>
+        </button>
+    </div>
+
+    <h3 class="text-2xl font-bold mb-4">Flow sections</h3>
+
+    <p style="max-width: 600px" class="mb-4 mx-auto">
+        <small>
+            You can {{ flow ? 'edit your' : 'create your new' }} workflow here (<strong>create sections</strong> and <strong>add subsections</strong>).
+        </small>
+    </p>
+
+    {% if error %}
+        <div class="text-red-600 mb-8">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <div id="js-flow-definer-sections" class="mock-sections mb-8 overflow-x-auto flex" style="min-height: 240px;min-width: 600px;max-width: calc(100vw - 96px);">
+        {% partial '@_flow_definer_sections' %}
+    </div>
+
+    <input id="parsedSections" type="hidden" name="sections" {% if flow %} value="{{ flow.sectionsToJson() }}" {% endif %}>
+
+    <div>
+    </div>
+
+    {% set defaultTemplate = user().team.settings.default_flow_template %}
+    <div class="w-full flex {{ defaultTemplate ? 'justify-between' : 'justify-center' }} items-end">
+        <div>
+            {% if defaultTemplate %}
+                <button class="button button-outline"
+                        data-request="{{ __SELF__ }}::onLoadDefaultFlow"
+                        data-request-success="$('#parsedSections').val(__parseSections());"
+                >
+                    Load default template
+                </button>
+            {% endif %}
+        </div>
+
+        <div class="flex flex-col {{ defaultTemplate ? 'items-end' : 'items-center' }}">
+            <label for="defaultTemplate" class="mb-4 cursor-pointer flex items-center">
+                <input id="defaultTemplate" type="checkbox" name="default_template" class="w-6 h-6 mr-2">
+                <span class="font-semibold">Save as default template</span>
+            </label>
+
+            <div class="flex">
+                <button class="button button-outline color-custom border-red-500 text-red-500 mr-3 hover:shadow-red"
+                        data-request="{{ __SELF__ }}::onResetFlow"
+                        data-request-success="$('#parsedSections').val(__parseSections());"
+                >
+                    Reset
+                </button>
+
+                <button class="button button-primary" type="submit">Save workflow</button>
+            </div>
+        </div>
+    </div>
+</form>

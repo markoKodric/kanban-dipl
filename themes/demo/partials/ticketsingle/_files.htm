@@ -1,0 +1,35 @@
+<div class="mb-4 w-full">
+    <form method="POST" class="flex items-stretch w-full" data-request="{{ __SELF__ }}::onFileUpload" data-request-files>
+        <div class="form-item w-full" style="max-width: calc(100% - 64px);">
+            <div class="input-type-file">
+                <label for="ticket-file-upload" class="custom block placeholder-blue-300 py-2 px-6 rounded-md border border-dashed border-blue-300 font-bold relative cursor-pointer overflow-ellipsis overflow-hidden">
+                    <input type="file" id="ticket-file-upload" name="file" placeholder="Add file..." class="invisible opacity-0 absolute">
+                    <span class="input-type-file-text font-bold text-blue-300 w-full">Add file...</span>
+                </label>
+            </div>
+        </div>
+        <button type="submit" class="button button-icon bg-custom bg-blue-300">
+            <i class="la la-check text-2xl"></i>
+        </button>
+    </form>
+</div>
+
+<div class="max-h-sm overflow-y-auto overflow-x-visible">
+    {% if __SELF__.ticket.files.isNotEmpty() %}
+        {% for file in __SELF__.ticket.files.sortBy('sort_order') %}
+            <div class="attachment-wrapper pr-3">
+                <a class="flex flex-wrap items-baseline w-full py-2 mb-3 border-b relative" download href="{{ file.getPath() }}">
+                    <span class="font-semibold text-blue-500 w-full overflow-ellipsis overflow-hidden block mb-1 pr-8">{{ file.file_name }}</span>
+                    <span class="file-size text-gray-500 text-xs">({{ format_bytes(file.file_size) }})</span>
+                    <span class="ml-auto text-xs text-gray-500">Added: {{ file.created_at.diffForHumans() }}</span>
+
+                    <button data-request="{{ __SELF__ }}::onDeleteFile"
+                            data-request-data="file_id: {{ file.id }}"
+                            class="w-7 h-7 flex justify-center items-center font-bold text-white bg-red-500 rounded-full ml-2 absolute top-1 right-0 focus:outline-none">
+                        <i class="la la-trash"></i>
+                    </button>
+                </a>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

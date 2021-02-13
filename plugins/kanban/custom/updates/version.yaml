@@ -1,0 +1,59 @@
+1.0.1:
+    - 'Initialize plugin.'
+1.0.2:
+    - 'Create projects table.'
+    - 2019_08_06_170801_create_projects_table.php
+1.0.3:
+    - 'Create tickets table.'
+    - 2019_08_06_171655_create_tickets_table.php
+1.0.5:
+    - 'Create ticket comments table.'
+    - 2019_08_06_172110_create_ticket_comments_table.php
+1.0.6:
+    - 'Create ticket checklists table.'
+    - 2019_08_06_172152_create_ticket_checklists_table.php
+1.0.7:
+    - 'Create ticket checklist items table.'
+    - 2019_08_06_172234_create_ticket_checklist_items_table.php
+1.0.9:
+    - 'Create teams table.'
+    - 2019_08_07_120110_create_teams_table.php
+1.0.10:
+    - 'Create project user table.'
+    - 2019_08_09_152401_create_project_user_table.php
+1.0.11:
+    - 'Create flows table.'
+    - 2019_08_09_210050_create_flows_table.php
+1.0.12:
+    - 'Create flow sections table.'
+    - 2019_08_09_210106_create_flow_sections_table.php
+1.0.13:
+    - 'Create ticket user table.'
+    - 2019_08_10_125721_create_ticket_user_table.php
+1.0.14:
+    - 'Create notifications table.'
+    - 2020_01_25_100317_create_notifications_table.php
+1.0.15:
+    - 'Create tags table.'
+    - 2020_01_26_155051_create_tags_table.php
+1.0.16:
+    - 'Create ticket tags table.'
+    - 2020_01_26_155734_create_tickets_tags_table.php
+1.0.17:
+    - 'Create timers table.'
+    - 2020_02_09_145635_create_timers_table.php
+1.0.18:
+    - 'Create flow section updates table.'
+    - 2020_02_29_120619_create_flow_section_updates.php
+1.0.19:
+    - 'Update users table'
+    - migration1019.php
+1.0.20:
+    - 'DB seeder'
+    - seeder1020.php
+1.0.21:
+    - 'Create url map updates table'
+    - builder_table_kanban_custom_url_map.php
+1.0.22:
+    - 'Created table kanban_custom_flow_section_restrictions'
+    - builder_table_create_kanban_custom_flow_section_restrictions.php

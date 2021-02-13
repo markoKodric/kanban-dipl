@@ -1,0 +1,82 @@
+<h3 class="w-full font-semibold border-b py-4 px-6 pb-2 mb-3">General permissions</h3>
+
+<div class="flex flex-wrap items-start space-x-8 bg-blue-50 rounded-md">
+    <div class="py-4 px-6">
+        <h3 class="text-lg font-bold mb-4">Board</h3>
+        <div>
+            {% for key, permission in __SELF__.permissionList if key starts with 'board.' %}
+                <label for="{{ key }}" class="flex cursor-pointer items-center mb-4">
+                    <input id="{{ key }}"
+                           type="checkbox"
+                            {{ __SELF__.permissionsUser.can(key) ? 'checked' }}
+                           name="{{ key }}"
+                           class="w-6 h-6 mr-4">
+                    <span class="font-semibold">{{ permission }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="py-4 px-6">
+        <h3 class="text-lg font-bold mb-4">Ticket</h3>
+        <div>
+            {% for key, permission in __SELF__.permissionList if key starts with 'ticket.' %}
+                <label for="{{ key }}" class="flex cursor-pointer items-center mb-4">
+                    <input id="{{ key }}"
+                           type="checkbox"
+                            {{ __SELF__.permissionsUser.can(key) ? 'checked' }}
+                           name="{{ key }}"
+                           class="w-6 h-6 mr-4">
+                    <span class="font-semibold">{{ permission }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="py-4 px-6">
+        <h3 class="text-lg font-bold mb-4">Projects</h3>
+        <div>
+            {% for key, permission in __SELF__.permissionList if key starts with 'projects.' %}
+                <label for="{{ key }}" class="flex cursor-pointer items-center mb-4">
+                    <input id="{{ key }}"
+                           type="checkbox"
+                            {{ __SELF__.permissionsUser.can(key) ? 'checked' }}
+                           name="{{ key }}"
+                           class="w-6 h-6 mr-4">
+                    <span class="font-semibold">{{ permission }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if __SELF__.permissionsProject.flow %}
+<h3 class="w-full font-semibold border-b mt-4 py-4 px-6 pb-2 mb-3">Project specific permissions</h3>
+
+<div class="flex flex-wrap items-start space-x-8 bg-blue-50 rounded-md pb-6">
+    <div class="w-full py-4 px-6">
+        <h3 class="text-lg font-bold mb-4">Flow sections</h3>
+        <div>
+            {% for section in __SELF__.permissionsProject.flow.sections().doesntHave('subsections').get() %}
+                <label for="section-{{ section.id }}" class="flex cursor-pointer items-center mb-4">
+                    <input id="section-{{ section.id }}"
+                           type="checkbox"
+                            {{ __SELF__.permissionsUser.canManageSection(section) ? 'checked' }}
+                           name="sections[]"
+                           value="{{ section.id }}"
+                           class="w-6 h-6 mr-4">
+                    <span class="font-semibold">{{ section.name }} {{ section.parent ? '(' ~ section.parent.name ~ ')' }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="w-full items-center mt-4">
+    <button data-request="{{ __SELF__ }}::onUpdateUserPermissions" class="button button-outline color-custom bg-green-500 text-white border-green-500 hover:shadow-green mr-4">
+        Save permissions <i class="la la-check ml-2"></i>
+    </button>
+
+    <button data-request="{{ __SELF__ }}::onResetUserPermissions" class="button button-outline color-custom bg-red-500 text-white border-red-500 hover:shadow-red">
+        Reset permissions <i class="la la-undo-alt ml-2"></i>
+    </button>
+</div>

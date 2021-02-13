@@ -1,0 +1,7 @@
+<span>{{ section.name }}</span>
+
+{% if section.wip_limit %}
+    <span class="text-sm {{ section.wip_limit == section.tickets.count() ? 'text-red-500' }}">
+        ({{ section.tickets.count() }}/{{ section.wip_limit }})
+    </span>
+{% endif %}

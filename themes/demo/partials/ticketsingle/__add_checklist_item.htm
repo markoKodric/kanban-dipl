@@ -1,0 +1,8 @@
+<form data-request="{{ __SELF__ }}::onCreateChecklistItem" data-request-success="$(this).find('input').val('');" method="POST" class="flex items-stretch mt-3">
+    <input type="hidden" name="checklist" value="{{ checklist.id }}">
+    <input type="text" required name="checklist-item" placeholder="Add item..." class="custom block w-full flex-1 placeholder-blue-300 py-1 px-6 rounded-md border border-dashed border-blue-300 font-bold">
+
+    <button type="submit" class="button button-icon bg-custom bg-blue-300">
+        <i class="la la-check text-2xl"></i>
+    </button>
+</form>

@@ -1,0 +1,50 @@
+<input type="hidden" name="_section_id" value="{{ section.id }}">
+
+<div class="ticket-footer flex align-center mb-2">
+    <div class="flex-1 mr-6" >
+        <input type="text" class="w-full text-sm" name="title" placeholder="Ticket title...">
+        {% if errors.get('title').0 %}
+            <div class="text-red-600">{{ errors.get('title').0 }}</div>
+        {% endif %}
+    </div>
+
+    <div class="members">
+        <div class="member rounded-full cursor-pointer shadow-md relative w-10 h-10 flex items-center justify-center -ml-2 hover:z-20">
+            {% if __SELF__.user.picture %}
+                <img src="{{ __SELF__.user.picture }}" class="rounded-full" width="40" alt="{{ __SELF__.user.credentials }}">
+            {% else %}
+                <div class="w-10 h-10 rounded-full flex justify-center items-center bg-gray-300">
+                    <span class="font-bold">{{ __SELF__.user.credentials }}</span>
+                </div>
+            {% endif %}
+
+            <span class="block absolute top-full opacity-0 scale-0 invisible transition duration-200 whitespace-nowrap bg-gray-100 font-bold rounded-md text-sm px-2 py-1">
+                {{ __SELF__.user.name }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<textarea name="description" class="form-control mb-0.5 w-full text-sm py-3" placeholder="Ticket description..." rows="3"></textarea>
+
+<div class="priority mb-2 w-full">
+    <label for="priority" class="flex items-center">
+        <span class="text-sm">Priority:</span>
+        <div class="select flex-1 ml-2">
+            <select class="form-control w-full text-sm" name="priority" id="priority">
+                <option value="1">High priority </option>
+                <option value="2">Medium priority </option>
+                <option value="3">Low priority </option>
+            </select>
+            <i class="la la-angle-down"></i>
+        </div>
+    </label>
+</div>
+
+<div class="estimation">
+    <label for="estimation" class="flex items-center">
+        <span class="text-sm">Estimation:</span>
+        <input type="number" step="1" class="ml-2 min-w-0 text-sm mr-1 w-16" name="estimation[]" placeholder="0" value="0" min="0"> h
+        <input type="number" step="1" class="ml-2 min-w-0 text-sm ml-auto mr-1 w-16" name="estimation[]" placeholder="0" value="0" min="0" max="59"> m
+    </label>
+</div>

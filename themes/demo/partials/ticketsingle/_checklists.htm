@@ -1,0 +1,26 @@
+{% if __SELF__.ticket.checklists.isNotEmpty() %}
+    {% for checklist in __SELF__.ticket.checklists.sortBy('sort_order') %}
+        <div class="mb-8">
+            <div class="checklist-header is-active text-gray-700 text-lg cursor-pointer pr-3" onclick="$(this).toggleClass('is-active');">
+                <div class="checklist-header-inner flex items-center justify-between w-full rounded-md bg-blue-50 font-bold py-2 px-4 relative">
+                    <span class="pr-9 flex-1">{{ checklist.title }}</span>
+
+                    <button data-request="{{ __SELF__ }}::onDeleteChecklist"
+                            data-request-data="checklist: {{ checklist.id }}"
+                            class="delete-item w-7 h-7 flex justify-center items-center font-bold text-white bg-red-500 rounded-full ml-2 focus:outline-none">
+                        <i class="la la-trash"></i>
+                    </button>
+
+                    <a class="toggle-checklist ml-3" href="#"><i class="la la-angle-down"></i></a>
+                </div>
+            </div>
+            <div id="js-checklist-{{ checklist.id }}">
+                {% partial '@__checklist' checklist=checklist %}
+            </div>
+
+            <div id="js-add-checklist-item-{{ checklist.id }}">
+                {% partial '@__add_checklist_item' checklist=checklist %}
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}

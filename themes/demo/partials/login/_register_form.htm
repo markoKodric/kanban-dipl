@@ -1,0 +1,53 @@
+{% if canRegister %}
+    <h3 class="text-2xl font-bold mb-8 text-center">Register</h3>
+
+    {{ form_ajax('onRegister') }}
+
+        <div class="form-group mb-4">
+            <label class="block font-semibold mb-0.5" for="registerName">Full Name</label>
+            <input
+                name="name"
+                type="text"
+                class="form-control w-full"
+                id="registerName"
+                placeholder="Enter your full name" />
+        </div>
+
+        <div class="form-group mb-4">
+            <label class="block font-semibold mb-0.5" for="team">Team</label>
+            <select name="team_id" id="team" class="w-full">
+                <option value="">-- Choose team --</option>
+                {% for id, team in __SELF__.teams %}
+                    <option value="{{ id }}">{{ team }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group mb-4">
+            <label class="block font-semibold mb-0.5" for="registerEmail">Email</label>
+            <input
+                name="email"
+                type="email"
+                class="form-control w-full"
+                id="registerEmail"
+                placeholder="Enter your email" />
+        </div>
+
+        <div class="form-group mb-4">
+            <label class="block font-semibold mb-0.5" for="registerPassword">Password</label>
+            <input
+                name="password"
+                type="password"
+                class="form-control w-full"
+                id="registerPassword"
+                placeholder="Choose a password" />
+        </div>
+
+        <div class="flex justify-center">
+            <button type="submit" class="button button-primary">Register</button>
+        </div>
+
+    {{ form_close() }}
+{% else %}
+    <!-- Registration is disabled. -->
+{% endif %}

@@ -1,0 +1,30 @@
+<div id="js-settings-permissions">
+    <form>
+        <div class="flex items-center mt-4 mb-6">
+            <div class="select mr-8">
+                <label for="selectUser" class="font-semibold mr-2">Select user:</label>
+                <select name="permissions_user" id="selectUser" data-request="{{ __SELF__ }}::onPermissionsChangeUser" data-track-input>
+                    {% for user in __SELF__.users %}
+                        <option {{ __SELF__.permissionsUser.id == user.id ? 'selected' }} value="{{ user.id }}">{{ user.name }} {{ user.surname }} ({{ user.credentials }})</option>
+                    {% endfor %}
+                </select>
+                <i class="la la-angle-down"></i>
+            </div>
+
+            <div class="select mr-4">
+                <label for="selectProject" class="font-semibold mr-2">Select project:</label>
+                <select name="permissions_project" id="selectProject" data-request="{{ __SELF__ }}::onPermissionsChangeProject" data-track-input>
+                    <option value="">-- Choose --</option>
+                    {% for project in __SELF__.projects %}
+                        <option {{ __SELF__.permissionsProject and __SELF__.permissionsProject.id == project.id ? 'selected' }} value="{{ project.id }}">{{ project.title }}</option>
+                    {% endfor %}
+                </select>
+                <i class="la la-angle-down"></i>
+            </div>
+        </div>
+
+        <div id="js-permission-list">
+            {% partial '@__permission_list' %}
+        </div>
+    </form>
+</div>

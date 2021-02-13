@@ -1,0 +1,6 @@
+plugin:
+    name: 'kanban.custom::lang.plugin.name'
+    description: 'kanban.custom::lang.plugin.description'
+    author: Kanban
+    icon: oc-icon-adjust
+    homepage: ''

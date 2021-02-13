@@ -1,0 +1,82 @@
+{% if project.flow %}
+    {% set columnWidths = {'0': 'w-22.5 min-w-22.5', '1': 'w-22.5 min-w-22.5', '2': 'w-45 min-w-45', '3': 'w-67.5 min-w-67.5', '4': 'w-90 min-w-90'} %}
+    {% for section in project.flow.sections.where('parent_section_id', null).sortBy('sort_order') %}
+        <div class="flow-section py-3 bg-blue-50 rounded-md {{ columnWidths[section.subsections.count()] }}"
+             id="flow-section-{{ section.id }}"
+             data-limit="{{ section.wip_limit }}"
+             data-section-id="{{ section.id }}">
+            <div class="section-inner">
+                <div class="section-header flex justify-center items-center w-full px-3 {{ section.subsections.isNotEmpty() ? 'pb-2 border-b border-dashed border-gray-300' : '' }}">
+                    <div id="js-section-header-{{ section.id }}" class="title text-lg text-center font-bold">
+                        {% partial '@_section_header' section=section %}
+                    </div>
+                </div>
+
+                {% if not section.subsections.isEmpty() %}
+                    <div class="flex space-x-3">
+                        {% for subsection in section.subsections %}
+                            <div class="flow-section py-3 bg-blue-50 rounded-md w-1/{{ section.subsections.count() }} {{ not loop.first ? 'border-l border-dashed border-gray-300' : '' }}"
+                                 id="flow-section-{{ subsection.id }}"
+                                 data-limit="{{ subsection.wip_limit }}"
+                                 data-section-id="{{ subsection.id }}">
+                                <div class="section-inner">
+                                    <div class="section-header flex items-center justify-center w-full px-3">
+                                        <div id="js-section-header-{{ subsection.id }}" class="title text-lg text-center font-bold">
+                                            {% partial '@_section_header' section=subsection %}
+                                        </div>
+                                    </div>
+
+                                    <div class="section-tickets min-h-lg max-h-md overflow-y-auto px-3">
+                                        <div id="section-tickets-{{ subsection.id }}" class="pb-0.5 section-tickets-inner min-h-sm">
+                                            {% partial '@_tickets' section=subsection %}
+                                        </div>
+                                    </div>
+
+                                    {% if loop.parent.first and loop.first %}
+                                        <div id="section-add-ticket" class="ml-auto mt-4">
+                                            {% partial '@_add_ticket' section=subsection %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="section-tickets {{ loop.first ? 'max-h-md' : 'max-h-lg' }} overflow-y-auto px-3">
+                        <div id="section-tickets-{{ section.id }}" class="pb-0.5 section-tickets-inner {{ loop.first ? section.tickets.count() > 0 ? 'min-h-xs' : '' : 'min-h-sm' }}">
+                            {% partial '@_tickets' section=section %}
+                        </div>
+                    </div>
+
+                    {% if section.subsections.isEmpty() and loop.first %}
+                        <div id="section-add-ticket" class="ml-auto mt-4">
+                            {% partial '@_add_ticket' section=section %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="warning text-center w-full flex flex-col items-center justify-center m-auto">
+        <h1 class="text-gray-300 text-7xl mb-8">No workflow defined.</h1>
+
+        <a href="#" class="button button-primary mx-auto mb-2" data-target="#newFlow">Create workflow</a>
+
+        <div class="tutorial-step mb-8">
+            <div class="mb-2 animate-bounce">
+                <i class="la la-long-arrow-up text-2xl"></i>
+            </div>
+
+            <span class="font-semibold text-lg">Click here to define new flow.</span>
+        </div>
+
+        <div id="newFlow" class="flow-definer-wrapper invisible opacity-0 fixed inset-0 flex justify-center items-center z-50">
+            <div class="background-overlay absolute inset-0 bg-black bg-opacity-75"></div>
+
+            <div id="flow-definer">
+                {% partial '@_flow_definer' %}
+            </div>
+        </div>
+    </div>
+{% endif %}
