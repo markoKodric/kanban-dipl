@@ -53,17 +53,15 @@ return [
         ],
 
         'mysql' => [
-            'driver'     => 'mysql',
-            'engine'     => 'InnoDB',
-            'host'       => 'localhost',
-            'port'       => 3306,
-            'database'   => 'kanban',
-            'username'   => 'root',
-            'password'   => '',
-            'charset'    => 'utf8mb4',
-            'collation'  => 'utf8mb4_unicode_ci',
-            'prefix'     => '',
-            'varcharmax' => 191,
+            'driver'    => 'mysql',
+            'host'      => env('DB_HOST'),
+            'port'      => '',
+            'database'  => env('DB_NAME'),
+            'username'  => env('DB_USER'),
+            'password'  => env('DB_PASS'),
+            'charset'   => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix'    => '',
         ],
 
         'pgsql' => [
