@@ -51,6 +51,7 @@ function onStart()
 
     <body>
         <div id="app"
+             data-sio="{{ socketio_url() }}"
              data-tid="{{ user() ? user().team.id }}"
              data-uid="{{ user() ? user().id }}"
              class="h-screen max-h-screen overflow-hidden {{ user() ? 'grid' }}">
@@ -76,7 +77,7 @@ function onStart()
         </div>
 
         <!-- Scripts -->
-        {% set socketIoScript = 'http://localhost:8443/socket.io/socket.io.js' %}
+        {% set socketIoScript = socketio_url() ~ 'socket.io/socket.io.js' %}
 
         {% if ping(socketIoScript) %}
             <script src="{{ socketIoScript }}"></script>

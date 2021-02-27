@@ -1,3 +1,4 @@
 *.sqlite
 /debugbar
 /search
+system.log

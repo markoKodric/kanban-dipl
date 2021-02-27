@@ -39,4 +39,7 @@ return [
         'secret' => '',
     ],
 
+    'socketio' => [
+        'url' => env('SOCKET_IO_URL', '')
+    ]
 ];

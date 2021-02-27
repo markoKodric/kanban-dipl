@@ -183,6 +183,9 @@ class Plugin extends PluginBase
                 },
                 'str_random' => function ($length = 32) {
                     return Str::random($length);
+                },
+                'socketio_url' => function () {
+                    return config('services.socketio.url');
                 }
             ]
         ];
