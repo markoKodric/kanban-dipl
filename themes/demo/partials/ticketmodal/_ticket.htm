@@ -6,7 +6,7 @@
         {% partial 'ticketsingle/_ticket' ticket=ticket %}
     </div>
 
-    <button data-request="{{ __SELF__ }}::onCloseTicket"
+    <button data-request="{{ __SELF__ ?: 'ticketModal' }}::onCloseTicket"
             class="absolute bg-blue-500 text-white flex justify-center items-center rounded-md w-10 h-10 top-2 right-2 z-30">
         <i class="la la-times text-2xl"></i>
     </button>
