@@ -6,9 +6,8 @@
        {% if user().team.settings.general.ticket_modal %}
            data-request="ticketModal::onOpenTicket"
            data-request-data='"ticket": {{ ticket.id }}'
-       {% else %}
-           href="{{ ticket.url() }}"
        {% endif %}
+       href="{{ ticket.url() }}"
        id="ticket-{{ ticket.id }}">
         {% partial 'projectsingle/_ticket' ticket=ticket %}
     </a>
