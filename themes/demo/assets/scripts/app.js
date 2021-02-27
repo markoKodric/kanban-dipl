@@ -60,7 +60,7 @@
         let socket;
 
         if (typeof io === 'function') {
-            socket = io('http://localhost:8444/');
+            socket = io('http://localhost:8443/');
 
             if (tid) {
                 socket.emit('userConnection', {

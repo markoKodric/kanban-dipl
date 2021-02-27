@@ -76,7 +76,7 @@ function onStart()
         </div>
 
         <!-- Scripts -->
-        {% set socketIoScript = 'http://localhost:8444/socket.io/socket.io.js' %}
+        {% set socketIoScript = 'http://localhost:8443/socket.io/socket.io.js' %}
 
         {% if ping(socketIoScript) %}
             <script src="{{ socketIoScript }}"></script>
