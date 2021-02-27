@@ -39,7 +39,7 @@ class ProjectList extends ComponentBase
 
         $this->projects = Auth::getUser()->team()->with('projects')->first()->projects()->unarchived()->with('picture')->get();
 
-        $this->currentProject = $this->projects->where('id', session()->get('currentProject'))->first() ?? $this->projects->where('is_default', 1)->first();
+        $this->currentProject = $this->projects->where('id', session()->get('currentProject'))->first() ?? $this->projects->where('is_default', 1)->first() ?? $this->projects->first();
 
         if ($this->currentProject && url()->current() == url('/')) {
             return redirect($this->currentProject->url());
