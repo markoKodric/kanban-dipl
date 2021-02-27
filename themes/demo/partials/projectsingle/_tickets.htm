@@ -3,18 +3,12 @@
        data-sort-order="{{ ticket.sort_order }}"
        style="background-color: rgba({{ hex2rgb(ticket.color) }}, {{ ticket.color == '#fff' or ticket.color == '#ffffff' ? '1' : '0.3' }})"
        data-id="{{ ticket.id }}"
-       {#{% if user().team.settings.general.ticket_modal %}
-       data-target="#ticketPopup"
-       data-request="{{ __SELF__ }}::onToggleTicket"
-       data-request-loading=".loader"
-       data-request-data='"ticket": {{ ticket.id }}'
-       href="{{ ticket.url() }}"
-       data-request-success="var refresh = window.location.protocol + '//' + window.location.host + window.location.pathname + '?ticket={{ ticket.id }}#open-ticket-{{ ticket.id }}';window.history.pushState({ path: refresh }, '', refresh);"
-       {% else %}#}
-       href="{{ ticket.url() }}"
-       data-request="ticketModal::onOpenTicket"
-       data-request-data='"ticket": {{ ticket.id }}'
-       {#{% endif %}#}
+       {% if user().team.settings.general.ticket_modal %}
+           data-request="ticketModal::onOpenTicket"
+           data-request-data='"ticket": {{ ticket.id }}'
+       {% else %}
+           href="{{ ticket.url() }}"
+       {% endif %}
        id="ticket-{{ ticket.id }}">
         {% partial 'projectsingle/_ticket' ticket=ticket %}
     </a>

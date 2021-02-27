@@ -60,6 +60,17 @@ class TicketModal extends ComponentBase
         ];
     }
 
+    public function onCloseTicket()
+    {
+        session()->forget('ticket_modal');
+
+        $this->onRun();
+
+        return [
+            '#ticket-modal' => ''
+        ];
+    }
+
     public function getProjectPageOptions()
     {
         return ['' => '---'] + $this->getAllPages();
