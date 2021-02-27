@@ -1,0 +1,15 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+{% if user().can('ticket.edit') %}
+    <textarea name="ticket_description"
+              class="custom w-full {{ ticket.description|length ? 'border-0' : 'border border-gray-300' }} resize-y -ml-2 pl-2"
+              rows="{{ max((ticket.description|length ? 2 : 1), min((ticket.description|length) // 64, 6)) }}"
+              data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdateTicketDescription"
+              data-request-blur
+              data-request-success="
+                  ticketUpdate('#js-description', 'ticketsingle/_ticket_description', {{ ticket.id }});
+                  ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+              ">{{ ticket.description }}</textarea>
+{% else %}
+    <p class="pl-2 -ml-2" id="socket-description">{{ ticket.description }}</p>
+{% endif %}

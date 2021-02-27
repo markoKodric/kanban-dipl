@@ -1,4 +1,9 @@
-<form method="POST" data-request="{{ __SELF__ }}::{{ flow ? 'onUpdateWorkflow' : 'onSaveWorkflow' }}" class="bg-white rounded-md p-6 relative z-100">
+<form method="POST"
+      data-request="{{ __SELF__ }}::{{ flow ? 'onUpdateWorkflow' : 'onSaveWorkflow' }}"
+      {% if flow %}
+      data-request-success="flowUpdate({{ flow.project.id }}, {{ flow.id }})"
+      {% endif %}
+      class="bg-white rounded-md p-6 relative z-100">
     <div class="absolute top-3 right-1">
         <button class="button button-icon" data-target="{{ flow ? '#editFlow' : '#newFlow' }}">
             <i class="la la-times text-2xl"></i>
@@ -20,13 +25,10 @@
     {% endif %}
 
     <div id="js-flow-definer-sections" class="mock-sections mb-8 overflow-x-auto flex" style="min-height: 240px;min-width: 600px;max-width: calc(100vw - 96px);">
-        {% partial '@_flow_definer_sections' %}
+        {% partial 'projectsingle/_flow_definer_sections' %}
     </div>
 
     <input id="parsedSections" type="hidden" name="sections" {% if flow %} value="{{ flow.sectionsToJson() }}" {% endif %}>
-
-    <div>
-    </div>
 
     {% set defaultTemplate = user().team.settings.default_flow_template %}
     <div class="w-full flex {{ defaultTemplate ? 'justify-between' : 'justify-center' }} items-end">
@@ -49,7 +51,7 @@
 
             <div class="flex">
                 <button class="button button-outline color-custom border-red-500 text-red-500 mr-3 hover:shadow-red"
-                        data-request="{{ __SELF__ }}::onResetFlow"
+                        data-request="{{ __SELF__ ?: 'projectSingle' }}::onResetFlow"
                         data-request-success="$('#parsedSections').val(__parseSections());"
                 >
                     Reset

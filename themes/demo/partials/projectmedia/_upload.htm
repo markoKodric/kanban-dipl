@@ -1,0 +1,19 @@
+<form method="POST" class="flex items-stretch"
+      data-request="{{ __SELF__ }}::onFileUpload"
+      data-request-files>
+    <div class="form-item w-full"{# style="max-width: calc(100% - 64px);"#}>
+        <div class="input-type-file">
+            <label for="file-upload"
+                   class="custom flex items-center placeholder-white placeholder-opacity-100 py-1 px-6 rounded-md border border-blue-500 bg-blue-500 font-bold relative cursor-pointer hover:shadow-blue transition overflow-ellipsis overflow-hidden" style="min-height: 2.5rem">
+                <input type="file"
+                       id="file-upload"
+                       name="file"
+                       onchange="$(this.form).request();"
+                       placeholder="Upload file..."
+                       class="invisible opacity-0 absolute">
+
+                <span class="input-type-file-text text-custom font-bold text-white w-full flex items-center">Upload file <i class="text-2xl la la-cloud-upload-alt ml-2"></i></span>
+            </label>
+        </div>
+    </div>
+</form>

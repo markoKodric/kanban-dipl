@@ -2,7 +2,10 @@
 
 use App;
 use Auth;
+use Cms\Classes\Controller;
 use Event;
+use Illuminate\Support\Str;
+use Kanban\Custom\Components\TicketModal;
 use System\Classes\PluginBase;
 use Kanban\Custom\Models\Project;
 use Kanban\Custom\Components\Login;
@@ -10,10 +13,14 @@ use Kanban\Custom\Components\Archive;
 use Kanban\Custom\Components\Settings;
 use Kanban\Custom\Components\Analytics;
 use Kanban\Custom\Bootstrap\ExtendUser;
+use Kanban\Custom\Components\ActivityLog;
+use Kanban\Custom\Components\UserProfile;
 use Kanban\Custom\Components\ProjectList;
+use Kanban\Custom\Components\ProjectMedia;
 use Kanban\Custom\Components\TicketSingle;
 use Kanban\Custom\Components\ProjectSingle;
-use Kanban\Custom\Bootstrap\InitGlobalScopes;
+use Kanban\Custom\Components\ProjectUpdate;
+use Kanban\Custom\Bootstrap\InitSocketFunctions;
 use Kanban\Custom\Bootstrap\InitDynamicParameters;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -27,7 +34,7 @@ class Plugin extends PluginBase
     public function boot()
     {
         (new ExtendUser())->init();
-        (new InitGlobalScopes())->init();
+        (new InitSocketFunctions())->init();
         (new InitDynamicParameters())->init();
 
         App::error(function(HttpException $exception) {
@@ -68,9 +75,14 @@ class Plugin extends PluginBase
             Archive::class       => 'archive',
             Settings::class      => 'settings',
             Analytics::class     => 'analytics',
+            ActivityLog::class   => 'activityLog',
             ProjectList::class   => 'projectList',
+            UserProfile::class   => 'userProfile',
+            TicketModal::class   => 'ticketModal',
             TicketSingle::class  => 'ticketSingle',
+            ProjectMedia::class  => 'projectMedia',
             ProjectSingle::class => 'projectSingle',
+            ProjectUpdate::class => 'projectUpdate',
         ];
     }
 
@@ -88,6 +100,9 @@ class Plugin extends PluginBase
                     } else {
                         return $size;
                     }
+                },
+                'file_type' => function ($value) {
+                    return pathinfo($value, PATHINFO_EXTENSION);
                 },
                 'hex2rgb' => function ($hex) {
                     $hex = str_replace("#", "", $hex);
@@ -108,8 +123,8 @@ class Plugin extends PluginBase
                 'user' => function () {
                     return Auth::getUser();
                 },
-                'dd' => function (...$args) {
-                    dd($args);
+                'dd' => function () {
+                    dd(...func_get_args());
                 },
                 'request' => function () {
                     return request();
@@ -122,6 +137,52 @@ class Plugin extends PluginBase
                 },
                 'debugEnabled' => function () {
                     return config('app.debug');
+                },
+                'charts' => function () {
+                    $components = Controller::getController()->getPage()->components;
+
+                    foreach ($components as $key => $component) {
+                        if (get_class($component) == 'Kanban\\Custom\\Components\\Analytics') {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                },
+                'ticketModal' => function () {
+                    $components = Controller::getController()->getPage()->components;
+
+                    foreach ($components as $key => $component) {
+                        if (get_class($component) == 'Kanban\\Custom\\Components\\TicketModal') {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                },
+                'ping' => function ($url) {
+                    if ($url == null) return false;
+
+                    if (cache()->has('url_available_' . md5($url))) {
+                        return cache()->get('url_available_' . md5($url));
+                    }
+
+                    $curl = curl_init($url);
+
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+                    curl_exec($curl);
+
+                    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                    curl_close($curl);
+
+                    return cache()->remember('url_available_' . md5($url), 15, function () use ($httpCode) {
+                        return $httpCode >= 200 && $httpCode < 300;
+                    });
+                },
+                'str_random' => function ($length = 32) {
+                    return Str::random($length);
                 }
             ]
         ];

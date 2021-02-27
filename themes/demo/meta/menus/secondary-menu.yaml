@@ -1,10 +1,23 @@
 items:
     -
-        title: Archive
+        title: 'Activity log'
         nesting: 0
         type: static-page
         code: ''
+        reference: activity-log
+        replace: 0
+        viewBag:
+            isHidden: '0'
+            cssClass: 'la la-history'
+            isExternal: '0'
+    -
+        title: Archive
+        nesting: 0
+        type: static-page
+        url: null
+        code: ''
         reference: archive
+        cmsPage: null
         replace: 0
         viewBag:
             isHidden: '0'

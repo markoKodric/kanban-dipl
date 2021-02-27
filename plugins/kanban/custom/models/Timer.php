@@ -1,5 +1,6 @@
 <?php namespace Kanban\Custom\Models;
 
+use Auth;
 use Model;
 use RainLab\User\Models\User;
 use October\Rain\Database\Traits\Validation;

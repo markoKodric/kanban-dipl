@@ -6,6 +6,7 @@ use Kanban\Custom\Models\Timer;
 use Kanban\Custom\Models\Ticket;
 use Kanban\Custom\Models\Comment;
 use Kanban\Custom\Models\Project;
+use Kanban\Custom\Models\Activity;
 use Kanban\Custom\Models\FlowSection;
 
 class ExtendUser
@@ -29,7 +30,10 @@ class ExtendUser
             $model->belongsToMany['restrictions'] = [FlowSection::class, 'table' => 'kanban_custom_flow_section_restrictions'];
 
             $model->hasMany['timers'] = [Timer::class];
+
             $model->hasMany['comments'] = [Comment::class];
+
+            $model->hasMany['activities'] = [Activity::class];
 
             $model->addFillable(['team_id']);
             $model->addJsonable(['permissions']);
@@ -54,6 +58,24 @@ class ExtendUser
                 }
 
                 return is_null(static::$restrictions->where('id', $section->id)->first());
+            });
+
+            $model->addDynamicMethod('getPictureAttribute', function ($value) use ($model) {
+                if ($model->avatar) {
+                    return $model->avatar->getPath();
+                }
+
+                if ($value) {
+                    return url($value);
+                }
+
+                return $value;
+            });
+
+            $model->addDynamicMethod('getFirstNameAttribute', function () use ($model) {
+                $splitName = explode(' ', $model->name);
+
+                return $splitName[0] ?? $model->name;
             });
         });
     }

@@ -5,3 +5,7 @@ static-pages:
     settings: {  }
     login: {  }
     archive: {  }
+    profile: {  }
+    project-information: {  }
+    shared-files: {  }
+    activity-log: {  }

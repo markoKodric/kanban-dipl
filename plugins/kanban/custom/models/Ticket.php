@@ -1,5 +1,6 @@
 <?php namespace Kanban\Custom\Models;
 
+use Auth;
 use Model;
 use System\Models\File;
 use Illuminate\Support\Str;
@@ -13,11 +14,11 @@ class Ticket extends Model
 
     public $table = 'kanban_custom_tickets';
 
-    public $fillable = ['flow_section_id', 'project_id', 'name', 'description', 'priority', 'sort_order', 'time_estimation', 'due_date', 'is_archived'];
+    public $fillable = ['flow_section_id', 'project_id', 'name', 'description', 'priority', 'sort_order', 'time_estimation', 'due_date', 'is_archived', 'color', 'completed_at'];
 
     public $rules = [];
 
-    public $dates = ['due_date'];
+    public $dates = ['due_date', 'completed_at'];
 
     public $belongsTo = [
         'section' => FlowSection::class,
@@ -90,16 +91,16 @@ class Ticket extends Model
         return $estimatedTime;
     }
 
-    public function excludedUsers($searchQuery = null)
+    public function excludedUsers()
     {
-        if ($searchQuery) {
+        if (post('query')) {
             return $this->project
                 ->users()
                 ->whereNotIn('id', $this->users->pluck('id')->all())
                 ->orderBy('name')
                 ->get()
-                ->filter(function ($user) use ($searchQuery) {
-                    return Str::contains(strtolower($user->name . ' ' . $user->surname), $searchQuery);
+                ->filter(function ($user) {
+                    return Str::contains(strtolower($user->name . ' ' . $user->surname), post('query'));
                 });
         }
 
@@ -111,6 +112,13 @@ class Ticket extends Model
     }
 
     public function elapsedTime()
+    {
+        $totalTime = $this->timers()->mine()->get()->sum('time_in_seconds');
+
+        return date('H:i:s', mktime(0, 0, $totalTime));
+    }
+
+    public function totalElapsedTime()
     {
         $totalTime = $this->timers->sum('time_in_seconds');
 
@@ -140,5 +148,29 @@ class Ticket extends Model
             ->tags()
             ->whereNotIn('id', $this->tags->pluck('id')->all())
             ->get();
+    }
+
+    public function scopeSearch($query, $searchQuery)
+    {
+        if ($searchQuery) {
+            $query->where('name', 'like', '%' . $searchQuery . '%');
+        }
+    }
+
+    public function scopeArchived($query)
+    {
+        $query->where($this->table . '.is_archived', true);
+    }
+
+    public function scopeUnarchived($query)
+    {
+        $query->where($this->table . '.is_archived', false)->orWhereNull($this->table . '.is_archived');
+    }
+
+    public function getDueInAttribute()
+    {
+        if (!$this->due_date) return;
+
+        return now()->startOfDay()->diffInDays($this->due_date, false);
     }
 }

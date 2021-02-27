@@ -35,26 +35,29 @@ class Flow extends Model
         foreach ($parentSections as $key => $section) {
             if ($section->subsections->isEmpty()) {
                 $sections[] = [
-                    'id'          => $section->id,
-                    'title'       => $section->name,
-                    'wipLimit'    => $subsection->wip_limit ?? '-',
-                    'subsections' => [],
+                    'id'           => $section->id,
+                    'title'        => $section->name,
+                    'wipLimit'     => $subsection->wip_limit ?? '-',
+                    'markComplete' => $subsection->mark_tickets_complete ?? false,
+                    'subsections'  => [],
                 ];
             } else {
                 $subsections = [];
 
                 foreach ($section->subsections as $subkey => $subsection) {
                     $subsections[] = [
-                        'id'       => $section->id,
-                        'title'    => $section->name,
-                        'wipLimit' => $subsection->wip_limit ?? '-'
+                        'id'           => $section->id,
+                        'title'        => $section->name,
+                        'wipLimit'     => $subsection->wip_limit ?? '-',
+                        'markComplete' => $subsection->mark_tickets_complete ?? false,
                     ];
                 }
 
                 $sections[] = [
-                    'id'          => $section->id,
-                    'title'       => $section->name,
-                    'subsections' => $subsections,
+                    'id'           => $section->id,
+                    'title'        => $section->name,
+                    'markComplete' => $section->mark_tickets_complete ?? false,
+                    'subsections'  => $subsections,
                 ];
             }
         }

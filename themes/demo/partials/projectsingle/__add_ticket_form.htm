@@ -41,10 +41,17 @@
     </label>
 </div>
 
-<div class="estimation">
+<div class="estimation mb-2">
     <label for="estimation" class="flex items-center">
         <span class="text-sm">Estimation:</span>
-        <input type="number" step="1" class="ml-2 min-w-0 text-sm mr-1 w-16" name="estimation[]" placeholder="0" value="0" min="0"> h
+        <input id="estimation" type="number" step="1" class="ml-2 min-w-0 text-sm mr-1 w-16" name="estimation[]" placeholder="0" value="0" min="0"> h
         <input type="number" step="1" class="ml-2 min-w-0 text-sm ml-auto mr-1 w-16" name="estimation[]" placeholder="0" value="0" min="0" max="59"> m
+    </label>
+</div>
+
+<div class="color">
+    <label for="color" class="flex items-center">
+        <span class="text-sm">Background color:</span>
+        <input id="color" type="color" class="ml-2 min-w-0 text-sm flex-1" name="color" value="#ffffff">
     </label>
 </div>

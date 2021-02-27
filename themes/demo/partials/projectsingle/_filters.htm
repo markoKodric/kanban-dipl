@@ -1,0 +1,14 @@
+<div class="select">
+    <select name="filter" id="name" class="form-control" data-request="{{ __SELF__ }}::onFilterTickets">
+        {% for filter, name in __SELF__.filters %}
+            <option value="{{ filter }}" {{ __SELF__.activeFilter and filter == __SELF__.activeFilter ? 'selected' }}>{{ name }}</option>
+        {% endfor %}
+    </select>
+    <i class="la la-angle-down"></i>
+</div>
+
+{% if __SELF__.activeFilter %}
+    <button data-request="{{ __SELF__ }}::onResetFilters" href="#" class="button-icon" id="clear-filters" data-tooltip="Clear filter">
+        <i class="la la-times text-2xl"></i>
+    </button>
+{% endif %}

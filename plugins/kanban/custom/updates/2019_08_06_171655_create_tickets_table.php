@@ -22,7 +22,9 @@ class CreateTicketsTable extends Migration
             $table->integer('sort_order')->default(10);
             $table->integer('time_estimation')->default(0);
             $table->timestamp('due_date')->nullable();
+            $table->timestamp('completed_at')->nullable();
             $table->boolean('is_archived')->nullable();
+            $table->string('color')->default('#fff');
             $table->timestamps();
         });
     }

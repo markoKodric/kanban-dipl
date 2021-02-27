@@ -24,8 +24,9 @@ class Project extends Model
     ];
 
     public $hasMany = [
-        'tickets' => Ticket::class,
-        'tags'    => Tag::class,
+        'tickets'    => Ticket::class,
+        'tags'       => Tag::class,
+        'activities' => Activity::class,
     ];
 
     public $belongsToMany = [
@@ -36,6 +37,10 @@ class Project extends Model
         'picture' => File::class,
     ];
 
+    public $attachMany = [
+        'files' => File::class,
+    ];
+
     public $dates = ['start_date', 'due_date'];
 
     public $fillable = ['is_archived'];
@@ -43,6 +48,16 @@ class Project extends Model
     public function url()
     {
         return Page::url('project') . '/' . $this->id;
+    }
+
+    public function updateUrl()
+    {
+        return Page::url('project-information') . '/' . $this->id;
+    }
+
+    public function mediaUrl()
+    {
+        return Page::url('shared-files') . '/' . $this->id;
     }
 
     public function settingsUrl()
@@ -90,5 +105,15 @@ class Project extends Model
         if ($searchQuery) {
             $query->where('title', 'like', '%' . $searchQuery . '%');
         }
+    }
+
+    public function scopeArchived($query)
+    {
+        $query->where($this->table . '.is_archived', true);
+    }
+
+    public function scopeUnarchived($query)
+    {
+        $query->where($this->table . '.is_archived', false)->orWhereNull($this->table . '.is_archived');
     }
 }

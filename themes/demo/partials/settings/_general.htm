@@ -1,7 +1,7 @@
-<div id="js-general-settings" class="bg-blue-50 rounded-md py-4 px-6 pb-6">
-    <h3 class="text-lg font-bold mb-4">General settings</h3>
+<div id="js-general-settings" class="bg-blue-50 rounded-md pb-6">
+    <h3 class="w-full font-bold text-xl border-b py-4 px-8 pb-2 mb-3">General settings</h3>
 
-    <form>
+    <form class="px-8 pt-2">
         <label for="ticket_modal" class="flex cursor-pointer items-center">
             <input id="ticket_modal"
                    type="checkbox"
@@ -9,7 +9,7 @@
                    {% if __SELF__.user.team.settings.general.ticket_modal %}checked{% endif %}
                    name="ticket_modal"
                    class="w-6 h-6 mr-4">
-            <span class="font-semibold">Open tickets in modal</span>
+            <span class="font-semibold">Open tickets in modal (experimental)</span>
         </label>
     </form>
 </div>

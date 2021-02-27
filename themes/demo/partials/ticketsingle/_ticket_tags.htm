@@ -1,0 +1,23 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+{% if ticket.tags.isNotEmpty() %}
+    {% for tag in ticket.tags %}
+        <div style="background: rgba({{ hex2rgb(tag.color) }}, 0.1); color: {{ tag.color }}"
+             class="tag font-bold px-2 py-1.5 rounded-md mx-1 relative">
+            <span>{{ tag.title }}</span>
+
+            {% if user().can('ticket.tags.manage') %}
+                <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketRemoveTag"
+                        data-request-data="tag: {{ tag.id }}"
+                        data-request-success="
+                            ticketUpdate('#js-ticket-tags', 'ticketsingle/_ticket_tags', {{ ticket.id }});
+                            ticketUpdate('#js-ticket-available-tags', 'ticketsingle/_ticket_tags_picker', {{ ticket.id }});
+                            ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+                        "
+                        class="remove-tag absolute block bottom-full -mb-1 left-1/2 transform -translate-x-1/2 scale-0 origin-bottom z-20 rounded-full bg-blue-500 border-2 border-white w-7 h-7 flex justify-center items-center opacity-0 invisible transition focus:outline-none">
+                    <i class="la la-times text-white font-bold"></i>
+                </button>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endif %}

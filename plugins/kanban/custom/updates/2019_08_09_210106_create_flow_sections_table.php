@@ -18,6 +18,7 @@ class CreateFlowSectionsTable extends Migration
             $table->integer('parent_section_id')->nullable();
             $table->string('name');
             $table->integer('wip_limit')->nullable();
+            $table->boolean('mark_tickets_complete')->nullable();
             $table->integer('sort_order')->default(10);
             $table->timestamps();
         });

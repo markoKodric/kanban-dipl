@@ -1,0 +1,30 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+{% if user().can('ticket.edit') %}
+    {% if ticket.is_archived %}
+        <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketRestore"
+                data-request-success="
+                    sectionUpdate('#section-tickets-{{ ticket.flow_section_id }}', 'projectsingle/_tickets', {{ ticket.flow_section_id }}, 'false');
+                    ticketUpdate('#js-ticket-actions', 'ticketsingle/_ticket_actions', {{ ticket.id }}, 'false');
+                "
+                class="custom block flex-1 text-green-500 py-2 px-6 mb-4 rounded-md border border-dashed border-green-500 font-bold">
+            Restore ticket
+        </button>
+    {% else %}
+        <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketArchive"
+                data-request-success="
+                    sectionUpdate('#section-tickets-{{ ticket.flow_section_id }}', 'projectsingle/_tickets', {{ ticket.flow_section_id }}, '{{ user().name }} archived ticket {{ ticket.name }}');
+                    ticketUpdate('#js-ticket-actions', 'ticketsingle/_ticket_actions', {{ ticket.id }}, 'false');
+                "
+                class="custom block flex-1 text-red-500 py-2 px-6 mb-4 rounded-md border border-dashed border-red-500 font-bold">
+            Archive ticket
+        </button>
+    {% endif %}
+{% endif %}
+
+{% if user().can('ticket.edit') and user().can('ticket.delete') %}
+    <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketDelete"
+            class="custom block flex-1 text-white py-2 px-6 rounded-md border transition border border-red-500 bg-red-500 hover:shadow-red font-bold">
+        Delete ticket
+    </button>
+{% endif %}

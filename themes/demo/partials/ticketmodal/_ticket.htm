@@ -1,0 +1,13 @@
+{% if ticket %}
+<div class="fixed inset-0 flex items-center justify-center z-50">
+    <div class="background-overlay fixed inset-0 bg-black bg-opacity-50 transition z-20"></div>
+
+    <div id="js-ticket-modal" class="w-full mx-auto bg-white z-30 p-8 rounded-md overflow-y-auto" style="max-width: 1360px; max-height: 95vh">
+        {% partial 'ticketsingle/_ticket' ticket=ticket %}
+    </div>
+
+    <button class="absolute bg-blue-500 text-white flex justify-center items-center rounded-md w-10 h-10 top-2 right-2 z-30">
+        <i class="la la-times text-2xl"></i>
+    </button>
+</div>
+{% endif %}

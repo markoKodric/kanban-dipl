@@ -1,12 +1,18 @@
 {% set projects = projectList.projects %}
 {% set project = this.page.project ?: project %}
 
-<div id="projects-sidebar" class="h-full px-6 py-10 flex flex-col border-r border-gray-200 bg-blue-50">
+<div id="projects-sidebar" class="h-screen overflow-y-auto px-6 py-10 flex flex-col border-r border-gray-200 bg-blue-50">
     {% if project %}
         <div id="sidebar-header" class="relative">
+            {% if project.due_date and project.due_date.diffInDays("now"|date) < 7 %}
+                <div class="due-date absolute bottom-full opacity-0 invisible scale-0 transform origin-bottom-left transition left-14 bg-red-400 rounded-md rounded-tr-none py-1 px-2 text-xs font-bold text-white">
+                    Due in {{ project.due_date.diffInDays("now"|date('Y-m-d')) }} {{ project.due_date.diffInDays("now"|date) == 1 ? 'day' : 'days' }}
+                </div>
+            {% endif %}
+
             <div class="header-content flex items-center relative cursor-pointer pr-7" data-target=".sidebar-dropdown">
                 <div class="img-wrapper" style="flex-basis: 40px; min-width: 40px;">
-                    <img class="transform translate-z-0" src="{{ project.getPicture() }}" width="40" alt="{{ project.title }}">
+                    <img class="transform translate-z-0" src="{{ project.getPicture()|resize(40) }}" width="40" alt="{{ project.title }}">
                 </div>
                 <div class="content pl-4">
                     <p class="text-sm leading-snug text-gray-900 font-semibold tracking-wide">
@@ -57,7 +63,7 @@
         </button>
 
         <div id="createProject" class="fixed inset-0 flex items-center justify-center z-50 opacity-0 invisible transition">
-            <div class="absolute inset-0 bg-black bg-opacity-75 z-10" data-target="#createProject"></div>
+            <div class="absolute inset-0 bg-black bg-opacity-50 z-10" data-target="#createProject"></div>
             <div id="js-project-form" class="relative z-20 bg-white py-5 px-8 rounded-md" style="width: 100%; max-width: 640px">
                 {% partial 'projectlist/_form' projectList=projectList %}
             </div>
@@ -69,8 +75,8 @@
         <ul>
             {% for item in items %}
                 <li>
-                    <a class="{{ url().current() starts with item.url and item.url != url('/') and not item.viewBag.isHidden ? 'is-active' : '' }} {{ item.viewBag.isHidden ? 'is-disabled' : '' }} flex items-center color-gray-700 no-underline font-bold relative py-2 mb-1 rounded-md transition px-2 hover:bg-white"
-                       href="{{ item.url }}">
+                    <a class="{{ url().current() starts with item.url and item.url != url('/') and not item.viewBag.isHidden ? 'is-active' : '' }} {{ item.viewBag.isHidden ? 'is-disabled cursor-not-allowed' : 'hover:bg-white' }} flex items-center color-gray-700 no-underline font-bold relative py-2 mb-1 rounded-md transition px-2"
+                       href="{{ item.viewBag.isHidden ? 'javascript:' : item.url }}">
                         <i class="{{ item.viewBag.cssClass }} text-2.5xl mr-5"></i>
                         <span>{{ item.title }}</span>
                     </a>
@@ -99,14 +105,7 @@
         </ul>
     </div>
 
-    <a href="#" class="mt-auto flex items-center py-2 px-3 bg-white shadow-sm rounded-md">
-        {% if user().picture %}
-            <img width="32" class="rounded-full mr-2" src="{{ user().picture }}" alt="{{ user().credentials }}">
-        {% else %}
-            <div class="w-8 h-8 rounded-full mr-2 flex justify-center items-center bg-gray-300">
-                <span class="text-sm font-bold">{{ user().credentials }}</span>
-            </div>
-        {% endif %}
-        <span class="font-semibold">{{ user().name }} {{ user().surname }}</span>
-    </a>
+    <div id="js-profile-link" class="mt-auto">
+        {% partial 'layout/_sidebar_profile' %}
+    </div>
 </div>

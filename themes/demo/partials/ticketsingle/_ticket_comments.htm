@@ -1,0 +1,98 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+{% set comments = comments ?: ticket.comments.where('parent_id', null).sortByDesc('created_at') %}
+
+{% if comments.isNotEmpty() %}
+    {% for comment in comments %}
+        <div class="comment relative flex items-start mb-4 {{ comment.replies.isEmpty() ? 'border-b' }}">
+            {% if comment.replies.isNotEmpty() %}
+                <div class="absolute left-4 top-8 bottom-4 w-px bg-gray-300"></div>
+            {% endif %}
+
+            <img class="rounded-full w-8" src="{{ comment.user.picture }}" alt="{{ comment.user.name }}">
+
+            <div class="ml-3 flex-1">
+                <div class="header flex justify-between items-baseline">
+                    <span>
+                        <strong>{{ comment.user.name }}</strong>
+                    </span>
+
+                    <time class="text-xs text-gray-500">{{ comment.created_at.format('j.n.Y H:i') }}</time>
+                </div>
+
+                {% if comment.isMine() %}
+                    {% if user().can('ticket.edit') %}
+                        <form data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdateComment"
+                              data-request-success="
+                                   ticketUpdate('#js-ticket-comments', 'ticketsingle/_ticket_comments', {{ ticket.id }});
+                                   ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+                              "
+                              class="flex items-center relative w-full">
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+
+                            <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketDeleteComment"
+                                    data-request-success="
+                                        ticketUpdate('#js-ticket-comments', 'ticketsingle/_ticket_comments', {{ ticket.id }});
+                                        ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+                                    "
+                                    data-request-data="comment_id: {{ comment.id }}"
+                                    class="w-7 h-7 flex justify-center items-center font-bold text-white bg-red-500 rounded-full ml-2 absolute top-1 right-0 focus:outline-none">
+                                <i class="la la-trash"></i>
+                            </button>
+
+                            <input type="text"
+                                   class="edit-comment not-dynamic custom w-full min-w-full pr-16"
+                                   name="comment"
+                                   oninput="$(this).next().addClass('is-active');"
+                                   value="{{ comment.comment }}">
+
+                            <button type="submit"
+                                    class="w-7 h-7 flex justify-center items-center font-bold text-white bg-blue-500 rounded-full ml-2 invisible opacity-0 absolute top-1 right-8 focus:outline-none">
+                                <i class="la la-check"></i>
+                            </button>
+                        </form>
+                    {% else %}
+                        <div style="min-height: 2.5rem">{{ comment.comment }}</div>
+                    {% endif %}
+                {% elseif user().can('ticket.edit') %}
+                    <div class="relative pr-9">
+                        <button class="w-7 h-7 flex justify-center items-center font-bold text-white bg-blue-500 rounded-full ml-2 absolute top-1 right-0 focus:outline-none"
+                                data-target="#commentReply-{{ comment.id }}">
+                            <i class="la la-reply"></i>
+                            <i class="la la-times hidden"></i>
+                        </button>
+
+                        <form id="commentReply-{{ comment.id }}"
+                              data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketReplyToComment"
+                              data-request-success="
+                                  ticketUpdate('#js-ticket-comments', 'ticketsingle/_ticket_comments', {{ ticket.id }});
+                                  ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+                              "
+                              class="absolute flex items-start p-3 top-full left-0 right-1 mt-2 bg-white shadow-md rounded-md z-10 origin-left transition duration-300 invisible opacity-0 scale-0 origin-top origin-left">
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+
+                            <input type="text"
+                                   class="edit-comment not-dynamic flex-1 pr-16"
+                                   name="comment"
+                                   placeholder="Enter reply...">
+
+                            <button type="submit"
+                                    class="w-7 h-7 flex justify-center items-center font-bold text-white bg-blue-500 rounded-full ml-2 focus:outline-none">
+                                <i class="la la-check"></i>
+                            </button>
+                        </form>
+
+                        <p class="py-1.5">{{ comment.comment }}</p>
+                    </div>
+                {% endif %}
+
+                {% if comment.replies.isNotEmpty() %}
+                    <div class="pt-3 border-t">
+                        {% partial 'ticketsingle/_ticket_comments' comments=comment.replies %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% elseif not user().can('ticket.edit') %}
+    <div class="text-gray-400">No comments.</div>
+{% endif %}

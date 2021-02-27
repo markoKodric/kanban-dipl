@@ -1,0 +1,32 @@
+{% if __SELF__.selectedFile %}
+    <div>
+        {% if __SELF__.selectedFile.isImage() %}
+            <div class="border-b border-r border-gray-300">
+                <img class="mx-auto" src="{{ __SELF__.selectedFile.getThumb(300, 300) }}" alt="">
+            </div>
+        {% endif %}
+
+        <div class="mt-6 flex justify-between px-6">
+            <a download="{{ __SELF__.selectedFile.file_name }}"
+               href="{{ __SELF__.selectedFile.getPath() }}"
+               class="button button-primary"
+               style="padding-top: .25rem; padding-bottom: .25rem">
+                <span class="font-bold flex items-center">
+                    Download <i class="text-2xl la la-cloud-download-alt ml-2"></i>
+                </span>
+            </a>
+
+            <button data-request="{{ __SELF__ }}::onDeleteFile"
+                    data-request-data="file: {{ __SELF__.selectedFile.id }}"
+                    class="button button-outline color-custom bg-red-500 text-white border-red-500 hover:shadow-red"
+                    style="padding-top: .25rem; padding-bottom: .25rem">
+                <span class="font-bold flex items-center">Delete <i class="text-2xl la la-times ml-2"></i></span>
+            </button>
+        </div>
+    </div>
+{% else %}
+    <div class="text-blue-300 font-bold text-center mt-8">
+        <i class="la la-crop-alt text-9xl"></i>
+        <div class="text-lg mt-4">Nothing is selected.</div>
+    </div>
+{% endif %}

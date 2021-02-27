@@ -1,0 +1,11 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+<img class="mr-4 transform translate-z-0 {{ user().can('ticket.edit') ? 'cursor-pointer' }}"
+     src="{{ ticket.priority_image|theme }}"
+     {% if user().can('ticket.edit') %}data-target="#updatePriority"{% endif %}
+     alt=""
+     width="32">
+
+{% if user().can('ticket.edit') %}
+<div class="background-overlay fixed inset-0 bg-black bg-opacity-50 invisible opacity-0 transition z-40"></div>
+{% endif %}

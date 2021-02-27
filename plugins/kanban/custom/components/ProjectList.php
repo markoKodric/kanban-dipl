@@ -37,7 +37,7 @@ class ProjectList extends ComponentBase
     {
         if (!Auth::check()) return;
 
-        $this->projects = Auth::getUser()->team()->with('projects')->first()->projects()->with('picture')->get();
+        $this->projects = Auth::getUser()->team()->with('projects')->first()->projects()->unarchived()->with('picture')->get();
 
         $this->currentProject = $this->projects->where('id', session()->get('currentProject'))->first() ?? $this->projects->where('is_default', 1)->first();
 
@@ -58,6 +58,12 @@ class ProjectList extends ComponentBase
 
             return [
                 '#js-project-form' => $this->renderPartial('@_form', ['formErrors' => session()->get('errors')])
+            ];
+        }
+
+        if (!Auth::getUser()->can('projects.manage')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];
         }
 
@@ -91,7 +97,7 @@ class ProjectList extends ComponentBase
 
     public function onSearch()
     {
-        $this->projects = Auth::getUser()->team()->with('projects')->first()->projects()->search(post('query'))->get();
+        $this->projects = Auth::getUser()->team()->with('projects')->first()->projects()->unarchived()->search(post('query'))->get();
 
         return [
             '#js-project-list' => $this->renderPartial('@default', [

@@ -1,6 +1,6 @@
 {% set project = __SELF__.project %}
 
-<div class="project py-10 px-16 bg-white h-full flex flex-col" id="project">
+<div class="project pt-10 pb-8 px-16 bg-white h-full flex flex-col" id="project" style="max-width: calc(100vw - 320px); width: 100%;overflow-y: auto;height: 100vh;">
     <div class="flex flex-col flex-1">
         <div class="flex items-center pb-2 border-b border-gray-200 mb-5">
             <h2 class="font-bold mr-10 mb-4 text-3xl">Board</h2>
@@ -20,58 +20,64 @@
             <div id="js-members" class="mr-auto">
                 <div class="project-members flex items-center pl-10 relative border-l border-gray-300 mb-4">
                     <div id="js-project-users" class="flex items-center">
-                        {% partial '@_users' %}
+                        {% partial 'projectsingle/_users' %}
                     </div>
 
-                    <div id="js-project-add-users" class="non-members absolute top-0 left-full ml-2 bg-white shadow-md rounded-md z-10 origin-left transition duration-200 invisible opacity-0 scale-0 origin-top-left z-50 transform">
-                        {% partial '@_add_users' users=__SELF__.project.excludedUsers %}
-                    </div>
+                    {% if user().can('board.users.manage') %}
+                        <div id="js-project-add-users" class="non-members absolute top-0 left-full pb-2 ml-2 bg-white shadow-md rounded-md z-10 origin-left transition duration-200 invisible opacity-0 scale-0 origin-top-left z-50 transform">
+                            {% partial 'projectsingle/_add_users' %}
+                        </div>
 
-                    <button class="add-members button-icon shadow-md" data-tooltip="Add people" data-target="#js-project-add-users">
-                        <i class="la la-user-plus text-2xl"></i>
-                        <i class="la la-times text-2xl hidden"></i>
-                    </button>
+                        <button class="add-members button-icon shadow-md" data-tooltip="Add users" data-target="#js-project-add-users">
+                            <i class="la la-user-plus text-2xl"></i>
+                            <i class="la la-times text-2xl hidden"></i>
+                        </button>
+                        <div class="background-overlay fixed inset-0 bg-black bg-opacity-50 invisible opacity-0 transition z-40"></div>
+                    {% endif %}
                 </div>
             </div>
 
-            <div id="js-flow-update" class="actions mb-4 mr-4 ml-4">
-                {% if project.flow %}
-                    {% partial '@_flow_update' project=project %}
-                {% endif %}
-            </div>
-
-            <div class="filters-wrapper ml-4 mb-4">
-                <div class="select">
-                    <select name="filter" id="name" class="form-control" data-request="{{ __SELF__ }}::onFilterTickets">
-                        <option value="">-- Ticket filters --</option>
-                        <option value="high-priority">High priority tickets</option>
-                        <option value="medium-priority">Medium priority tickets</option>
-                        <option value="low-priority">Low priority tickets</option>
-                        <option value="assigned-only">Assigned tickets</option>
-                        <option value="my-tickets">Tickets I am assigned to</option>
-                        <option value="estimated-only">Estimated tickets</option>
-                        <option value="non-estimated-only">Non-estimated tickets</option>
-                        <option value="checklist-only">Tickets with checklists</option>
-                        <option value="files-only">Tickets with files</option>
-                        <option value="comments-only">Tickets with comments</option>
-                    </select>
-                    <i class="la la-angle-down"></i>
+            {% if user().can('board.workflow.edit') %}
+                <div id="js-flow-update" class="actions mb-4 mr-4 ml-4">
+                    {% if project.flow %}
+                        {% partial 'projectsingle/_flow_update' project=project %}
+                    {% endif %}
                 </div>
+            {% endif %}
 
-                {% if app.session.exists('ticketsFilter') %}
-                <a href="#" class="button-icon" id="clear-filters" data-tooltip="Clear filter">
-                    <i class="la la-times text-2xl"></i>
-                </a>
-                {% endif %}
+            <div id="js-project-filters" class="filters-wrapper ml-4 mb-4 flex -mr-2 items-center">
+                {% partial 'projectsingle/_filters' %}
             </div>
         </div>
         <div class="layout-body flex-1">
             <div id="js-board" class="board h-full">
                 <div id="workflow"
-                     class="w-full pb-3 h-full flex rounded-md relative space-x-3 overflow-x-auto overflow-y-hidden {{ project.flow and project.flow.sections.isEmpty() ? 'items-center justify-center bg-blue-50 flex-wrap' : '' }}">
-                    {% partial '@_board' project=project %}
+                     class="workflow-{{ project.id }} w-full pb-4 h-full flex rounded-md relative space-x-3 overflow-x-auto overflow-y-hidden {{ project.flow and project.flow.sections.isEmpty() ? 'items-center justify-center bg-blue-50 flex-wrap' : '' }}">
+                    {% partial 'projectsingle/_board' project=project %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{#
+{% if user().team.settings.general.ticket_modal %}
+    <div id="ticketPopup" class="fixed inset-0 flex items-center justify-center z-50 opacity-0 invisible">
+        <div class="absolute inset-0 bg-black bg-opacity-50 z-10" data-target="#ticketPopup"></div>
+        <div id="js-ticket-popup" class="relative z-20 bg-white py-5 px-8 rounded-md overflow-y-auto" style="width: calc(100% - 48px); max-width: 1360px; height: 100%; max-height: calc(100% - 48px)">
+            {% if __SELF__.ticket %}
+                {% partial 'projectsingle/_ticket' ticket=__SELF__.ticket %}
+            {% endif %}
+        </div>
+        <button data-target="#ticketPopup" class="text-white no-underline font-semibold absolute w-10 h-10 p-2 text-center rounded-lg inline-flex mx-3 flex justify-center items-center transition focus:outline-none z-50 top-6 right-6 bg-white text-blue-500">
+            <i class="la la-times text-2xl"></i>
+        </button>
+    </div>
+
+    <div class="loader fixed inset-0 flex items-center justify-center hidden z-50">
+        <div class="absolute inset-0 bg-black bg-opacity-25 z-10"></div>
+        <div class="absolute z-30 flex left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 justify-center items-center">
+            <i class="la la-circle-notch text-white animate-spin text-7xl"></i>
+        </div>
+    </div>
+{% endif %}#}

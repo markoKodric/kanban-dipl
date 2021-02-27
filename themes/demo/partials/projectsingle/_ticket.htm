@@ -1,0 +1,63 @@
+<div class="ticket-footer flex items-center pb-2 border-b border-gray-200 mb-2">
+    <div class="flex items-center pr-6">
+        <img src="{{ ticket.priority_image|theme }}" alt="" title="High priority" width="20" class="mr-2 transform translate-z-0">
+        <span class="block mt-0.5 font-extrabold text-sm leading-none">{{ ticket.name }}</span>
+    </div>
+
+    <div class="ml-auto flex items-center">
+        {% for user in ticket.users.sortBy('name') %}
+            <div class="member rounded-full cursor-pointer shadow-md relative w-7 h-7 flex items-center justify-center -ml-2 hover:z-6">
+                <img src="{{ user.picture|resize(28) }}" class="rounded-full relative z-5 bg-white w-full h-full object-fit-cover" width="28" alt="{{ user.credentials }}">
+
+                <span class="block absolute top-full right-0 z-20 opacity-0 scale-0 invisible transition duration-200 whitespace-nowrap bg-gray-100 font-bold rounded-md text-sm px-2 py-1">
+                        {{ user.name }}
+                    </span>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if ticket.description %}
+    <p class="ticket-description text-s mb-2 mt-2.5 font-semibold">{{ ticket.description|slice(0, 255) }}{{ ticket.description | length > 254 ? '...' }}</p>
+{% endif %}
+
+<div class="estimation flex items-center {{ ticket.time_estimation == 0 ? 'is-not-estimated' : '' }}">
+    {% if ticket.time_estimation == 0 %}
+        <p><span class="text-sm font-semibold py-0.5 px-1 text-blue-700 rounded-md bg-blue-100">Needs estimation</span></p>
+    {% else %}
+        <p class="text-sm">
+            <span class="text-sm font-semibold py-0.5 px-1 text-green-700 rounded-md bg-green-100">Estimated</span>:
+            <span class="font-bold">{{ ticket.time_estimation != 0 ? ticket.estimatedTimeForHumans() : '-' }}</span>
+        </p>
+    {% endif %}
+    <div class="flex items-center py-1 px-2 bg-gray-200 rounded-md ml-auto">
+        <div class="comments flex items-center pr-1 border-r border-gray-500"><i class="la la-wechat mr-0.5"></i> <span class="text-xs">{{ ticket.comments.count() ?: '-' }}</span></div>
+        <div class="files flex items-center px-1"><i class="la la-paperclip mr-0.5"></i> <span class="text-xs">{{ ticket.files.count() ?: '-' }}</span></div>
+        <div class="checklist flex items-center pl-1 border-l border-gray-500"><i class="la la-check-square mr-0.5"></i> <span class="text-xs">{{ ticket.totalChecklistItems() > 0 ? ticket.doneChecklistItems() ~ '/' ~ ticket.totalChecklistItems() : '-' }}</span></div>
+    </div>
+</div>
+
+{% if ticket.tags.isNotEmpty() %}
+    <div class="ticket-tags flex items-center mt-2 -mx-1 {{ ticket.due_date and ticket.due_date.diffInDays("now"|date) < 7 ? 'w-8/12' }}">
+        {% for tag in ticket.tags %}
+            <button style="background: rgba({{ hex2rgb(tag.color) }}, 0.1); color: {{ tag.color }}"
+                    data-request="{{ __SELF__ ?: 'projectSingle' }}::onFilterTicketsByTag"
+                    data-request-data="tag: {{ tag.id }}"
+                    class="tag font-bold px-1.5 py-0.5 text-xs rounded-md mx-1 relative">
+                <span>{{ tag.title }}</span>
+            </button>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if not ticket.completed_at %}
+    {% if ticket.due_date and ticket.due_in >= 0 and ticket.due_in < 7 %}
+        <div class="absolute -bottom-1 -right-px {{ ticket.due_in == 0 ? 'bg-red-500' : 'bg-orange-400' }} rounded-md rounded-tr-none py-0.5 px-1 text-xs font-bold text-white">
+            Due {% if ticket.due_in != 0 %}in {{ ticket.due_in }} {{ ticket.due_in == 1 ? 'day' : 'days' }}{% else %}today{% endif %}
+        </div>
+    {% elseif ticket.due_date and ticket.due_in < 0 %}
+        <div class="absolute -bottom-1 -right-px bg-purple-400 rounded-md rounded-tr-none py-0.5 px-1 text-xs font-bold text-white">
+            Overdue for {{ ticket.due_in|abs }} {{ (ticket.due_in|abs) == 1 ? 'day' : 'days' }}
+        </div>
+    {% endif %}
+{% endif %}

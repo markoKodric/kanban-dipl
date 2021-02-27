@@ -16,6 +16,10 @@ class CreateFlowSectionUpdates extends Migration
             $table->bigIncrements('id');
             $table->integer('ticket_id');
             $table->integer('flow_section_id');
+            $table->integer('old_flow_section_id')->nullable();
+            $table->integer('project_id');
+            $table->integer('user_id');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

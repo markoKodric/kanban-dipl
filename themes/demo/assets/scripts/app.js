@@ -1,12 +1,15 @@
 (function ($) {
     function init() {
-        initTimer();
         initToggle();
         initWorkflow();
         initWorkflowScroll();
         initTicketSorting();
         initFileInput();
         initCustomInputs();
+        initCFD();
+        initCC();
+        initTimer();
+        initNotifications();
 
         $('[data-request-blur]').unbind('blur').on('blur', function () {
             if ($(this).attr('data-request')) {
@@ -17,78 +20,155 @@
         });
     }
 
-    function initCustomInputs() {
-        $('input.custom:not([type="date"]):not(.not-dynamic)').each(function() {
-            let textLength = $(this).val().replace(/\s+/gm, '').length;
-            let endSpaces = $(this).val().match(/\s+$/gm);
+    function initOnce() {
+        initSocketIO();
 
-            if (endSpaces) {
-                textLength += endSpaces[0].length;
+        /*window.onpopstate = function(event) {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            console.log(queryString, window.location.hash);
+            if (urlParams.has('ticket')) {
+                const ticket = urlParams.get('ticket');
+                if (ticket && window.location.hash == '#open-ticket-' + ticket) {
+                    $('#ticket-' + ticket).removeAttr('data-popup-attached');
+                    $('#ticketPopup').removeClass('is-active');
+                    $('#ticketPopup *[data-target="#ticketPopup"]').removeClass('is-active');
+                    $('#ticket-' + ticket + ':not([data-popup-attached])').attr('data-popup-attached', true).trigger('click');
+                } else {
+                    $('#ticket-' + ticket).removeAttr('data-popup-attached');
+                    $('#ticketPopup').removeClass('is-active');
+                    $('#ticketPopup *[data-target="#ticketPopup"]').removeClass('is-active');
+                }
+            } else {
+                $('#ticketPopup').removeClass('is-active');
+                $('#ticketPopup *[data-target="#ticketPopup"]').removeClass('is-active');
             }
+        };
 
-            $(this).width(textLength + 'ch');
-        });
-        $('input.custom:not([type="date"]):not(.not-dynamic)').unbind().on('input', function() {
-            let textLength = $(this).val().replace(/\s+/gm, '').length;
-            let endSpaces = $(this).val().match(/\s+$/gm);
+        if (window.location.hash.startsWith('#open-ticket-')) {
+            let splitHash = window.location.hash.split('-');
 
-            if (endSpaces) {
-                textLength += endSpaces[0].length;
+            $('#ticket-' + splitHash[splitHash.length - 1] + ':not([data-popup-attached])').attr('data-popup-attached', true).trigger('click');
+        }*/
+    }
+
+    function initSocketIO() {
+        let app = $('#app');
+        
+        const tid = app.attr('data-tid');
+        const uid = app.attr('data-uid');
+        let socket;
+
+        if (typeof io === 'function') {
+            socket = io('http://localhost:8444/');
+
+            if (tid) {
+                socket.emit('userConnection', {
+                    tid: tid
+                });
+
+                socket.on('triggerUpdate', function (data) {
+                    $.request('onSocketEvent', {
+                        data: data,
+                        success: function (result) {
+                            for (const [key, value] of Object.entries(result)) {
+                                if (!$(key.replace('@', '').replace('-#', '#')).length) {
+                                    continue;
+                                }
+
+                                if (key === '@#js-notifications' && $('#js-notifications')[0].innerHTML.indexOf(result.notification) === -1) {
+                                    $(key.replace('@', '')).append(value);
+                                } else if (key.startsWith('@') && key !== '@#js-notifications') {
+                                    $(key.replace('@', '')).append(value);
+                                } else if (key === '-#js-checklists') {
+                                    $(key.replace('-#', '#')).find('#checklist-' + data.checklist).remove();
+                                } else if (key !== '@#js-notifications') {
+                                    $(key).html(value);
+                                }
+                            };
+
+                            init();
+                        }
+                    })
+                });
             }
+        }
 
-            $(this).width(textLength + 'ch');
+        $(document).on('socketEmit', function (event, name, params) {
+            const defaultParams = {
+                tid: tid,
+                uid: uid
+            };
+
+            if (socket) {
+                socket.emit(name, {...defaultParams, ...params});
+            }
         });
     }
 
+    function initCustomInputs() {
+        let dynamicInputs = $('input.custom:not([type="date"]):not(.not-dynamic)');
+
+        dynamicInputs.each(function() {
+            __handleDynamicInput($(this));
+        });
+        
+        dynamicInputs.unbind().on('input', function() {
+            __handleDynamicInput($(this));
+        });
+        
+        function __handleDynamicInput(item) {
+            let textLength = item.val().replace(/\s+/gm, '').length;
+            let endSpaces = item.val().match(/\s+$/gm);
+
+            if (endSpaces) {
+                textLength += endSpaces[0].length;
+            }
+
+            item.width(textLength + 'ch');
+        }
+    }
+
     function initFileInput() {
-        var $inputWrapper = $(".input-type-file");
-        var $fileInput = $(
-            ".input-type-file input[type=file]:not([data-inputfile-attached])"
-        );
-        $inputWrapper.removeClass("is-focused");
-        $fileInput.each(function (e) {
-            $(this).attr("data-inputfile-attached", true);
+        let inputWrapper = $(".input-type-file");
+        let fileInput = $(".input-type-file input[type=file]:not([data-input-file-attached])");
+        
+        inputWrapper.removeClass("is-focused");
+        
+        fileInput.each(function () {
+            $(this).attr("data-input-file-attached", true);
+            
             $(this).on("change", function () {
-                var filename = $(this)[0].files.length
-                    ? $(this)[0].files[0].name
-                    : "";
-                if (filename != "") {
-                    $(this)
-                        .next(".input-type-file-text")
-                        .text(filename);
-                    $(this).parents('.form-item').addClass('is-active');
+                let fileInput = $(this)[0];
+                
+                let filename = fileInput.files.length ? fileInput.files[0].name : "";
+                let formItem = $(this).parents('.form-item');
+                
+                if (filename.length) {
+                    $(this).next(".input-type-file-text").text(filename);
+                    formItem.addClass('is-active');
                 } else {
-                    $(this).parents('.form-item').removeClass('is-active');
+                    formItem.removeClass('is-active');
                 }
 
-                var element = $(this).parents('.form-item').find('img');
+                let imageThumb = formItem.find('img');
 
-                if ($(this)[0].files.length && element.length) {
-                    var reader = new FileReader();
+                if (!imageThumb.length) {
+                    imageThumb = $('<img src="" width="40" class="rounded-full"/>');
+                    
+                    $(this).parents('.input-type-file').prev().html(imageThumb);
+                }
+
+                if (fileInput.files.length && imageThumb.length) {
+                    let reader = new FileReader();
 
                     reader.onload = function(e) {
-                        element.attr('src', e.target.result);
-                    }
+                        imageThumb.attr('src', e.target.result);
+                    };
 
-                    reader.readAsDataURL($(this)[0].files[0]);
+                    reader.readAsDataURL(fileInput.files[0]);
                 }
             });
-            $(this).on("click", function () {
-                $(this)
-                    .closest($inputWrapper)
-                    .addClass("is-focused");
-            });
-        });
-        $(document).on("click", function (e) {
-            if (
-                (!$inputWrapper.is(e.target) &&
-                    $inputWrapper.has(e.target).length === 0 &&
-                    $("#toggleSearch").has(e.target).length === 0) ||
-                ($inputWrapper.is(e.target) &&
-                    $inputWrapper.has(e.target).length === 0)
-            ) {
-                $inputWrapper.removeClass("is-focused");
-            }
         });
     }
 
@@ -110,11 +190,25 @@
             function updateTimer() {
                 let currentSecs = parseInt($self.siblings('[name="time"]').val());
 
-                $self.siblings('[name="time"]').val(parseInt($self.siblings('[name="time"]').val()) + 1);
+                $self.siblings('[name="time"]').val(currentSecs + 1);
 
                 $self.parent().siblings('.elapsed-time').html(new Date(currentSecs * 1000).toISOString().substr(11, 8));
             }
-        })
+        });
+
+        if ($('[name="time"].timer-active').length && $('.elapsed-time.timer-active').length) {
+            let $self = $('[name="time"]');
+
+            interval = setInterval(updateTimer, 1000);
+
+            function updateTimer() {
+                let currentSecs = parseInt($self.val());
+
+                $self.val(currentSecs + 1);
+
+                $self.parent().prev().html(new Date(currentSecs * 1000).toISOString().substr(11, 8));
+            }
+        }
     }
 
     function initToggle() {
@@ -123,38 +217,61 @@
 
             let target = $(this).attr('data-target');
 
+            /*if ($(target).hasClass('is-active')) {
+                window.location.hash = '';
+            }*/
+            
             $(target).toggleClass('is-active');
             $('[data-target="' + target + '"]').toggleClass('is-active');
+
+            if ($(this).attr('data-request')) {
+                $(target).find('.ticket-wrapper').remove();
+            }
+        });
+
+        $('[data-target] + .background-overlay').unbind().on('click', function (e) {
+            e.preventDefault();
+
+            let target = $(this).prev().attr('data-target');
+
+            $(target).removeClass('is-active');
+            $('[data-target="' + target + '"]').removeClass('is-active');
         });
     }
 
     function initWorkflowScroll() {
-        let el = document.querySelector('#workflow');
-        let x = 0, y = 0, top = 0, left = 0;
+        const slider = $('#workflow');
 
-        if (el) {
-            let draggingFunction = (e) => {
-                document.addEventListener('mouseup', () => {
-                    el.style.cursor = 'default';
-                    document.removeEventListener("mousemove", draggingFunction);
-                });
+        slider.off();
 
-                el.style.cursor = 'move';
-                el.scrollLeft = left - e.pageX + x;
-                el.scrollTop = top - e.pageY + y;
-            };
+        if (slider.length) {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
 
-            el.addEventListener('mousedown', (e) => {
-                if ($(e.target).parents('.ticket').length || $(e.target).parents('.flow-definer-wrapper').length) return;
+            slider.on('mousedown', (e) => {
+                if ($(e.target).hasClass('ticket') || $(e.target).parents('.ticket').length || 
+                    $(e.target).parents('.flow-definer-wrapper').length || $(e.target).parents('#js-add-section').length) 
+                    return;
 
+                isDown = true;
+                startX = e.pageX - slider.offset().left;
+                scrollLeft = slider.scrollLeft();
+            });
+            slider.on('mouseleave', () => {
+                isDown = false;
+            });
+            slider.on('mouseup', () => {
+                isDown = false;
+            });
+            slider.on('mousemove', (e) => {
+                if(!isDown) return;
+                
                 e.preventDefault();
-
-                y = e.pageY;
-                x = e.pageX;
-                top = el.scrollTop;
-                left = el.scrollLeft;
-
-                document.addEventListener('mousemove', draggingFunction);
+                
+                const x = e.pageX - slider.offset().left;
+                const walk = (x - startX) * 2;
+                slider.scrollLeft(scrollLeft - walk);
             });
         }
     }
@@ -184,16 +301,27 @@
             }
         });
 
+        let radioId = '_' + Math.random().toString(36).substr(2, 9);
+
         let mockSectionTemplate =
             '<div class="mock-section mx-3">\n' +
             '    <div class="section-header">\n' +
             '        <input type="text" class="custom" value="Title">\n' +
             '    </div>\n' +
             '    <div class="section-body">\n' +
-            '        <div class="wip-limit flex items-center justify-center">' +
-            '           <span class="whitespace-nowrap mr-2">WIP Limit:</span>' +
-            '           <input type="text" value="-" class="custom">' +
-            '       </div>' +
+            '        <div class="wip-limit flex items-center justify-center flex-wrap">' +
+            '            <div class="flex items-center">' +
+            '                <span class="whitespace-nowrap mr-2">WIP Limit:</span>' +
+            '                <input type="text" value="-" class="custom">' +
+            '            </div>' +
+            '            <label class="w-full flex items-start text-left mt-3" for="' + radioId + '">' +
+            '                <input type="radio"' +
+            '                       id="' + radioId + '"' +
+            '                       name="markComplete"' +
+            '                       class="mr-2 w-5 h-5 min-w-5">' +
+            '                <span>Mark tickets complete</span>' +
+            '            </label>' +
+            '        </div>' +
             '        <div class="section-actions">' +
             '           <a class="button button-icon button-tooltip add-subsections" data-tooltip="Add subsection"><i class="text-2xl la la-plus"></i></a>\n' +
             '           <div class="all-members"></div>\n' +
@@ -244,19 +372,23 @@
 
             initWorkflow();
         });
+        
+        let mockSections = $('.mock-section');
 
-        $('.mock-section').find('.section-header').children('input').on('input keyup paste', function () {
+        mockSections.find('.section-header').children('input').on('input keyup paste', function () {
             $('[name="sections"]').val(__parseSections());
         });
 
-        $('.mock-section').find('.section-body').children('.wip-limit').children('input').on('input keyup paste', function () {
+        mockSections.find('.section-body').find('input[type="text"]', 'input[type="radio"]').on('input keyup paste change', function () {
             $('[name="sections"]').val(__parseSections());
         });
     }
 
     function initTicketSorting() {
-        $(".section-tickets-inner").sortable({
-            connectWith: ".section-tickets-inner",
+        let startCol, stopCol, defaultSectionTickets;
+
+        $(".section-tickets-inner.is-sortable").sortable({
+            connectWith: ".section-tickets-inner:not(.wip-reached)",
             opacity: 0.75,
             revert: 150,
             scroll: true,
@@ -265,18 +397,54 @@
             tolerance: 'pointer',
             cursor: 'move',
             stop: function(event, ui) {
+                stopCol = $(ui.item).parent();
+
+                if (startCol && startCol.length && parseInt(startCol.attr('data-wip-limit')) > 0 && startCol.children().length >= parseInt(startCol.attr('data-wip-limit'))) {
+                    startCol.addClass('wip-reached');
+                } else if (startCol && startCol.length) {
+                    startCol.removeClass('wip-reached');
+                }
+
+                if (stopCol && stopCol.length && parseInt(stopCol.attr('data-wip-limit')) > 0 && stopCol.children().length >= parseInt(stopCol.attr('data-wip-limit'))) {
+                    stopCol.addClass('wip-reached');
+                } else if (stopCol && stopCol.length) {
+                    stopCol.removeClass('wip-reached');
+                }
+
                 let $sectionId = $(ui.item).parents('.flow-section').attr('data-section-id');
                 let $sectionTickets = $(ui.item).parents('.section-tickets-inner').sortable('toArray', {attribute: 'data-id'});
+
+                if (JSON.stringify($sectionTickets) === JSON.stringify(defaultSectionTickets)) return;
 
                 $(ui.item).parents('.flow-section').first().request('onReorderTickets', {
                     data: {
                         sectionId: $sectionId,
-                        tickets: $sectionTickets
+                        tickets: $sectionTickets,
+                        ticket: $(ui.item).attr('data-id')
+                    },
+                    complete: function (data) {
+                        if (startCol.length) {
+                            let startSectionId = startCol.attr('id').split('-');
+
+                            sectionUpdate('#' + startCol.attr('id'), 'projectsingle/_tickets', startSectionId[startSectionId.length - 1], 'stop');
+                        }
+
+                        if (stopCol.length) {
+                            let stopSectionId = stopCol.attr('id').split('-');
+
+                            sectionUpdate('#' + stopCol.attr('id'), 'projectsingle/_tickets', stopSectionId[stopSectionId.length - 1], 'stop');
+                        }
+
                     }
                 });
             },
             start: function( event, ui ) {
                 $(ui.item).off('click');
+
+                startCol = $(ui.item).parent();
+
+                defaultSectionTickets = $(ui.item).parents('.section-tickets-inner').sortable('toArray', {attribute: 'data-id'});
+
                 $(".ui-state-highlight").css({
                     'width': $(ui.item).css('width'),
                     'height': $(ui.item).css('height'),
@@ -286,10 +454,379 @@
         }).disableSelection();
     }
 
-    $(document).ready(init);
+    function initCFD() {
+        let widget = $('#widget-cfd');
+        
+        if (widget.length && widget.attr('data-cfd').length) {
+            widget.find('#container').highcharts({
+                chart: {
+                    type: 'area',
+                    zoomType: 'x',
+                    panning: true,
+                    panKey: 'shift',
+                    resetZoomButton: {
+                        relativeTo: 'spacingBox',
+                        position: {
+                            y: 0,
+                            x: 0
+                        },
+                        theme: {
+                            fill: 'white',
+                            'stroke-width': 1,
+                            stroke: 'grey',
+                            r: 0,
+                            states: {
+                                hover: {
+                                    fill: '#b7cfec'
+                                },
+                                select: {
+                                    stroke: '#039',
+                                    fill: '#b7cfec'
+                                }
+                            }
+                        }
+                    }
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    title: {
+                        text: 'Date',
+                        margin: 24,
+                        style: {
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            fontFamily: 'Nunito',
+                            color: 'black'
+                        }
+                    },
+                    labels: {
+                        style: {
+                            fontWeight: 'normal',
+                            fontSize: '12',
+                            fontFamily: 'Nunito',
+                            color: 'black'
+                        },
+                        formatter: function () {
+                            return Highcharts.dateFormat('%d', this.value) + '<br/>' + Highcharts.dateFormat('%b', this.value);
+                        }
+                    },
+                    type: 'datetime',
+                    tickInterval: JSON.parse(widget.attr('data-cfd'))[0].data.length > 10 ? 24 * 3600 * 1000 * 5 : 24 * 3600 * 1000
+                },
+                credits: {
+                    enabled: false
+                },
+                yAxis: {
+                    title: {
+                        text: 'Number of tickets',
+                        margin: 24,
+                        style: {
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            fontFamily: 'Nunito',
+                            color: 'black'
+                        }
+                    },
+                    labels: {
+                        style: {
+                            fontWeight: 'normal',
+                            fontSize: '12px',
+                            fontFamily: 'Nunito',
+                            color: 'black'
+                        }
+                    },
+                    tickInterval: 3
+                },
+                legend: {
+                    enabled: true,
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle',
+                    itemMarginBottom:8,
+                    itemMarginTop:8,
+                    itemStyle: {
+                        fontWeight: 'normal',
+                        fontSize: '13',
+                        fontFamily: 'Nunito'
+                    }
+                },
+                tooltip: {
+                    crosshairs: true,
+                    shared: true
+                },
+                plotOptions: {
+                    area: {
+                        stacking: 'normal',
+                        lineColor: '#666666',
+                        lineWidth: 0,
+                        marker: { enabled: false },
+                        animation: {
+                            duration: 600
+                        }
+                    },
+                    series: {
+                        animation: {
+                            duration: 600
+                        }
+                    }
+                },
+                series: JSON.parse(widget.attr('data-cfd')),
+                exporting: {
+                    enabled: false
+                }
+            });
+        }
+    }
+
+    function initCC() {
+        let widget = $('#widget-cc');
+        
+        if (widget.length && widget.attr('data-cc').length &&
+            widget.attr('data-cc-average').length && widget.attr('data-cc-rolling').length &&
+            widget.attr('data-cc-standard-deviation').length) {
+            let chartype = {
+                type: 'scatter',
+                zoomType: 'xy'
+            }
+
+            let chartxaxis = {
+                title: {
+                    text: 'Completion date',
+                    margin: 24,
+                    style: {
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        fontFamily: 'Nunito',
+                        color: 'black'
+                    }
+                },
+                labels: {
+                    style: {
+                        fontWeight: 'normal',
+                        fontSize: '12',
+                        fontFamily: 'Nunito',
+                        color: 'black'
+                    },
+                    formatter: function () {
+                        return Highcharts.dateFormat('%d', this.value) + '<br/>' + Highcharts.dateFormat('%b', this.value);
+                    }
+                },
+                type: 'datetime',
+                tickInterval: JSON.parse(widget.attr('data-cc')).length && JSON.parse(widget.attr('data-cc'))[0].length > 10 ? 24 * 3600 * 1000 * 5 : 24 * 3600 * 1000
+            }
+
+            let chartyaxis = {
+                title: {
+                    text: 'Days to complete',
+                    margin: 24,
+                    style: {
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        fontFamily: 'Nunito',
+                        color: 'black'
+                    }
+                },
+                labels: {
+                    style: {
+                        fontWeight: 'normal',
+                        fontSize: '12px',
+                        fontFamily: 'Nunito',
+                        color: 'black'
+                    }
+                },
+            }
+
+            let chartlegend = {
+                enabled: true,
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                itemMarginBottom: 8,
+                itemMarginTop: 8,
+                itemStyle: {
+                    fontWeight: 'normal',
+                    fontSize: '13',
+                    fontFamily: 'Nunito'
+                }
+            }
+
+            let chartplotoptions = {
+                scatter: {
+                    marker: {
+                        radius: 5,
+                        fillColor: '#FFFFFF',
+                        lineWidth: 3,
+                        lineColor: '#36B37E',
+                        states: {
+                            hover: {
+                                enabled: true,
+                                lineColor: '#36B37E'
+                            }
+                        }
+                    },
+                    states: {
+                        hover: {
+                            marker: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: '',
+                        pointFormat: "Tickets: <b>{point.name}</b><br>Completed in: <b>{point.y} days</b>",
+                    },
+                    animation: {
+                        duration: 600
+                    }
+                },
+                series: {
+                    cluster: {
+                        enabled: false,
+                        minimumClusterSize: 2,
+                        allowOverlap: false,
+                        layoutAlgorithm: {
+                            type: 'grid',
+                            gridSize: 50
+                        },
+                        dataLabels: {
+                            style: {
+                                fontSize: '8px'
+                            }
+                        },
+                        marker: {
+                            fillColor: '#36B37E',
+                            radius: 10,
+                            states: {
+                                hover: {
+                                    fillColor: '#36B37E'
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 600
+                    }
+                }
+            }
+
+            let chartseries = [
+                {
+                    type: 'scatter',
+                    name: 'Tickets',
+                    color: '#36B37E',
+                    zIndex: 10,
+                    data: JSON.parse(widget.attr('data-cc'))
+                },
+                {
+                    type: 'line',
+                    name: 'Average',
+                    zIndex: 8,
+                    data: JSON.parse(widget.attr('data-cc-average')),
+                    color: '#0263e0',
+                    marker: {
+                        enabled: false
+                    }
+                },
+                {
+                    type: 'line',
+                    name: 'Rolling average',
+                    color: '#e07c04',
+                    zIndex: 9,
+                    data: JSON.parse(widget.attr('data-cc-rolling')),
+                    marker: {
+                        enabled: false
+                    },
+                    enableMouseTracking: false
+                },
+                {
+                    type: 'arearange',
+                    name: 'Standard deviation',
+                    data: JSON.parse(widget.attr('data-cc-standard-deviation')),
+                    color: '#F3F4F6',
+                    marker: {
+                        enabled: false
+                    },
+                    zIndex: 7,
+                    enableMouseTracking: false
+                }
+            ];
+
+            $('#container-cc').highcharts({
+                chart: chartype,
+                xAxis: chartxaxis,
+                yAxis: chartyaxis,
+                legend: chartlegend,
+                plotOptions: chartplotoptions,
+                series: chartseries,
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: ''
+                },
+                exporting: {
+                    enabled: false
+                }
+            });
+        }
+    }
+
+    function initNotifications() {
+        $('.remove').unbind().on('click', function () {
+            let popup = $(this).parent();
+
+            popup.addClass('opacity-0 translate-x-4');
+
+            setTimeout(function () {
+                popup.remove();
+            }, 450)
+        });
+
+        $('.notification').each(function () {
+            let popup = $(this);
+
+            setTimeout(function () {
+                popup.addClass('opacity-0 translate-x-4');
+
+                setTimeout(function () {
+                    popup.remove();
+                }, 450);
+            }, 8000);
+        })
+    }
+
+    $(document).ready(initOnce);
     $(document).render(init);
 }(jQuery));
 
+/*
+ * Socket.io wrapper functions
+ */
+function ticketUpdate(element, partial, ticket, notification = false) {
+    $(document).trigger('socketEmit', ['ticketUpdate', {element: element, partial: partial, ticket: ticket, notification: notification}]);
+}
+
+function checklistUpdate(element, partial, checklist) {
+    $(document).trigger('socketEmit', ['checklistUpdate', {element: element, partial: partial, checklist: checklist}]);
+}
+
+function sectionUpdate(element, partial, section, notification = false) {
+    $(document).trigger('socketEmit', ['ticketAdd', {element: element, partial: partial, section: section, notification: notification}]);
+}
+
+function flowUpdate(project, flow) {
+    $(document).trigger('socketEmit', ['flowUpdate', {project: project, flow: flow}]);
+}
+
+function projectUpdate(element, partial, project) {
+    $(document).trigger('socketEmit', ['flowUpdate', {element: element, partial: partial, project: project}]);
+}
+
+/*
+ * Helper functions
+ */
 function hexToRgb(hex) {
     return hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i
         ,(m, r, g, b) => '#' + r + r + g + g + b + b)
@@ -312,19 +849,27 @@ function __parseSections() {
 
             $(item).find('.mock-section').each(function () {
                 let subsection = {};
+                
+                let sectionHeader = $(this).children('.section-header').first();
+                let sectionBody = $(this).children('.section-body').first();
 
                 subsection.id = $(this).attr('data-id');
-                subsection.title = $(this).children('.section-header').first().children('input').first().val().trim();
-                subsection.wipLimit = $(this).children('.section-body').first().children('.wip-limit').first().find('input').val().trim();
+                subsection.title = sectionHeader.children('input').first().val().trim();
+                subsection.wipLimit = sectionBody.find('input[type="text"]').val().trim();
+                subsection.markComplete = sectionBody.find('input[type="radio"]').is(':checked');
 
                 subsections.push(subsection);
             });
 
             section.subsections = subsections;
         } else {
+            let sectionHeader = $(this).children('.section-header').first();
+            let sectionBody = $(this).children('.section-body').first();
+            
             section.id = $(item).attr('data-id');
-            section.title = $(item).children('.section-header').first().children('input').first().val().trim();
-            section.wipLimit = $(item).children('.section-body').first().children('.wip-limit').first().find('input').val().trim();
+            section.title = sectionHeader.children('input').first().val().trim();
+            section.wipLimit = sectionBody.find('input[type="text"]').val().trim();
+            section.markComplete = sectionBody.find('input[type="radio"]').is(':checked');
             section.subsections = [];
         }
 

@@ -1,8 +1,8 @@
 {% set projects = projects ? projects : __SELF__.projects %}
 
 {% for project in projects %}
-    <a href="{{ project.url() }}" class="flex items-center font-semibold text-sm p-3 border-b border-gray-200 {{ project.id == currentProject.id ? 'text-blue-500' }} hover:text-blue-500">
-        <img src="{{ project.getPicture() }}" width="20" alt="{{ project.title }}" class="mr-3">
+    <a href="{{ project.url() }}" class="flex items-center font-semibold text-sm p-3 {{ not loop.last ? 'border-b border-gray-200' }} {{ project.id == currentProject.id ? 'text-blue-500' }} hover:text-blue-500">
+        <img src="{{ project.getPicture()|resize(20) }}" width="20" alt="{{ project.title }}" class="mr-3 bg-white">
         <span>{{ project.title }}</span>
     </a>
 {% endfor %}

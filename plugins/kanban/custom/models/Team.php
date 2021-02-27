@@ -21,6 +21,13 @@ class Team extends Model
         'users'    => User::class,
     ];
 
+    public $hasManyThrough = [
+        'tickets' => [
+            Ticket::class,
+            'through' => Project::class,
+        ]
+    ];
+
     public function defaultProject()
     {
         return $this->projects()->where('is_default', true)->first();

@@ -1,0 +1,10 @@
+{% set types = {1: 'bg-indigo-500', 2: 'bg-green-500', 3: 'bg-orange-500', 4: 'bg-red-500'} %}
+
+{% if item %}
+    <div class="notification rounded-md {{ types[item.type] }} py-2.5 pl-4 pr-10 text-white font-bold shadow-md mb-4 relative transition duration-300 transform max-w-xs">
+        {{ item.message }}
+        <button class="remove absolute top-3 right-2 w-5 h-5 bg-transparent flex justify-center items-center text-white focus:outline-none">
+            <i class="la la-times"></i>
+        </button>
+    </div>
+{% endif %}

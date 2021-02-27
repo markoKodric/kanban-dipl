@@ -1,0 +1,25 @@
+{% for project in __SELF__.projects %}
+    <a class="flex items-center bg-white rounded-md mb-3 shadow-sm px-3 pt-2 pb-2 border border-white hover:shadow-blue transition duration-200 ml-6" style="width: calc(50% - 1rem)"
+       href="{{ project.url() }}">
+        <div class="img-wrapper" style="flex-basis: 40px; min-width: 40px;">
+            <img class="transform translate-z-0" src="{{ project.getPicture() }}" width="40" alt="{{ project.title }}">
+        </div>
+        <div class="content pl-4">
+            <p class="text-sm leading-snug text-gray-900 font-semibold tracking-wide">
+                <strong class="font-extrabold">{{ project.title }}</strong>
+            </p>
+
+            <p class="text-xs text-gray-500 font-semibold">
+                {{ project.description|slice(0, 60) }}{{ project.description|length > 60 ? '...' }}
+            </p>
+        </div>
+
+        <div class="h-full flex items-start">
+            <button data-request="{{ __SELF__ }}::onRestoreProject"
+                    data-request-data="project: {{ project.id }}"
+                    class="py-1 px-3 text-white text-sm bg-green-500 hover:shadow-green rounded-md font-bold focus:outline-none transition ml-2">
+                Restore
+            </button>
+        </div>
+    </a>
+{% endfor %}

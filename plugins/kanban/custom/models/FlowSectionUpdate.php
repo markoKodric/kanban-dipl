@@ -11,7 +11,7 @@ class FlowSectionUpdate extends Model
 
     public $rules = [];
 
-    public $fillable = ['ticket_id', 'flow_section_id'];
+    public $fillable = ['ticket_id', 'flow_section_id', 'old_flow_section_id', 'project_id', 'user_id', 'description'];
 
     public $belongsTo = [
         'ticket' => Ticket::class,

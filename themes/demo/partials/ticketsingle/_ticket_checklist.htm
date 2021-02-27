@@ -1,0 +1,34 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+<div id="checklist-{{ checklist.id }}" class="mb-8">
+    <div class="checklist-header is-active text-gray-700 text-lg cursor-pointer pr-3"
+         onclick="$(this).toggleClass('is-active');">
+        <div class="checklist-header-inner flex items-center justify-between w-full rounded-md bg-blue-50 font-bold py-2 px-4 relative">
+            <span class="pr-9 flex-1">{{ checklist.title }}</span>
+
+            {% if user().can('ticket.edit') %}
+                <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketDeleteChecklist"
+                        data-request-data="checklist: {{ checklist.id }}"
+                        data-request-success="
+                            checklistUpdate('-#js-checklists', 'ticketsingle/_ticket_checklist', data.checklist);
+                            ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+                        "
+                        class="delete-item w-7 h-7 flex justify-center items-center font-bold text-white bg-red-500 rounded-full ml-2 focus:outline-none">
+                    <i class="la la-trash"></i>
+                </button>
+            {% endif %}
+
+            <a class="toggle-checklist ml-3" href="#"><i class="la la-angle-down"></i></a>
+        </div>
+    </div>
+
+    <div id="js-checklist-{{ checklist.id }}">
+        {% partial 'ticketsingle/__checklist' checklist=checklist %}
+    </div>
+
+    {% if user().can('ticket.edit') %}
+        <div id="js-add-checklist-item-{{ checklist.id }}">
+            {% partial 'ticketsingle/__ticket_add_checklist_item' checklist=checklist %}
+        </div>
+    {% endif %}
+</div>

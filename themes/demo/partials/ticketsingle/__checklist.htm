@@ -1,16 +1,36 @@
 {% for item in checklist.items %}
     <form class="mb-3 px-3" method="POST">
         <label for="item-{{ item.id }}" class="checklist-item relative flex items-center mt-3 cursor-pointer">
-            <input type="hidden" name="checklist" value="{{ checklist.id }}">
-            <input id="item-{{ item.id }}" data-request="{{ __SELF__ }}::onToggleChecklistItem" type="checkbox" name="item" value="{{ item.id }}" class="absolute w-0 h-0 invisible opacity-0 {{ item.is_done ? 'is-checked' : '' }}">
+            <input type="hidden"
+                   name="checklist"
+                   value="{{ checklist.id }}">
+
+            <input id="item-{{ item.id }}"
+                   data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketToggleChecklistItem"
+                   data-request-success="
+                       checklistUpdate('#js-checklist-{{ checklist.id }}', 'ticketsingle/__checklist', data.checklist);
+                       ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+                   "
+                   type="checkbox"
+                   name="item"
+                   value="{{ item.id }}"
+                   class="absolute w-0 h-0 invisible opacity-0 {{ item.is_done ? 'is-checked' : '' }}">
+
             <span class="checkbox block w-5 h-5 rounded-full border border-blue-500 mr-3"></span>
+
             <span class="pr-8">{{ item.description }}</span>
 
-            <button data-request="{{ __SELF__ }}::onDeleteChecklistItem"
-                    data-request-data="checklist: {{ checklist.id }}, item: {{ item.id }}"
-                    class="delete-item w-7 h-7 flex justify-center items-center font-bold text-white bg-red-500 rounded-full ml-2 absolute -top-1 right-0 focus:outline-none opacity-0 invisible">
-                <i class="la la-trash"></i>
-            </button>
+            {% if user().can('ticket.edit') %}
+                <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketDeleteChecklistItem"
+                        data-request-data="checklist: {{ checklist.id }}, item: {{ item.id }}"
+                        data-request-success="
+                            checklistUpdate('#js-checklist-{{ checklist.id }}', 'ticketsingle/__checklist', data.checklist);
+                            ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+                        "
+                        class="delete-item w-7 h-7 flex justify-center items-center font-bold text-white bg-red-500 rounded-full ml-2 absolute -top-1 right-0 focus:outline-none opacity-0 invisible">
+                    <i class="la la-trash"></i>
+                </button>
+            {% endif %}
         </label>
     </form>
 {% endfor %}

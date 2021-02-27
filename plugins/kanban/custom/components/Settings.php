@@ -40,13 +40,13 @@ class Settings extends ComponentBase
         'projects.manage'       => 'Manage projects (create, edit, delete)',
 
         'board.workflow.edit'   => 'Edit workflow',
-        'board.users.add'       => 'Add users',
+        'board.users.manage'    => 'Manage users',
         'board.tickets.add'     => 'Add tickets',
         'board.tickets.reorder' => 'Reorder tickets',
         //'board.sections.manage' => 'Manage sections',
 
-        'ticket.users.add'      => 'Add users',
-        'ticket.tags.add'       => 'Add tags',
+        'ticket.users.manage'   => 'Manage users',
+        'ticket.tags.manage'    => 'Manage tags',
         'ticket.edit'           => 'Edit ticket',
         'ticket.delete'         => 'Delete ticket',
     ];
@@ -91,14 +91,16 @@ class Settings extends ComponentBase
             'permissions' => !empty($newPermissions) ? json_encode($newPermissions) : null,
         ]);
 
-        $projectSections = array_diff($this->permissionsProject->flow->sections()->doesntHave('subsections')->get()->pluck('id')->all(), post('sections'));
+        if ($this->permissionsProject) {
+            $projectSections = array_diff($this->permissionsProject->flow->sections()->doesntHave('subsections')->get()->pluck('id')->all(), post('sections'));
 
-        $sections = [];
-        foreach ($projectSections as $section) {
-            $sections[$section] = ['project_id' => $this->permissionsProject->id];
+            $sections = [];
+            foreach ($projectSections as $section) {
+                $sections[$section] = ['project_id' => $this->permissionsProject->id];
+            }
+
+            $this->permissionsUser->restrictions()->wherePivot('project_id', $this->permissionsProject->id)->sync($sections);
         }
-
-        $this->permissionsUser->restrictions()->wherePivot('project_id', $this->permissionsProject->id)->sync($sections);
     }
 
     public function onPermissionsChangeUser()
@@ -200,7 +202,7 @@ class Settings extends ComponentBase
             $file = new File([
                 'data'      => request()->file('picture'),
                 'title'     => $fileName,
-                'is_public' => false,
+                'is_public' => true,
             ]);
 
             $file->save();

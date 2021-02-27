@@ -3,9 +3,9 @@
 </button>
 
 <div id="editFlow" class="flow-definer-wrapper invisible opacity-0 fixed inset-0 flex justify-center items-center z-50 text-center transition">
-    <div class="background-overlay absolute inset-0 bg-black bg-opacity-75"></div>
+    <div class="background-overlay absolute inset-0 bg-black bg-opacity-50"></div>
 
     <div id="flow-definer">
-        {% partial '@_flow_definer' flow=project.flow %}
+        {% partial 'projectsingle/_flow_definer' flow=project.flow %}
     </div>
 </div>

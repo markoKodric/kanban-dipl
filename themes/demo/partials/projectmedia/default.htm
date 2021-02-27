@@ -1,0 +1,83 @@
+<div class="media py-10 px-16 bg-white h-full flex flex-col" id="project-media">
+    <div class="flex flex-col flex-1">
+        <div class="flex items-center pb-2 border-b border-gray-200 mb-5">
+            <h2 class="font-bold mr-10 mb-4 text-3xl">Shared files</h2>
+        </div>
+
+        <div class="layout-body flex-1">
+            <div class="h-full flex flex-col">
+                <div id="js-media-actions" class="flex flex-wrap w-full items-center">
+                    <div id="js-upload">
+                        {% partial '@_upload' %}
+                    </div>
+
+                    <form data-request="{{ __SELF__ }}::onFilter" class="flex flex-1 items-center">
+                        <div class="search-wrapper relative cursor-pointer ml-6 mr-10">
+                            <input type="text"
+                                   data-track-input="250"
+                                   name="filters[search]"
+                                   oninput="$(this.form).request()"
+                                   placeholder="Search..."
+                                   value="{{ session().project_media_filters.search }}"
+                                   class="w-full pr-10">
+                            <i class="la la-search is-active absolute right-2 top-1/2 text-2xl text-gray-500"></i>
+                            <i class="la la-spinner absolute right-2 top-1/2 text-2xl text-gray-500 invisible"></i>
+                            <i class="la la-times absolute right-2 top-1/2 text-2xl text-gray-500 invisible"></i>
+                        </div>
+
+                        <div class="select ml-auto mr-8">
+                            <label for="selectType" class="font-semibold mr-2">Display:</label>
+                            <select name="filters[type]" id="selectType" onchange="$(this.form).request()">
+                                <option value="">All</option>
+                                <option {{ session().project_media_filters.type == 'images' ? 'selected' }} value="images">Images</option>
+                                <option {{ session().project_media_filters.type == 'videos' ? 'selected' }} value="videos">Videos</option>
+                                <option {{ session().project_media_filters.type == 'audio' ? 'selected' }} value="audio">Audio</option>
+                                <option {{ session().project_media_filters.type == 'documents' ? 'selected' }} value="documents">Documents</option>
+                            </select>
+
+                            <i class="la la-angle-down"></i>
+                        </div>
+
+                        <div class="select mr-2">
+                            <label for="selectOrder" class="font-semibold mr-2">Order by:</label>
+                            <select name="filters[order]" id="selectOrder" onchange="$(this.form).request()">
+                                <option value="file_name">Title</option>
+                                <option {{ session().project_media_filters.order == 'file_size' ? 'selected' }} value="file_size">Size</option>
+                                <option {{ session().project_media_filters.order == 'updated_at' ? 'selected' }} value="updated_at">Last modified</option>
+                            </select>
+
+                            <i class="la la-angle-down"></i>
+                        </div>
+
+                        <div class="select">
+                            <select name="filters[direction]" id="selectDirection" onchange="$(this.form).request()">
+                                <option value="asc">Ascending</option>
+                                <option {{ session().project_media_filters.direction == 'desc' ? 'selected' }}  value="desc">Descending</option>
+                            </select>
+
+                            <i class="la la-angle-down"></i>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="mt-5 border-t border-gray-300 flex-1 flex items-stretch w-full">
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex w-full py-2.5 px-6 bg-indigo-400 text-white items-center">
+                            <span class="font-bold w-16">Type</span>
+                            <span class="font-bold flex-1">Title</span>
+                            <span class="font-bold w-32">Size</span>
+                            <span class="font-bold w-32">Uploaded</span>
+                        </div>
+
+                        <div id="js-media-files" class="flex-1 max-h-lg overflow-y-auto border-r border-gray-300">
+                            {% partial '@_files' files=__SELF__.files %}
+                        </div>
+                    </div>
+                    <div id="js-selected-file" style="width: 297px">
+                        {% partial '@_selection' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

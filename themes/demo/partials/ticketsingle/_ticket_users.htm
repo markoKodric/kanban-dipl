@@ -1,0 +1,30 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+{% for user in ticket.users %}
+    <div class="member rounded-full cursor-pointer shadow-md relative w-10 h-10 flex items-center justify-center -ml-2 hover:z-20">
+        {% if user.picture %}
+            <img src="{{ user.picture|resize(40) }}" class="rounded-full bg-white w-full h-full object-fit-cover" width="40" alt="{{ user.credentials }}">
+        {% else %}
+            <div class="w-10 h-10 rounded-full flex justify-center items-center bg-gray-300">
+                <span class="font-bold">{{ user.credentials }}</span>
+            </div>
+        {% endif %}
+
+        {% if user.id != user().id and user().can('ticket.users.manage') %}
+        <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketRemoveUser"
+                data-request-data="user: {{ user.id }}"
+                data-request-success="
+                    ticketUpdate('#js-ticket-users', 'ticketsingle/_ticket_users', {{ ticket.id }});
+                    ticketUpdate('#js-ticket-add-users', 'ticketsingle/_ticket_add_users', {{ ticket.id }});
+                    ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+                "
+                class="remove-user absolute bottom-full -mb-1 left-1.5 scale-0 origin-bottom z-20 rounded-full bg-blue-500 border-2 border-white w-7 h-7 flex justify-center items-center opacity-0 invisible transition transform focus:outline-none">
+            <i class="la la-times text-white font-bold"></i>
+        </button>
+        {% endif %}
+
+        <span class="block absolute top-full opacity-0 scale-0 invisible transition duration-200 whitespace-nowrap bg-gray-100 font-bold rounded-md text-sm px-2 py-1 transform">
+            {{ user.name }}
+        </span>
+    </div>
+{% endfor %}

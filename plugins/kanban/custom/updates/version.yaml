@@ -57,3 +57,6 @@
 1.0.22:
     - 'Created table kanban_custom_flow_section_restrictions'
     - builder_table_create_kanban_custom_flow_section_restrictions.php
+1.0.23:
+    - 'Created table kanban_custom_activity_log'
+    - builder_table_create_kanban_custom_activity_log.php

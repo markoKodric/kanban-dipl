@@ -13,7 +13,7 @@ items:
             cssClass: 'la la-database icon-rotate-90'
             isExternal: '0'
     -
-        title: 'Reports & Analytics'
+        title: Overview
         nesting: 0
         type: static-page
         url: null
@@ -65,42 +65,29 @@ items:
             cssClass: 'la la-code-branch'
             isExternal: '0'
     -
-        title: 'Activity log'
-        nesting: null
-        type: url
-        url: /
-        code: ''
-        reference: null
-        cmsPage: null
-        replace: null
-        viewBag:
-            isHidden: '1'
-            cssClass: 'la la-history'
-            isExternal: '0'
-    -
         title: 'Shared files'
-        nesting: null
-        type: url
-        url: /
+        nesting: 0
+        type: static-page
+        url: null
         code: ''
-        reference: null
+        reference: shared-files
         cmsPage: null
-        replace: null
+        replace: 0
         viewBag:
-            isHidden: '1'
+            isHidden: '0'
             cssClass: 'la la-file-text'
             isExternal: '0'
     -
         title: Information
-        nesting: null
-        type: url
-        url: /
+        nesting: 0
+        type: static-page
+        url: null
         code: ''
-        reference: null
+        reference: project-information
         cmsPage: null
-        replace: null
+        replace: 0
         viewBag:
-            isHidden: '1'
+            isHidden: '0'
             cssClass: 'la la-info-circle'
             isExternal: '0'
 name: 'Main menu'

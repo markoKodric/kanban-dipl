@@ -10,17 +10,18 @@ class FlowSection extends Model
 
     public $table = 'kanban_custom_flow_sections';
 
-    public $fillable = ['name', 'flow_id', 'parent_section_id', 'sort_order', 'wip_limit'];
+    public $fillable = ['name', 'flow_id', 'parent_section_id', 'sort_order', 'wip_limit', 'mark_tickets_complete'];
 
     public $rules = [];
 
     public $belongsTo = [
-        'flow' => Flow::class,
+        'flow'   => Flow::class,
+        'parent' => [FlowSection::class, 'key' => 'parent_section_id']
     ];
 
     public $hasMany = [
         'subsections' => [FlowSection::class, 'key' => 'parent_section_id', 'order' => 'sort_order asc'],
-        'tickets'     => Ticket::class,
+        'tickets'     => [Ticket::class, 'scope' => 'unarchived'],
     ];
 
     public $belongsToMany = [

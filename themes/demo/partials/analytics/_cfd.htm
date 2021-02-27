@@ -1,0 +1,11 @@
+<div id="widget-cfd" class="widget rounded-md bg-blue-50 p-6 h-full flex flex-col" data-cfd="{{ __SELF__.data }}">
+    <div class="widget-header flex justify-between">
+        <h3 class="text-xl font-bold">Project: {{ __SELF__.project.title }} <span class="text-gray-500 font-semibold text-sm">(Start date: {{ __SELF__.project.start_date.format('d.m.Y') }})</span></h3>
+        <div class="buttons">
+            <button class="button button-primary is-active" data-request="{{ __SELF__ }}::onChangeTimePeriod">All time</button>
+            <button class="button button-primary" data-request="{{ __SELF__ }}::onChangeTimePeriod" data-request-data="time_period: 30">Last 30 days</button>
+            <button class="button button-primary" data-request="{{ __SELF__ }}::onChangeTimePeriod" data-request-data="time_period: 7">Last 7 days</button>
+        </div>
+    </div>
+    <div id="container" class="rounded-md mt-4 pt-6 bg-white flex-1"></div>
+</div>

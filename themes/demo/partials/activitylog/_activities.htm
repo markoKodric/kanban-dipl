@@ -1,0 +1,10 @@
+{% set activities = activities ?: __SELF__.activities %}
+
+{% for activity in activities %}
+    <div class="flex w-full py-3 px-6 {{ loop.index % 2 == 1 ? 'bg-blue-50' }} items-center text-sm">
+        <span class="font-semibold w-32">{{ activity.created_at.format('M. d, Y') }}</span>
+        <span class="font-semibold w-40">{{ activity.user.name }} {{ activity.user.surname }}</span>
+        <span class="font-semibold w-40">{{ activity.project.title }}</span>
+        <span class="font-semibold flex-1">{{ activity.description }}</span>
+    </div>
+{% endfor %}

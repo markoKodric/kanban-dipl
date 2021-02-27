@@ -1,0 +1,16 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+{% if user().can('ticket.edit') %}
+    <input type="date"
+           data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdateTicketDueDate"
+           data-request-blur
+           data-request-success="
+               ticketUpdate('#js-due-date', 'ticketsingle/_ticket_due_date', {{ ticket.id }});
+               ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+           "
+           class="custom w-full text-3xl {{ ticket.due_date and ticket.due_date.diffInDays("now"|date) < 7 ? 'text-red-500' : 'text-blue-400' }} font-semibold mt-2" name="ticket_due_date" value="{{ ticket.due_date.toDateString() }}">
+{% else %}
+    <div class="text-3xl {{ ticket.due_date and ticket.due_date.diffInDays("now"|date) < 7 ? 'text-red-500' : 'text-blue-400' }} font-semibold mt-4.5">
+        {{ ticket.due_date.format('d.m.Y') }}
+    </div>
+{% endif %}

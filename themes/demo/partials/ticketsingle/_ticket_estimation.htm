@@ -1,0 +1,22 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+{% if user().can('ticket.edit') %}
+    <form data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdateTicketEstimation"
+          data-request-success="
+              ticketUpdate('#js-estimation', 'ticketsingle/_ticket_estimation', {{ ticket.id }});
+              ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+          "
+          class="flex items-center text-3xl text-blue-400 font-semibold flex-wrap">
+        <input type="text" data-request-blur class="custom text-3xl text-blue-400 font-semibold mt-2 w-1/3" name="ticket_estimation_hours" placeholder="0" value="{{ ticket.estimationHours() ?: 0 }}">
+        <span class="cursor-default mt-2">h</span>
+        <input type="text" data-request-blur class="custom text-3xl text-blue-400 font-semibold mt-2 w-1/3 ml-4" name="ticket_estimation_minutes" placeholder="0" value="{{ ticket.estimationMinutes() ?: 0 }}">
+        <span class="cursor-default mt-2">m</span>
+    </form>
+{% else %}
+    <div class="flex items-center text-3xl text-blue-400 font-semibold flex-wrap">
+        <span class="text-3xl text-blue-400 font-semibold mt-2">{{ ticket.estimationHours() ?: 0 }}</span>
+        <span class="cursor-default mt-2">h</span>
+        <span class="text-3xl text-blue-400 font-semibold mt-2 ml-4">{{ ticket.estimationMinutes() ?: 0 }}</span>
+        <span class="cursor-default mt-2">m</span>
+    </div>
+{% endif %}

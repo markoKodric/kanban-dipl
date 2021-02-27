@@ -1,0 +1,272 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+<div id="ticket-wrapper-{{ ticket.id }}" class="ticket-wrapper relative z-30">
+    <div class="flex items-center pb-5 border-b border-gray-200 mb-5">
+        <div class="border-r border-gray-200 pr-2 py-2 flex items-center relative">
+            <h2 class="flex items-center font-extrabold text-3xl">
+                <span id="js-priority">
+                    {% partial 'ticketsingle/_ticket_priority' ticket=ticket %}
+                </span>
+
+                <span id="js-ticket-name">
+                    {% partial 'ticketsingle/_ticket_name' ticket=ticket %}
+                </span>
+            </h2>
+
+            {% if user().can('ticket.edit') %}
+                <form id="updatePriority"
+                      data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdatePriority"
+                      data-request-success="ticketUpdate('#js-priority', 'ticketsingle/_ticket_priority', {{ ticket.id }});"
+                      class="absolute flex items-center p-3 top-full left-0 mt-2 bg-white shadow-md rounded-md z-10 transition duration-200 invisible opacity-0 scale-0 origin-top-left transform z-50"
+                >
+                    <span class="text-sm whitespace-nowrap">Choose priority:</span>
+
+                    <div class="select flex-1 ml-2">
+                        <select class="form-control text-sm"
+                                name="priority"
+                                onchange="$(this).parents('form').request(); $(this).parent().next().click()"
+                                id="priority"
+                        >
+                            <option value="1" {{ ticket.priority == 1 ? 'selected' }}>High priority </option>
+                            <option value="2" {{ ticket.priority == 2 ? 'selected' }}>Medium priority </option>
+                            <option value="3" {{ ticket.priority == 3 ? 'selected' }}>Low priority </option>
+                        </select>
+
+                        <i class="la la-angle-down"></i>
+                    </div>
+
+                    <button class="button-icon shadow-md" data-target="#updatePriority">
+                        <i class="la la-times text-2xl"></i>
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div id="js-members" class="flex items-center py-2 ml-8 pr-8 border-r border-gray-200">
+            <p class="font-semibold">Assigned team members:</p>
+
+            <div class="ticket-members flex items-center ml-6 relative">
+                <div id="js-ticket-users" class="flex items-center">
+                    {% partial 'ticketsingle/_ticket_users' %}
+                </div>
+
+                {% if user().can('ticket.users.manage') %}
+                    <div id="excluded-users"
+                         class="non-members absolute top-0 left-full ml-2 bg-white shadow-md rounded-md transition duration-200 invisible opacity-0 scale-0 origin-top-left transform z-50 pb-2">
+                        <div class="search-wrapper p-3 relative">
+                            <input id="search-users"
+                                   name="query"
+                                   type="text"
+                                   data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketSearchUsers"
+                                   data-track-input
+                                   data-request-complete="$(this).focus()"
+                                   placeholder="Find user..."
+                                   class="form-control pr-10">
+
+                            <i class="la la-search absolute top-1/2 right-6 text-2xl text-gray-500"></i>
+                        </div>
+
+                        <div id="js-ticket-add-users">
+                            {% partial 'ticketsingle/_ticket_add_users' %}
+                        </div>
+                    </div>
+
+                    <button class="add-members button-icon shadow-md"
+                            data-tooltip="Add users"
+                            data-target="#excluded-users">
+                        <i class="la la-user-plus text-2xl"></i>
+
+                        <i class="la la-times text-2xl hidden"></i>
+                    </button>
+
+                    <div class="background-overlay fixed inset-0 bg-black bg-opacity-50 invisible opacity-0 transition z-40"></div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="ticket-tags flex items-center ml-8 relative">
+            <p class="font-semibold">Tags:</p>
+
+            <div id="js-ticket-tags" class="applied-tags flex items-center ml-2">
+                {% partial 'ticketsingle/_ticket_tags' %}
+            </div>
+
+            {% if user().can('ticket.tags.manage') %}
+                <button class="button button-icon add-tags-button shadow-md"
+                        data-tooltip="Add tag"
+                        data-target="#other-tags">
+                    <i class="la la-plus text-2xl"></i>
+
+                    <i class="la la-times text-2xl hidden"></i>
+                </button>
+
+                <div class="background-overlay fixed inset-0 bg-black bg-opacity-50 invisible opacity-0 transition z-40"></div>
+
+                <div id="other-tags"
+                     style="max-width: 320px; min-width: 270px;"
+                     class="other-tags absolute top-0 left-full ml-2 bg-white shadow-md rounded-md z-10 transition duration-200 invisible opacity-0 scale-0 origin-top-left transform z-50">
+                    <div class="search-wrapper p-3 relative">
+                        <input type="text"
+                               name="query"
+                               data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketSearchTags"
+                               data-track-input
+                               placeholder="Find tag..."
+                               class="form-control pr-10 w-full">
+
+                        <i class="la la-search absolute top-1/2 right-6 text-2xl text-gray-500"></i>
+                    </div>
+
+                    <div id="js-ticket-available-tags" class="flex items-start flex-wrap px-2 pb-2">
+                        {% partial 'ticketsingle/_ticket_tags_picker' %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="layout-body">
+        <div id="js-ticket" class="board">
+            <div class="flex items-start pb-6 mb-6 border-b border-gray-200">
+                <div class="w-5/12 pr-8">
+                    <p class="text-xl font-bold mb-2">Description</p>
+
+                    <div id="js-description">
+                        {% partial 'ticketsingle/_ticket_description' %}
+                    </div>
+                </div>
+
+                <div class="w-2/12 pl-8 border-l border-gray-200">
+                    <p class="text-xl font-bold mb-2">Estimated time</p>
+
+                    <div id="js-estimation">
+                        {% partial 'ticketsingle/_ticket_estimation' %}
+                    </div>
+                </div>
+                <div class="w-2/12 pl-8 border-l border-gray-200">
+                    <p class="text-xl font-bold mb-2">Elapsed time</p>
+
+                    <div class="flex items-center mt-4">
+                        <p class="elapsed-time text-3xl text-blue-400 font-semibold {{ ticket.runningTimer() ? 'timer-active' : '' }}" title="Total: {{ ticket.totalElapsedTime() }}">
+                            {{ ticket.elapsedTime() }}
+                        </p>
+
+                        {% if ticket.users.contains('id', user().id) %}
+                            <form data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketToggleTimer" method="POST">
+                                <input type="hidden"
+                                       name="time"
+                                       class="{{ ticket.runningTimer() ? 'timer-active' : '' }}"
+                                       value="{{ ticket.timers.sum('time_in_seconds') }}">
+
+                                <button type="submit"
+                                        class="button button-icon timer"
+                                        data-tooltip="Start timer"
+                                        data-tooltip-alt="Stop timer">
+                                    <i class="la {{ ticket.runningTimer() ? 'la-pause' : 'la-clock' }} text-2xl"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="w-3/12 pl-8 border-l border-gray-200">
+                    <p class="text-xl font-bold mb-2">Due date</p>
+
+                    <div id="js-due-date">
+                        {% partial 'ticketsingle/_ticket_due_date' %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-start space-x-10">
+                <div class="w-1/4">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xl font-bold mb-2">Checklists</p>
+                    </div>
+
+                    {% if user().can('ticket.edit') %}
+                        <div class="mb-6">
+                            <form method="POST"
+                                  data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketCreateChecklist"
+                                  data-request-success="
+                                    $(this).find('input').val('');
+                                    checklistUpdate('@#js-checklists', 'ticketsingle/_ticket_checklist', data.checklist)
+                                  "
+                                  class="flex items-stretch">
+                                <input type="text"
+                                       required
+                                       name="checklist"
+                                       placeholder="New checklist..."
+                                       class="custom block flex-1 placeholder-blue-300 py-1 px-6 rounded-md border border-dashed border-blue-300 font-bold">
+
+                                <button type="submit"
+                                        class="button button-icon bg-custom bg-blue-300">
+                                    <i class="la la-check text-2xl"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+
+                    <div id="js-checklists" class="max-h-sm overflow-y-auto overflow-x-visible">
+                        {% partial 'ticketsingle/_checklists' %}
+                    </div>
+                </div>
+
+                <div class="w-1/4">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xl font-bold mb-2">Files</p>
+                    </div>
+
+                    <div id="js-ticket-files">
+                        {% partial 'ticketsingle/_ticket_files' %}
+                    </div>
+                </div>
+
+                <div class="w-1/4">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xl font-bold mb-2">Comments</p>
+                    </div>
+
+                    {% if user().can('ticket.edit') %}
+                        <div class="mb-4">
+                            <form method="POST"
+                                  data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketAddComment"
+                                  data-request-success="
+                                      ticketUpdate('#js-ticket-comments', 'ticketsingle/_ticket_comments', {{ ticket.id }});
+                                      ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+                                  "
+                                  class="flex items-stretch">
+                                <input type="text"
+                                       required
+                                       name="comment"
+                                       placeholder="Add comment..."
+                                       class="custom block flex-1 placeholder-blue-300 py-1 px-6 rounded-md border border-dashed border-blue-300 font-bold">
+
+                                <button type="submit" class="button button-icon bg-custom bg-blue-300">
+                                    <i class="la la-check text-2xl"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+
+                    <div id="js-ticket-comments" class="max-h-sm overflow-y-auto overflow-x-visible pr-3 pb-14">
+                        {% partial 'ticketsingle/_ticket_comments' %}
+                    </div>
+                </div>
+
+                <div class="w-1/4">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xl font-bold mb-2">Actions</p>
+                    </div>
+
+                    {% if user().can('ticket.edit') %}
+                        <div class="mb-4">
+                            <div class="flex flex-col items-stretch" id="js-ticket-actions">
+                                {% partial 'ticketsingle/_ticket_actions' %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-gray-400">No actions.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

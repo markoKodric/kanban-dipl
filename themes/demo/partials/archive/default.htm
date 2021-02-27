@@ -2,6 +2,42 @@
     <div class="flex flex-col flex-1">
         <div class="flex items-center pb-2 border-b border-gray-200 mb-5">
             <h2 class="font-bold mr-10 mb-4 text-3xl">Archive</h2>
+
+            <div class="search-wrapper relative cursor-pointer mb-4 mr-10">
+                <input type="text"
+                       data-request="{{ __SELF__ }}::onSearch"
+                       data-track-input="250"
+                       name="query"
+                       placeholder="Search..."
+                       class="w-full pr-10">
+                <i class="la la-search is-active absolute right-2 top-1/2 text-2xl text-gray-500"></i>
+                <i class="la la-spinner absolute right-2 top-1/2 text-2xl text-gray-500 invisible"></i>
+                <i class="la la-times absolute right-2 top-1/2 text-2xl text-gray-500 invisible"></i>
+            </div>
+        </div>
+
+        <div class="layout-body flex-1">
+            <div class="h-full">
+                <div class="flex space-x-6 items-start">
+                    {% if __SELF__.tickets.isNotEmpty() %}
+                    <div class="bg-blue-50 rounded-md  w-1/2">
+                        <h3 class="w-full font-bold text-xl border-b py-4 px-6 pb-2 mb-3">Archived tickets</h3>
+                        <div id="js-tickets" class="flex items-start -ml-6 rounded-md flex-wrap py-3 px-6">
+                            {% partial '@_tickets' tickets=__SELF__.tickets %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if __SELF__.projects.isNotEmpty() %}
+                    <div class="bg-blue-50 rounded-md  w-1/2">
+                        <h3 class="w-full font-bold text-xl border-b py-4 px-6 pb-2 mb-3">Archived projects</h3>
+                        <div id="js-projects" class="flex items-start -ml-6 rounded-md flex-wrap py-3 px-6">
+                            {% partial '@_projects' projects=__SELF__.projects %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>

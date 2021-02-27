@@ -1,0 +1,110 @@
+{% set user = __SELF__.user %}
+
+<div class="w-full">
+    <div class="flex items-start justify-between">
+        <div>
+            <h3 class="text-xl font-bold">{{ user.name }} {{ user.surname }} {{ user.email != user.username ? '(' ~ user.username ~ ')' }}</h3>
+            <p class="text-sm text-gray-500 font-semibold">Registered: {{ user.created_at.format('d.m.Y') }}</p>
+        </div>
+
+        <button data-request="{{ __SELF__ }}::onDeactivateAccount" class="button button-outline color-custom border-red-500 text-white bg-red-500 hover:shadow-red transition">
+            <span class="font-bold">Deactivate account</span>
+        </button>
+    </div>
+
+    <form data-request="{{ __SELF__ }}::onUpdateProfile" data-request-files class="mt-8">
+        <div class="flex w-full flex-wrap space-x-6">
+            <div class="flex flex-col flex-1">
+                <label for="first_name" class="font-semibold">First name <span class="text-red-500">*</span></label>
+                <input type="text" class="w-full custom not-dynamic border px-3 focus:shadow-blue {{ formErrors.get('first_name') ? 'border-red-500' }}" id="first_name" name="first_name" placeholder="First name..." value="{{ user.name }}">
+
+                {% if formErrors.get('first_name') %}
+                    <div class="text-red-500 text-sm font-semibold mt-1">{{ formErrors.get('first_name').0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col flex-1">
+                <label for="last_name" class="font-semibold">Last name</label>
+                <input type="text" class="w-full custom not-dynamic border px-3 focus:shadow-blue {{ formErrors.get('last_name') ? 'border-red-500' }}" id="last_name" name="last_name" placeholder="Last name..." value="{{ user.surname }}">
+            </div>
+        </div>
+
+        <div class="flex w-full flex-wrap space-x-6">
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="email" class="font-semibold">Email <span class="text-red-500">*</span></label>
+                <input type="email" class="w-full custom not-dynamic border px-3 focus:shadow-blue {{ formErrors.get('email') ? 'border-red-500' }}" id="email" name="email" placeholder="Email..." value="{{ user.email }}">
+
+                {% if formErrors.get('email') %}
+                    <div class="text-red-500 text-sm font-semibold mt-1">{{ formErrors.get('email').0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="username" class="font-semibold">Username</label>
+                <input type="text" class="w-full custom not-dynamic border px-3 focus:shadow-blue {{ formErrors.get('username') ? 'border-red-500' }}" id="username" name="username" placeholder="Username..." value="{{ user.username }}">
+            </div>
+        </div>
+
+        <div class="flex w-full flex-wrap space-x-6">
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="password" class="font-semibold">Password</label>
+                <input type="password" class="w-full custom not-dynamic border px-3 focus:shadow-blue {{ formErrors.get('password') ? 'border-red-500' }}" id="password" name="password">
+
+                {% if formErrors.get('password') %}
+                    <div class="text-red-500 text-sm font-semibold mt-1">{{ formErrors.get('password').0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="password_confirmation" class="font-semibold">Password confirmation</label>
+                <input type="password" class="w-full custom not-dynamic border px-3 focus:shadow-blue {{ formErrors.get('password') ? 'border-red-500' }}" id="password_confirmation" name="password_confirmation">
+
+                {% if formErrors.get('password') %}
+                    <div class="text-red-500 text-sm font-semibold mt-1">{{ formErrors.get('password_confirmation').0 }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="flex w-full flex-wrap space-x-6">
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="team" class="font-semibold mb-1">Team</label>
+                <input type="text" disabled class="w-full custom not-dynamic border border-gray-400 cursor-not-allowed px-3 focus:shadow-blue" id="team" name="team" value="{{ user.team.name }}">
+            </div>
+
+            <div class="flex flex-1 flex-col mt-4">
+                <div class="form-item flex flex-wrap">
+                    <label for="picture-file-upload" class="font-semibold w-full mb-1">Profile picture</label>
+                    <div class="flex items-center">
+                        <div class="mr-4 relative profile-picture">
+                            {% if user.picture %}
+                                <img width="40" class="rounded-full" src="{{ user.picture starts with 'http' ? user.picture : user.picture.getPath() }}" alt="{{ user.credentials }}">
+                                <button data-request="{{ __SELF__ }}::onRemovePicture"
+                                        data-request-data="user: {{ user.id }}"
+                                        class="remove-user absolute bottom-full -mb-1 left-1.5 scale-0 origin-bottom z-20 rounded-full bg-blue-500 border-2 border-white w-7 h-7 flex justify-center items-center opacity-0 invisible transition transform">
+                                    <i class="la la-times text-white font-bold"></i>
+                                </button>
+                            {% else %}
+                                <div class="w-10 h-10 rounded-full flex justify-center items-center bg-gray-300">
+                                    <span class="font-bold">{{ user.credentials }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="input-type-file">
+                            <label for="user-picture-upload" class="custom block placeholder-blue-300 py-2 px-6 rounded-md border border-dashed border-blue-300 font-bold relative cursor-pointer overflow-ellipsis overflow-hidden">
+                                <input type="file" id="user-picture-upload" name="picture" placeholder="Add picture..." class="invisible opacity-0 absolute">
+                                <span class="input-type-file-text font-bold text-blue-300 w-full">Change picture...</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <button type="submit" class="button button-primary mx-auto">
+                <span class="font-bold" style="min-width: 120px">Submit</span>
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,7 +1,31 @@
-<div class="analytics py-10 px-16 bg-white h-full flex flex-col" id="project">
+<div class="analytics py-10 px-16 bg-white h-full flex flex-col">
     <div class="flex flex-col flex-1">
-        <div class="flex items-center pb-2 border-b border-gray-200 mb-5">
+        <div class="flex items-center pb-2 border-b border-gray-200 mb-6">
             <h2 class="font-bold mr-10 mb-4 text-3xl">Reports & Analytics</h2>
+        </div>
+
+        <div class="layout-body flex-1">
+            <div class="analytics h-full flex flex-col">
+                <div class="flex items-stretch rounded-mb border-b border-gray-200 pb-6">
+                    {% set activeClass = 'bg-blue-500 border-blue-500 text-white' %}
+                    {% set inactiveClass = 'border-blue-300 text-blue-300' %}
+
+                    {% for segment, params in __SELF__.segments %}
+                        <a href="{{ __SELF__.analyticsUrl(segment) }}"
+                           class="{{ url().current() == __SELF__.analyticsUrl(segment) or (not __SELF__.segment and loop.first) ? activeClass : inactiveClass  }} border {{ loop.first ? 'rounded-l-md' : 'border-l-0' }} {{ loop.last ? 'rounded-r-md' }} inline-flex items-center justify-center font-semibold py-2 px-3">
+                            {{ params[1] }}
+                        </a>
+                    {% endfor %}
+                </div>
+
+                <div id="js-analytics" class="mt-6 flex-1">
+                    {% if __SELF__.segment %}
+                        {% partial '@_' ~ __SELF__.segment %}
+                    {% else %}
+                        {% partial '@_cfd' %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>

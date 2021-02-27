@@ -3,16 +3,18 @@
 use App;
 use Auth;
 use Illuminate\Support\Str;
+use Kanban\Custom\Models\Activity;
+use RainLab\User\Models\User;
 use Cms\Classes\ComponentBase;
 use Kanban\Custom\Models\Flow;
-use Kanban\Custom\Models\FlowSection;
 use Kanban\Custom\Models\Ticket;
 use Kanban\Custom\Models\Project;
+use Kanban\Custom\Models\FlowSection;
 use Kanban\Custom\Traits\MenuHelpers;
+use Kanban\Custom\Classes\Notification;
 use Kanban\Custom\Traits\RenderingHelpers;
 use Kanban\Custom\Models\FlowSectionUpdate;
 use Kanban\Custom\Traits\DynamicParameters;
-use RainLab\User\Models\User;
 
 class ProjectSingle extends ComponentBase
 {
@@ -22,7 +24,21 @@ class ProjectSingle extends ComponentBase
 
     public $project;
 
+    public $ticket;
+
     public $user;
+
+    public $activeFilter;
+
+    public $filters = [
+        ''                   => '-- Filters --',
+        'my-tickets'         => 'My tickets',
+        'high-priority'      => 'High priority',
+        'medium-priority'    => 'Medium priority',
+        'low-priority'       => 'Low priority',
+        'estimated-only'     => 'Estimated only',
+        'non-estimated-only' => 'Non-estimated only',
+    ];
 
     public function componentDetails()
     {
@@ -64,14 +80,24 @@ class ProjectSingle extends ComponentBase
             App::abort(403);
         }
 
+        /*if (get('ticket')) {
+            $this->ticket = $this->project->tickets()->where('id', get('ticket'))->first();
+        }*/
+
         session()->put('currentProject', $this->project->id);
     }
 
     public function onSaveWorkflow()
     {
-        if (!($sections = json_decode(request()->post('sections'), true))) {
-            $this->onRun();
+        $this->onRun();
 
+        if (!$this->user->can('board.workflow.edit')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
+        if (!($sections = json_decode(request()->post('sections'), true))) {
             return [
                 '#flow-definer' => $this->renderPartial('@_flow_definer', ['error' => 'Please add at least one section.'])
             ];
@@ -84,22 +110,22 @@ class ProjectSingle extends ComponentBase
 
         foreach ($sections as $key => $section) {
             $sectionModel = $flow->sections()->create([
-                'name'       => $section['title'],
-                'sort_order' => $key + 1,
-                'wip_limit'  => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null
+                'name'                  => $section['title'],
+                'sort_order'            => $key + 1,
+                'wip_limit'             => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null,
+                'mark_tickets_complete' => $section['markComplete'] ?? false,
             ]);
 
             foreach ($section['subsections'] as $subkey => $subsection) {
                 $sectionModel->subsections()->create([
-                    'flow_id'    => $flow->id,
-                    'name'       => $subsection['title'],
-                    'sort_order' => $subkey + 1,
-                    'wip_limit'  => is_numeric($subsection['wipLimit']) ? $subsection['wipLimit'] : null
+                    'flow_id'               => $flow->id,
+                    'name'                  => $subsection['title'],
+                    'sort_order'            => $subkey + 1,
+                    'wip_limit'             => is_numeric($subsection['wipLimit']) ? $subsection['wipLimit'] : null,
+                    'mark_tickets_complete' => $subsection['markComplete'] ?? false,
                 ]);
             }
         }
-
-        $this->onRun();
 
         if (post('default_template')) {
             $this->user->team()->update([
@@ -116,6 +142,12 @@ class ProjectSingle extends ComponentBase
     public function onUpdateWorkflow()
     {
         $this->onRun();
+
+        if (!$this->user->can('board.workflow.edit')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
 
         if (!($sections = json_decode(request()->post('sections'), true))) {
             return [
@@ -155,32 +187,36 @@ class ProjectSingle extends ComponentBase
                 $sectionModel = $this->project->flow->sections()->where('id', $section['id'])->first();
 
                 $sectionModel->update([
-                    'name'       => $section['title'],
-                    'sort_order' => $key + 1,
-                    'wip_limit'  => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null
+                    'name'                  => $section['title'],
+                    'sort_order'            => $key + 1,
+                    'wip_limit'             => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null,
+                    'mark_tickets_complete' => $section['markComplete'] ?? false,
                 ]);
             } else {
                 $sectionModel = $this->project->flow->sections()->create([
-                    'name'       => $section['title'],
-                    'sort_order' => $key + 1,
-                    'wip_limit'  => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null
+                    'name'                  => $section['title'],
+                    'sort_order'            => $key + 1,
+                    'wip_limit'             => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null,
+                    'mark_tickets_complete' => $section['markComplete'] ?? false,
                 ]);
             }
 
             foreach ($section['subsections'] as $subkey => $subsection) {
                 if (isset($subsection['id'])) {
                     $sectionModel->subsections()->where('id', $subsection['id'])->update([
-                        'flow_id'    => $this->project->flow->id,
-                        'name'       => $subsection['title'],
-                        'sort_order' => $subkey + 1,
-                        'wip_limit'  => is_numeric($subsection['wipLimit']) ? $subsection['wipLimit'] : null
+                        'flow_id'               => $this->project->flow->id,
+                        'name'                  => $subsection['title'],
+                        'sort_order'            => $subkey + 1,
+                        'wip_limit'             => is_numeric($subsection['wipLimit']) ? $subsection['wipLimit'] : null,
+                        'mark_tickets_complete' => $subsection['markComplete'] ?? false,
                     ]);
                 } else {
                     $sectionModel->subsections()->create([
-                        'flow_id'    => $this->project->flow->id,
-                        'name'       => $subsection['title'],
-                        'sort_order' => $subkey + 1,
-                        'wip_limit'  => is_numeric($subsection['wipLimit']) ? $subsection['wipLimit'] : null
+                        'flow_id'               => $this->project->flow->id,
+                        'name'                  => $subsection['title'],
+                        'sort_order'            => $subkey + 1,
+                        'wip_limit'             => is_numeric($subsection['wipLimit']) ? $subsection['wipLimit'] : null,
+                        'mark_tickets_complete' => $subsection['markComplete'] ?? false,
                     ]);
                 }
             }
@@ -210,6 +246,12 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
+        if (!$this->user->can('board.workflow.edit')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
         return [
             '#js-flow-definer-sections' => $this->renderPartial('@_flow_definer_sections', ['defaultTemplate' => $this->user->team->settings['default_flow_template'] ?? null]),
         ];
@@ -219,8 +261,14 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
+        if (!$this->user->can('board.workflow.edit')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
         return [
-            '#js-flow-definer-sections' => $this->renderPartial('@_flow_definer_sections'),
+            '#js-flow-definer-sections' => $this->renderPartial('@_flow_definer_sections', ['flow' => $this->project->flow]),
         ];
     }
 
@@ -228,11 +276,20 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
+        if (!$this->user->can('board.tickets.add')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
         $section = $this->project->flow->sections->where('id', post('_section_id'))->first();
 
         if (!validate_request(['title' => 'required', '_section_id' => 'required'])) {
             return [
-                '#addTicketForm' => $this->renderPartial('@__add_ticket_form', ['section' => $section, 'errors' => session()->get('errors')])
+                '#addTicketForm' => $this->renderPartial('@__add_ticket_form', [
+                    'section' => $section,
+                    'errors' => session()->get('errors')
+                ])
             ];
         }
 
@@ -243,13 +300,34 @@ class ProjectSingle extends ComponentBase
             'priority'        => post('priority'),
             'sort_order'      => $section->tickets()->count() + 1,
             'time_estimation' => $this->calculateEstimation(post('estimation')),
+            'color'           => post('color', '#fff'),
         ]);
 
         $ticket->users()->attach(Auth::getUser()->id);
 
         session()->forget('errors');
 
+        FlowSectionUpdate::create([
+            'ticket_id'       => $ticket->id,
+            'flow_section_id' => $section->id,
+            'project_id'      => $this->project->id,
+            'user_id'         => Auth::getUser()->id,
+            'description'     => 'Created ticket',
+        ]);
+
+        Activity::create([
+            'user_id'     => Auth::getUser()->id,
+            'project_id'  => $this->project->id,
+            'description' => 'Added ticket "' . $ticket->name . '"',
+            'data'        => [
+                'ticket'  => $ticket->id,
+                'section' => $section->id,
+            ]
+        ]);
+
         return [
+            'ticket' => $ticket->id,
+            'section' => $section->id,
             '#section-tickets-' . post('_section_id') => $this->renderPartial('@_tickets', ['section' => $section]),
             '#section-add-ticket' => $this->renderPartial('@_add_ticket', ['section' => $section])
         ];
@@ -259,8 +337,24 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
+        if (!$this->user->can('board.tickets.reorder')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')]),
+                '#workflow' => $this->renderPartial('@_board', ['project' => $this->project]),
+            ];
+        }
+
         $tickets = Ticket::find(post('tickets'));
         $newSection = post('sectionId');
+
+        if ($this->user->restrictions->find($newSection)) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')]),
+                '#workflow' => $this->renderPartial('@_board', ['project' => $this->project]),
+            ];
+        }
+
+        $section = FlowSection::find($newSection);
 
         $updates = [];
 
@@ -270,29 +364,62 @@ class ProjectSingle extends ComponentBase
             }
         }
 
-        $tickets->each(function ($ticket, $i) use ($newSection) {
-            $currentSection = $ticket->flow_section_id;
+        $tickets->each(function ($ticket, $i) use ($section) {
+            $currentSection = FlowSection::find($ticket->flow_section_id);
 
-            if ($currentSection != $newSection) {
+            if ($currentSection->id != $section->id) {
                 FlowSectionUpdate::create([
-                    'ticket_id' => $ticket->id,
-                    'flow_section_id' => $newSection
+                    'ticket_id'           => $ticket->id,
+                    'flow_section_id'     => $section->id,
+                    'old_flow_section_id' => $currentSection->id,
+                    'project_id'          => $this->project->id,
+                    'user_id'             => Auth::getUser()->id,
+                    'description'         => $section->mark_tickets_complete ? 'Completed ticket' : 'Moved ticket',
                 ]);
             }
 
             $ticket->update([
-                'sort_order' => array_search($ticket->id, post('tickets')),
-                'flow_section_id' => $newSection
+                'sort_order'      => array_search($ticket->id, post('tickets')),
+                'flow_section_id' => $section->id,
             ]);
+
+            if ($section->mark_tickets_complete && $ticket->id == post('ticket')) {
+                Activity::create([
+                    'user_id'     => Auth::getUser()->id,
+                    'project_id'  => $this->project->id,
+                    'description' => ($currentSection->mark_tickets_complete ? 'Uncompleted' : 'Completed') . ' ticket "' . $ticket->name . '"',
+                    'data'        => [
+                        'ticket'  => $ticket->id,
+                        'section' => $section->id,
+                    ]
+                ]);
+
+                $ticket->update([
+                    'completed_at' => now(),
+                ]);
+            } else if (!$section->mark_tickets_complete && $ticket->id == post('ticket')) {
+                $ticket->update([
+                    'completed_at' => null,
+                ]);
+            }
         });
+
+        $this->project->refresh();
 
         $updates = array_merge(array_unique($updates), [$newSection]);
         $partialUpdates = [
-            '#section-add-ticket' => $this->renderPartial('@_add_ticket', ['section' => $this->project->flow->sections()->orderBy('sort_order')->first()])
+            '#section-add-ticket'       => $this->renderPartial('@_add_ticket', [
+                'section' => $this->project->flow->sections()->orderBy('sort_order')->first()
+            ]),
+            '#ticket-' . post('ticket') => $this->renderPartial('@_ticket', [
+                'ticket' => Ticket::find(post('ticket'))
+            ]),
         ];
 
         foreach ($updates as $update) {
-            $partialUpdates['#js-section-header-' . $update] = $this->renderPartial('@_section_header', ['section' => FlowSection::find($update)]);
+            $partialUpdates['#js-section-header-' . $update] = $this->renderPartial('@_section_header', [
+                'section' => FlowSection::find($update)
+            ]);
         }
 
         return $partialUpdates;
@@ -311,19 +438,19 @@ class ProjectSingle extends ComponentBase
                         $query->where(function ($subquery) use ($searchQuery) {
                             $subquery->where('name', 'like', '%' . $searchQuery . '%')
                                 ->orWhere('description', 'like', '%' . $searchQuery . '%');
-                        })->orderBy('priority');
+                        })->unarchived()->orderBy('priority');
                     },
                     'flow.sections.subsections.tickets' => function ($query) use ($searchQuery) {
                         $query->where(function ($subquery) use ($searchQuery) {
                             $subquery->where('name', 'like', '%' . $searchQuery . '%')
                                 ->orWhere('description', 'like', '%' . $searchQuery . '%');
-                        })->orderBy('priority');
+                        })->unarchived()->orderBy('priority');
                     },
                 ]
             )->first();
 
         return [
-            '#workflow' => $this->renderPartial('@_board', ['project' => $this->project])
+            '#workflow' => $this->renderPartial('@_board', ['project' => $this->project]),
         ];
     }
 
@@ -338,62 +465,75 @@ class ProjectSingle extends ComponentBase
                 $query = $query->ticketsFilter(function ($query) {
                     $query->whereHas('users', function ($subquery) {
                         $subquery->where('id', Auth::getUser()->id);
-                    })->orderBy('priority');
+                    })->unarchived()->orderBy('priority');
                 });
                 break;
             case 'estimated-only':
                 $query->ticketsFilter(function ($query) {
-                    $query->where('time_estimation', '>', 0)->orderBy('priority');
+                    $query->where('time_estimation', '>', 0)->unarchived()->orderBy('priority');
                 });
                 break;
             case 'non-estimated-only':
                 $query->ticketsFilter(function ($query) {
-                    $query->where('time_estimation', 0)->orderBy('priority');
-                });
-                break;
-            case 'checklist-only':
-                $query->ticketsFilter(function ($query) {
-                    $query->whereHas('checklists')->orderBy('priority');
-                });
-                break;
-            case 'files-only':
-                $query->ticketsFilter(function ($query) {
-                    $query->whereHas('files')->orderBy('priority');
-                });
-                break;
-            case 'comments-only':
-                $query->ticketsFilter(function ($query) {
-                    $query->whereHas('comments')->orderBy('priority');
-                });
-                break;
-            case 'assigned-only':
-                $query->ticketsFilter(function ($query) {
-                    $query->whereHas('users')->orderBy('priority');
+                    $query->where('time_estimation', 0)->unarchived()->orderBy('priority');
                 });
                 break;
             case 'high-priority':
                 $query->ticketsFilter(function ($query) {
                     $query->where('priority', 1);
-                });
+                })->unarchived();
                 break;
             case 'medium-priority':
                 $query->ticketsFilter(function ($query) {
                     $query->where('priority', 2);
-                });
+                })->unarchived();
                 break;
             case 'low-priority':
                 $query->ticketsFilter(function ($query) {
                     $query->where('priority', 3);
-                });
+                })->unarchived();
                 break;
             default:
                 $query->ticketsFilter(function ($query) {
                     $query->orderBy('priority');
-                });
+                })->unarchived();
         }
 
+        $this->activeFilter = post('filter');
+
         return [
-            '#workflow' => $this->renderPartial('@_board', ['project' => $query->first()])
+            '#workflow' => $this->renderPartial('@_board', ['project' => $query->first()]),
+            '#js-project-filters' => $this->renderPartial('@_filters'),
+        ];
+    }
+
+    public function onFilterTicketsByTag()
+    {
+        $this->user = Auth::getUser();
+
+        $query = Project::where('id', $this->dynamicParam('project'))->ticketsFilter(function ($query) {
+                $query->whereHas('tags', function ($subquery) {
+                    $subquery->where('id', post('tag'));
+                })->unarchived()->orderBy('priority');
+        });
+
+        $this->activeFilter = post('tag');
+
+        return [
+            '#workflow' => $this->renderPartial('@_board', ['project' => $query->first()]),
+            '#js-project-filters' => $this->renderPartial('@_filters'),
+        ];
+    }
+
+    public function onResetFilters()
+    {
+        $this->user = Auth::getUser();
+
+        $this->onRun();
+
+        return [
+            '#workflow' => $this->renderPartial('@_board', ['project' => $this->project]),
+            '#js-project-filters' => $this->renderPartial('@_filters'),
         ];
     }
 
@@ -404,6 +544,12 @@ class ProjectSingle extends ComponentBase
         }
 
         $this->onRun();
+
+        if (!$this->user->can('board.users.manage')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
 
         $this->project->users()->attach($user);
 
@@ -436,6 +582,12 @@ class ProjectSingle extends ComponentBase
 
         $this->onRun();
 
+        if (!$this->user->can('board.users.manage')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
         $this->project->tickets->each(function ($ticket) use ($user) {
             $ticket->users()->detach($user);
         });
@@ -451,11 +603,57 @@ class ProjectSingle extends ComponentBase
         ];
     }
 
+    public function onAddSection()
+    {
+        if (!($section = post('section_title'))) {
+            return;
+        }
+
+        $this->onRun();
+
+        if (!$this->user->can('board.workflow.edit')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
+        $markComplete = filter_var(post('markComplete'), FILTER_VALIDATE_BOOLEAN);
+
+        if ($markComplete) {
+            $this->project->flow->sections()->update([
+                'mark_tickets_complete' => null,
+            ]);
+        }
+
+        $this->project->flow->sections()->create([
+            'name'                  => $section,
+            'wip_limit'             => post('wip_limit') ?: null,
+            'mark_tickets_complete' => $markComplete ?: null,
+        ]);
+
+        $this->project->refresh();
+
+        return [
+            '#workflow' => $this->renderPartial('@_board', ['project' => $this->project]),
+            '#js-flow-update' => $this->renderPartial('@_flow_update', ['project' => $this->project]),
+        ];
+    }
+
+    /*public function onToggleTicket()
+    {
+        $this->onRun();
+
+        $this->ticket = $this->project->tickets()->where('id', post('ticket'))->first();
+
+        return [
+            '#js-ticket-popup' => $this->renderPartial('ticketsingle/_ticket', ['ticket' => $this->ticket])
+        ];
+    }*/
+
     public function getTicketPageOptions()
     {
         return ['' => '---'] + $this->getAllPages();
     }
-
 
     protected function calculateEstimation($estimation)
     {

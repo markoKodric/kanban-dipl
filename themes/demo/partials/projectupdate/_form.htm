@@ -1,0 +1,116 @@
+{% set project = __SELF__.project %}
+
+<div class="w-full">
+    <div class="flex items-start justify-between">
+        <div>
+            <h3 class="text-xl font-bold">{{ project.title }}</h3>
+            <p class="text-sm text-gray-500 font-semibold">Created: {{ project.created_at.format('d.m.Y') }}</p>
+        </div>
+
+        <form class="flex items-center">
+            {% if __SELF__.project.is_archived %}
+                <button data-request="{{ __SELF__ }}::onRestoreProject" class="button button-outline color-custom text-green-500 border-green-500 hover:shadow-green mr-4">
+                    Restore project
+                </button>
+            {% else %}
+                <button data-request="{{ __SELF__ }}::onArchiveProject" class="button button-outline color-custom text-red-500 border-red-500 hover:shadow-red mr-4">
+                    Move to archive
+                </button>
+            {% endif %}
+
+            <button data-request="{{ __SELF__ }}::onDeleteProject" class="button button-outline color-custom bg-red-500 text-white border-red-500 hover:shadow-red">
+                Delete project
+            </button>
+        </form>
+    </div>
+
+    <form data-request="{{ __SELF__ }}::onUpdateProject" data-request-files class="mt-8">
+        <div class="flex w-full flex-wrap space-x-6">
+            <div class="flex flex-col flex-1">
+                <label for="title_update" class="font-semibold">Project title <span class="text-red-500">*</span></label>
+                <input type="text" class="w-full custom not-dynamic border px-3 focus:shadow-blue {{ formErrors.get('title') ? 'border-red-500' }}" id="title_update" name="title" placeholder="Project title..." value="{{ project.title }}">
+
+                {% if formErrors.get('title') %}
+                    <div class="text-red-500 text-sm font-semibold mt-1">{{ formErrors.get('title').0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col flex-1">
+                <label for="description_update" class="font-semibold">Project description <span class="text-red-500">*</span></label>
+                <textarea name="description" class="custom not-dynamic border px-3 {{ formErrors.get('description') ? 'border-red-500' }}" id="description_update" rows="1" placeholder="Project description...">{{ project.description }}</textarea>
+
+                {% if formErrors.get('description') %}
+                    <div class="text-red-500 text-sm font-semibold mt-1">{{ formErrors.get('description').0 }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="flex w-full flex-wrap space-x-6">
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="start_date_update" class="font-semibold">Start date</label>
+                <input type="date" class="form-control" id="start_date_update" name="start_date" placeholder="Start date..." value="{{ project.start_date ? project.start_date.toDateString() : '' }}">
+            </div>
+
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="due_date_update" class="font-semibold">Due date</label>
+                <input type="date" class="form-control" id="due_date_update" name="due_date" placeholder="Due date..." value="{{ project.due_date ? project.due_date.toDateString() : '' }}">
+            </div>
+        </div>
+
+        <div class="flex w-full flex-wrap space-x-6">
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="client_name" class="font-semibold">Client</label>
+                <input type="text" class="w-full custom not-dynamic border px-3 focus:shadow-blue" id="client_name" name="client_name" placeholder="Client name..." value="{{ project.client_name }}">
+            </div>
+
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="client_email" class="font-semibold">Client email</label>
+                <input type="text" class="w-full custom not-dynamic border px-3 focus:shadow-blue" id="client_email" name="client_email" placeholder="Client email..." value="{{ project.client_email }}">
+            </div>
+        </div>
+
+        <div class="flex w-full flex-wrap space-x-6">
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="client_phone" class="font-semibold">Client phone</label>
+                <input type="text" class="w-full custom not-dynamic border px-3 focus:shadow-blue" id="client_phone" name="client_phone" placeholder="Client phone..." value="{{ project.client_phone }}">
+            </div>
+
+            <div class="flex flex-1 flex-col mt-4">
+                <label for="client_company" class="font-semibold">Client company</label>
+                <input type="text" class="w-full custom not-dynamic border px-3 focus:shadow-blue" id="client_company" name="client_company" placeholder="Client company..." value="{{ project.client_company }}">
+            </div>
+        </div>
+
+        <div class="flex w-full flex-wrap items-center space-x-6">
+            <div class="flex flex-1 flex-col mt-4">
+                <div class="form-item flex flex-wrap">
+                    <label for="ticket-file-upload" class="font-semibold w-full mb-1">Project picture</label>
+                    <div class="flex items-center">
+                        <div class="mr-4">
+                            <img width="40" src="{{ project.getPicture()|resize(40) }}">
+                        </div>
+                        <div class="input-type-file">
+                            <label for="project-picture-upload" class="custom block placeholder-blue-300 py-2 px-6 rounded-md border border-dashed border-blue-300 font-bold relative cursor-pointer overflow-ellipsis overflow-hidden">
+                                <input type="file" id="project-picture-upload" name="picture" placeholder="Add file..." class="invisible opacity-0 absolute">
+                                <span class="input-type-file-text font-bold text-blue-300 w-full">Change picture...</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-1 flex-col mt-4">
+                <label class="checkbox flex items-center">
+                    <input type="checkbox" name="is_default" class="w-7 h-7 mr-2" {{ project.is_default ? 'checked' }}>
+                    <span class="font-semibold">Set as default project</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <button type="submit" class="button button-primary mx-auto">
+                <span class="font-bold">Submit</span>
+            </button>
+        </div>
+    </form>
+</div>

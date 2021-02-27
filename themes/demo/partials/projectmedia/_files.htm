@@ -1,0 +1,19 @@
+{% set files = files ?: __SELF__.files %}
+
+{% for file in files %}
+    <a href="#"
+       data-request="{{ __SELF__ }}::onSelectFile"
+       onclick="
+           $(this).toggleClass('bg-blue-500 text-white');
+           $(this).siblings().removeClass('bg-blue-500 text-white');
+           $(this).siblings().find('.file-type').removeClass('text-white').addClass('text-blue-300');
+           $(this).find('.file-type').addClass('text-white').removeClass('text-blue-300');
+       "
+       data-request-data="file: {{ file.id }}"
+       class="flex w-full py-3 px-6 {{ loop.index % 2 == 1 ? 'bg-blue-50' }} items-center text-sm {{ file.id == __SELF__.selectedFile.id ? 'bg-blue-500 text-white' }}">
+        <span class="file-type font-bold {{ file.id == __SELF__.selectedFile.id ? 'text-white' : 'text-blue-300' }} w-16">{{ file.extension|upper }}</span>
+        <span class="font-semibold flex-1">{{ file.file_name }}</span>
+        <span class="font-semibold w-32">{{ format_bytes(file.file_size) }}</span>
+        <span class="font-semibold w-32">{{ file.updated_at.format('M. d, Y') }}</span>
+    </a>
+{% endfor %}

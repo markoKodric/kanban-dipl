@@ -1,0 +1,15 @@
+{% if user().can('ticket.edit') %}
+    <input type="text"
+           style="min-width: 10ch"
+           data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdateTicketTitle"
+           data-request-blur
+           data-request-success="
+               ticketUpdate('#js-ticket-name', 'ticketsingle/_ticket_name', {{ ticket.id }});
+               ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+           "
+           class="custom border-0 font-extrabold"
+           name="ticket_title"
+           value="{{ ticket.name }}">
+{% else %}
+    <span id="socket-name" class="block mr-6">{{ ticket.name }}</span>
+{% endif %}

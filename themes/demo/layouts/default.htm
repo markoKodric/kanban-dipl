@@ -36,25 +36,32 @@ function onStart()
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="generator" content="OctoberCMS">
         <link rel="icon" type="image/png" href="{{ 'assets/images/october.png'|theme }}">
+
+        <!-- Styles -->
         <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+
         {% if debugEnabled() %}
             <link rel="stylesheet" href="{{ 'assets/styles/css/custom.css' | theme }}">
         {% else %}
             <link rel="stylesheet" href="{{ 'assets/styles/css/custom.min.css' | theme }}">
         {% endif %}
+
         {% styles %}
     </head>
 
     <body>
-        <div id="app" class="h-screen max-h-screen overflow-hidden {{ user() ? 'grid' }}">
+        <div id="app"
+             data-tid="{{ user() ? user().team.id }}"
+             data-uid="{{ user() ? user().id }}"
+             class="h-screen max-h-screen overflow-hidden {{ user() ? 'grid' }}">
             {% if user() %}
-            <nav class="sidebar">
-                {% partial 'layout/sidebar'
-                    items=mainMenu.menuItems()
-                    secondaryItems=secondaryMenu.menuItems()
-                    projectList=projectList
-                    project=projectList.currentProject %}
-            </nav>
+                <nav class="sidebar">
+                    {% partial 'layout/sidebar'
+                        items=mainMenu.menuItems()
+                        secondaryItems=secondaryMenu.menuItems()
+                        projectList=projectList
+                        project=projectList.currentProject %}
+                </nav>
             {% endif %}
 
             <div class="content">
@@ -62,18 +69,34 @@ function onStart()
             </div>
         </div>
 
+        <div id="js-notifications" class="fixed bottom-4 right-8" style="z-index: 500;"></div>
+
         <div class="fixed bottom-2 right-2 text-gray-500 text-xs">
             v1.0.0
         </div>
 
         <!-- Scripts -->
+        {% set socketIoScript = 'http://localhost:8444/socket.io/socket.io.js' %}
+
+        {% if ping(socketIoScript) %}
+            <script src="{{ socketIoScript }}"></script>
+        {% endif %}
+
         <script src="{{ [
             'assets/vendor/node_modules/jquery/dist/jquery.js',
             '@framework',
             '@framework.extras',
             'assets/scripts/jquery-ui.js',
             'assets/scripts/app.js'
-        ]|theme }}">
+        ]|theme }}.js">
         </script>
+
+        {% if charts() %}
+            <script src="{{ 'assets/vendor/node_modules/highcharts/highcharts.js'|theme }}"></script>
+            <script src="{{ 'assets/vendor/node_modules/highcharts/highcharts-more.js'|theme }}"></script>
+            <script src="{{ 'assets/vendor/node_modules/highcharts/modules/marker-clusters.js'|theme }}"></script>
+            <script src="{{ 'assets/vendor/node_modules/highcharts/modules/exporting.js'|theme }}"></script>
+            <script src="{{ 'assets/vendor/node_modules/highcharts/modules/broken-axis.js'|theme }}"></script>
+        {% endif %}
     </body>
 </html>

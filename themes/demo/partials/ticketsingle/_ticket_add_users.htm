@@ -1,0 +1,15 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+{% for user in ticket.excludedUsers.sortBy('name') %}
+    <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketAddUser"
+            data-request-data="user: {{ user.id }}"
+            data-request-success="
+                ticketUpdate('#js-ticket-users', 'ticketsingle/_ticket_users', {{ ticket.id }});
+                ticketUpdate('#js-ticket-add-users', 'ticketsingle/_ticket_add_users', {{ ticket.id }});
+                ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
+            "
+            class="add-user px-4 py-2 {{ not loop.last ? 'border-b border-gray-200' }} flex items-center w-full">
+        <img class="rounded-full mr-3 bg-white" width="32" src="{{ user.picture|resize(32) }}" alt="{{ user.name }}">
+        <span>{{ user.name }}</span>
+    </button>
+{% endfor %}

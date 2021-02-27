@@ -1,0 +1,5 @@
+{% set ticket = ticket ?: __SELF__.ticket %}
+
+<div id="ticket-modal">
+    {% partial 'ticketmodal/_ticket' ticket=ticket %}
+</div>

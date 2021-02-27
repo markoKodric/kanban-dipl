@@ -1,0 +1,86 @@
+<form data-request="{{ __SELF__ }}::onFilter" class="flex flex-col flex-1">
+    <div class="flex items-center pb-2 border-b border-gray-200 mb-5">
+        <h2 class="font-bold mr-10 mb-4 text-3xl">Activity log</h2>
+
+        <div class="flex items-center flex-1 mb-4">
+            <div class="-ml-3">
+                <button class="button button-icon" data-request="{{ __SELF__ }}::onRefresh" data-tooltip="Refresh">
+                    <i class="la la-refresh text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="search-wrapper relative cursor-pointer ml-6 mr-10">
+                <input type="text"
+                       data-track-input="250"
+                       name="filters[search]"
+                       oninput="$(this.form).request()"
+                       placeholder="Search..."
+                       class="w-full pr-10">
+                <i class="la la-search is-active absolute right-2 top-1/2 text-2xl text-gray-500"></i>
+                <i class="la la-spinner absolute right-2 top-1/2 text-2xl text-gray-500 invisible"></i>
+                <i class="la la-times absolute right-2 top-1/2 text-2xl text-gray-500 invisible"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="layout-body flex-1">
+        <div class="h-full flex flex-col">
+            <div class="flex items-center w-full">
+                <div class="select mr-8">
+                    <label for="selectUser" class="font-semibold mr-2">User:</label>
+                    <select name="filters[user]" id="selectUser" onchange="$(this.form).request()">
+                        <option value="">---</option>
+                        {% for user in __SELF__.users %}
+                            <option value="{{ user.id }}">{{ user.name }} {{ user.surname }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <i class="la la-angle-down"></i>
+                </div>
+
+                <div class="select mr-8">
+                    <label for="selectProject" class="font-semibold mr-2">Project:</label>
+                    <select name="filters[project]" id="selectProject" onchange="$(this.form).request()">
+                        <option value="">---</option>
+                        {% for project in __SELF__.projects %}
+                            <option value="{{ project.id }}">{{ project.title }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <i class="la la-angle-down"></i>
+                </div>
+
+                <div class="mr-8">
+                    <label for="selectStart" class="font-semibold mr-2">From:</label>
+                    <input id="selectStart"
+                           type="date"
+                           value="{{ session().activity_log_filters.start_date }}"
+                           name="filters[start_date]"
+                           onchange="$(this.form).request()">
+                </div>
+
+                <div class="mr-8">
+                    <label for="selectEnd" class="font-semibold mr-2">To:</label>
+                    <input id="selectEnd"
+                           type="date"
+                           value="{{ session().activity_log_filters.end_date }}"
+                           name="filters[end_date]"
+                           onchange="$(this.form).request()">
+                </div>
+            </div>
+
+            <div class="mt-5 flex-1 w-full">
+                <div class="flex w-full py-2.5 px-6 bg-indigo-400 text-white items-center">
+                    <span class="font-semibold w-32">Date</span>
+                    <span class="font-semibold w-40">User</span>
+                    <span class="font-semibold w-40">Project</span>
+                    <span class="font-semibold flex-1">Description</span>
+                </div>
+
+                <div id="js-activities" class="flex-1 max-h-lg overflow-y-auto border-r border-gray-300">
+                    {% partial '@_activities' activities=__SELF__.activities %}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

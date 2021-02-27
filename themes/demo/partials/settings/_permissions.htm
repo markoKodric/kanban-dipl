@@ -14,7 +14,7 @@
             <div class="select mr-4">
                 <label for="selectProject" class="font-semibold mr-2">Select project:</label>
                 <select name="permissions_project" id="selectProject" data-request="{{ __SELF__ }}::onPermissionsChangeProject" data-track-input>
-                    <option value="">-- Choose --</option>
+                    <option value="">---</option>
                     {% for project in __SELF__.projects %}
                         <option {{ __SELF__.permissionsProject and __SELF__.permissionsProject.id == project.id ? 'selected' }} value="{{ project.id }}">{{ project.title }}</option>
                     {% endfor %}

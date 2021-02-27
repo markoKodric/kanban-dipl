@@ -1,0 +1,12 @@
+<a href="{{ 'profile'|staticPage }}" class="flex items-center py-2 px-3 bg-white shadow-sm rounded-md">
+    {% if user().picture %}
+        <img width="32" class="rounded-full mr-4 bg-white" src="{{ user().picture }}" alt="{{ user().credentials }}">
+    {% else %}
+        <div class="w-8 h-8 rounded-full mr-4 flex justify-center items-center bg-gray-300">
+            <span class="text-sm font-bold">{{ user().credentials }}</span>
+        </div>
+    {% endif %}
+    <div>
+        <p class="font-semibold">{{ user().name }} {{ user().surname }}</p>
+    </div>
+</a>

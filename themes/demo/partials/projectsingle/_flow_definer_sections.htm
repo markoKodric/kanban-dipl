@@ -11,9 +11,19 @@
                             <input type="text" class="custom" value="{{ subsection.name }}">
                         </div>
                         <div class="section-body">
-                            <div class="wip-limit flex items-center justify-center">
-                                <span class="whitespace-nowrap mr-2">WIP Limit:</span>
-                                <input type="text" value="{{ subsection.wip_limit ? subsection.wip_limit : '-' }}" class="custom">
+                            <div class="wip-limit flex items-center justify-center flex-wrap">
+                                <div class="flex items-center">
+                                    <span class="whitespace-nowrap mr-2">WIP Limit:</span>
+                                    <input type="text" value="{{ subsection.wip_limit ? subsection.wip_limit : '-' }}" class="custom">
+                                </div>
+
+                                <label class="w-full flex items-start text-left mt-3" for="markComplete-{{ subsection.id }}">
+                                    <input type="radio"
+                                           name="markComplete"
+                                           id="markComplete-{{ subsection.id }}"
+                                           class="mr-2 w-5 h-5 min-w-5" {{ subsection.mark_tickets_complete ? 'checked' }}>
+                                    <span>Mark tickets complete</span>
+                                </label>
                             </div>
 
                             <div class="section-actions">
@@ -28,9 +38,19 @@
                 {% endfor %}
 
                 {% if section.subsections.isEmpty() %}
-                    <div class="wip-limit flex items-center justify-center">
-                        <span class="whitespace-nowrap mr-2">WIP Limit:</span>
-                        <input type="text" value="{{ section.wip_limit ? section.wip_limit : '-' }}" class="custom">
+                    <div class="wip-limit flex items-center justify-center flex-wrap">
+                        <div class="flex items-center">
+                            <span class="whitespace-nowrap mr-2">WIP Limit:</span>
+                            <input type="text" value="{{ section.wip_limit ? section.wip_limit : '-' }}" class="custom">
+                        </div>
+
+                        <label class="w-full flex items-start text-left mt-3" for="markComplete-{{ section.id }}">
+                            <input type="radio"
+                                   name="markComplete"
+                                   id="markComplete-{{ section.id }}"
+                                   class="mr-2 w-5 h-5 min-w-5" {{ section.mark_tickets_complete ? 'checked' }}>
+                            <span>Mark tickets complete</span>
+                        </label>
                     </div>
                 {% endif %}
 
@@ -57,9 +77,20 @@
                             <input type="text" class="custom" value="{{ subsection.title }}">
                         </div>
                         <div class="section-body">
-                            <div class="wip-limit flex items-center justify-center">
-                                <span class="whitespace-nowrap mr-2">WIP Limit:</span>
-                                <input type="text" value="{{ subsection.wipLimit ? subsection.wipLimit : '-' }}" class="custom">
+                            <div class="wip-limit flex items-center justify-center flex-wrap">
+                                <div class="flex items-center">
+                                    <span class="whitespace-nowrap mr-2">WIP Limit:</span>
+                                    <input type="text" value="{{ subsection.wipLimit ? subsection.wipLimit : '-' }}" class="custom">
+                                </div>
+
+                                {% set radioId = str_random() %}
+                                <label class="w-full flex items-start text-left mt-3" for="markComplete-{{ radioId }}">
+                                    <input type="radio"
+                                           name="markComplete"
+                                           id="markComplete-{{ radioId }}"
+                                           class="mr-2 w-5 h-5 min-w-5" {{ subsection.mark_tickets_complete ? 'checked' }}>
+                                    <span>Mark tickets complete</span>
+                                </label>
                             </div>
 
                             <div class="section-actions">
@@ -74,9 +105,20 @@
                 {% endfor %}
 
                 {% if section.subsections|length == 0 %}
-                    <div class="wip-limit flex items-center justify-center">
-                        <span class="whitespace-nowrap mr-2">WIP Limit:</span>
-                        <input type="text" value="{{ section.wipLimit ? section.wipLimit : '-' }}" class="custom">
+                    <div class="wip-limit flex items-center justify-center flex-wrap">
+                        <div class="flex items-center">
+                            <span class="whitespace-nowrap mr-2">WIP Limit:</span>
+                            <input type="text" value="{{ section.wipLimit ? section.wipLimit : '-' }}" class="custom">
+                        </div>
+
+                        {% set radioId = str_random() %}
+                        <label class="w-full flex items-start text-left mt-3" for="markComplete-{{ radioId }}">
+                            <input type="radio"
+                                   name="markComplete"
+                                   id="markComplete-{{ radioId }}"
+                                   class="mr-2 w-5 h-5 min-w-5" {{ section.mark_tickets_complete ? 'checked' }}>
+                            <span>Mark tickets complete</span>
+                        </label>
                     </div>
                 {% endif %}
 
