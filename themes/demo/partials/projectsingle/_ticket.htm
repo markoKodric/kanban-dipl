@@ -7,11 +7,17 @@
     <div class="ml-auto flex items-center">
         {% for user in ticket.users.sortBy('name') %}
             <div class="member rounded-full cursor-pointer shadow-md relative w-7 h-7 flex items-center justify-center -ml-2 hover:z-6">
-                <img src="{{ user.getPicture()|resize(28) }}" class="rounded-full relative z-5 bg-white w-full h-full object-fit-cover" width="28" alt="{{ user.credentials }}">
-
+                {% if user.picture %}
+                    <img src="{{ user.picture|resize(28) }}" class="rounded-full relative z-5 bg-white w-full h-full object-fit-cover" width="28" alt="{{ user.credentials }}">
+                {% else %}
+                    <div class="w-7 h-7 rounded-full flex justify-center items-center bg-gray-300">
+                        <span class="font-bold">{{ user.credentials }}</span>
+                    </div>
+                {% endif %}
+                
                 <span class="block absolute top-full right-0 z-20 opacity-0 scale-0 invisible transition duration-200 whitespace-nowrap bg-gray-100 font-bold rounded-md text-sm px-2 py-1">
-                        {{ user.name }}
-                    </span>
+                    {{ user.name }}
+                </span>
             </div>
         {% endfor %}
     </div>
