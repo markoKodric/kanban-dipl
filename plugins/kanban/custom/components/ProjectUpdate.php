@@ -2,6 +2,7 @@
 
 use App;
 use Auth;
+use System\Models\File;
 use Illuminate\Support\Str;
 use RainLab\User\Models\User;
 use Cms\Classes\ComponentBase;
