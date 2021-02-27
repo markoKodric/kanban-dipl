@@ -414,7 +414,7 @@
                 let $sectionId = $(ui.item).parents('.flow-section').attr('data-section-id');
                 let $sectionTickets = $(ui.item).parents('.section-tickets-inner').sortable('toArray', {attribute: 'data-id'});
 
-                if (JSON.stringify($sectionTickets) === JSON.stringify(defaultSectionTickets)) return;
+                if (startCol && stopCol && startCol.attr('id') === stopCol.attr('id') && JSON.stringify($sectionTickets) === JSON.stringify(defaultSectionTickets)) return;
 
                 $(ui.item).parents('.flow-section').first().request('onReorderTickets', {
                     data: {
