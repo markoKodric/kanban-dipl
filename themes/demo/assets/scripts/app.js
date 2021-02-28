@@ -397,6 +397,8 @@
             tolerance: 'pointer',
             cursor: 'move',
             stop: function(event, ui) {
+                $(ui.item).unbind('mousemove')
+
                 stopCol = $(ui.item).parent();
 
                 if (startCol && startCol.length && parseInt(startCol.attr('data-wip-limit')) > 0 && startCol.children().length >= parseInt(startCol.attr('data-wip-limit'))) {
@@ -441,6 +443,15 @@
             start: function( event, ui ) {
                 $(ui.item).off('click');
 
+                /*$(ui.item).on('mousemove', function (e) {
+                    if (e.pageX > $('#workflow').offset().left + $('#workflow').width() - $(this).width() && $('#workflow').scrollLeft() < $('#workflow')[0].scrollWidth) {
+                        $('#workflow').scrollLeft($('#workflow').scrollLeft() + 3);
+                    }
+                    if (e.pageX <= $('#workflow').offset().left + $(this).width()) {
+                        $('#workflow').scrollLeft($('#workflow').scrollLeft() - 3);
+                    }
+                })*/
+
                 startCol = $(ui.item).parent();
 
                 defaultSectionTickets = $(ui.item).parents('.section-tickets-inner').sortable('toArray', {attribute: 'data-id'});
@@ -450,8 +461,10 @@
                     'height': $(ui.item).css('height'),
                     'margin-top': 0
                 });
-            }
+            },
         }).disableSelection();
+
+
     }
 
     function initCFD() {
