@@ -6,6 +6,7 @@
               rows="{{ max((ticket.description|length ? 2 : 1), min((ticket.description|length) // 64, 6)) }}"
               data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdateTicketDescription"
               data-request-blur
+              placeholder="Add a description..."
               data-request-success="
                   ticketUpdate('#js-description', 'ticketsingle/_ticket_description', {{ ticket.id }});
                   ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
