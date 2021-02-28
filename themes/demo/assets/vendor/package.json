@@ -4,6 +4,7 @@
   "description": "Default frontend packages",
   "author": "",
   "dependencies": {
+    "@tailwindcss/typography": "^0.4.0",
     "aos": "^2.3.4",
     "cssnano": "^4.1.10",
     "forever": "^3.0.4",

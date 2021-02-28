@@ -1,11 +1,11 @@
 <?php namespace Kanban\Custom\Models;
 
 use Model;
+use System\Models\File;
 use Illuminate\Support\Str;
 use RainLab\User\Models\User;
 use RainLab\Pages\Classes\Page;
 use October\Rain\Database\Traits\Validation;
-use System\Models\File;
 
 class Project extends Model
 {
@@ -27,6 +27,7 @@ class Project extends Model
         'tickets'    => Ticket::class,
         'tags'       => Tag::class,
         'activities' => Activity::class,
+        'documents'  => Document::class,
     ];
 
     public $belongsToMany = [
@@ -43,7 +44,7 @@ class Project extends Model
 
     public $dates = ['start_date', 'due_date'];
 
-    public $fillable = ['is_archived'];
+    public $fillable = ['is_archived', 'docs'];
 
     public function url()
     {

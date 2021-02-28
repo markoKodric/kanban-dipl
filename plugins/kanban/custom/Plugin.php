@@ -2,24 +2,25 @@
 
 use App;
 use Auth;
-use Cms\Classes\Controller;
 use Event;
 use Illuminate\Support\Str;
-use Kanban\Custom\Components\TicketModal;
+use Cms\Classes\Controller;
 use System\Classes\PluginBase;
 use Kanban\Custom\Models\Project;
 use Kanban\Custom\Components\Login;
+use RainLab\Pages\Controllers\Index;
 use Kanban\Custom\Components\Archive;
 use Kanban\Custom\Components\Settings;
 use Kanban\Custom\Components\Analytics;
 use Kanban\Custom\Bootstrap\ExtendUser;
+use Kanban\Custom\Components\TicketModal;
 use Kanban\Custom\Components\ActivityLog;
 use Kanban\Custom\Components\UserProfile;
 use Kanban\Custom\Components\ProjectList;
 use Kanban\Custom\Components\ProjectMedia;
 use Kanban\Custom\Components\TicketSingle;
 use Kanban\Custom\Components\ProjectSingle;
-use Kanban\Custom\Components\ProjectUpdate;
+use Kanban\Custom\Components\ProjectInformation;
 use Kanban\Custom\Bootstrap\InitSocketFunctions;
 use Kanban\Custom\Bootstrap\InitDynamicParameters;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -36,6 +37,20 @@ class Plugin extends PluginBase
         (new ExtendUser())->init();
         (new InitSocketFunctions())->init();
         (new InitDynamicParameters())->init();
+
+        Event::listen('backend.form.extendFields', function ($widget) {
+            if (!$widget->getController() instanceof Index) {
+                return;
+            }
+
+            $widget->addTabFields([
+                'viewBag[wysiwyg]' => [
+                    'tab' => 'Custom',
+                    'label' => 'Enable rich editor',
+                    'type' => 'checkbox'
+                ]
+            ]);
+        });
 
         App::error(function(HttpException $exception) {
             if ($exception->getStatusCode() == 403) {
@@ -71,18 +86,18 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            Login::class         => 'login',
-            Archive::class       => 'archive',
-            Settings::class      => 'settings',
-            Analytics::class     => 'analytics',
-            ActivityLog::class   => 'activityLog',
-            ProjectList::class   => 'projectList',
-            UserProfile::class   => 'userProfile',
-            TicketModal::class   => 'ticketModal',
-            TicketSingle::class  => 'ticketSingle',
-            ProjectMedia::class  => 'projectMedia',
-            ProjectSingle::class => 'projectSingle',
-            ProjectUpdate::class => 'projectUpdate',
+            Login::class              => 'login',
+            Archive::class            => 'archive',
+            Settings::class           => 'settings',
+            Analytics::class          => 'analytics',
+            ActivityLog::class        => 'activityLog',
+            ProjectList::class        => 'projectList',
+            UserProfile::class        => 'userProfile',
+            TicketModal::class        => 'ticketModal',
+            TicketSingle::class       => 'ticketSingle',
+            ProjectMedia::class       => 'projectMedia',
+            ProjectSingle::class      => 'projectSingle',
+            ProjectInformation::class => 'projectInformation',
         ];
     }
 

@@ -510,3 +510,7 @@ form[id^="commentReply"].is-active {
 .error-popup {
   animation: .4s scaleIn forwards;
 }
+
+#js-add-document.is-active {
+  @apply opacity-100 visible scale-100;
+}

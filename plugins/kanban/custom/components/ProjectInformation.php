@@ -12,21 +12,32 @@ use Kanban\Custom\Traits\MenuHelpers;
 use Kanban\Custom\Traits\RenderingHelpers;
 use Kanban\Custom\Traits\DynamicParameters;
 
-class ProjectUpdate extends ComponentBase
+class ProjectInformation extends ComponentBase
 {
     use RenderingHelpers, MenuHelpers, DynamicParameters;
 
-    protected $parameters = ['project'];
+    protected $parameters = ['project', 'segment?'];
 
     public $project;
 
     public $user;
 
+    public $segment;
+
+    public $segments = [
+        'documentation' => ['documentation', 'Documentation', 'la la-book'],
+        'update'  => ['update', 'Update information', 'la la-pencil-alt'],
+    ];
+
+    public $editMode = false;
+
+    public $document;
+
     public function componentDetails()
     {
         return [
-            'name'        => 'Kanban - Project update',
-            'description' => 'Display project update form on page.'
+            'name'        => 'Kanban - Project information',
+            'description' => 'Display project information on page.'
         ];
     }
 
@@ -38,6 +49,8 @@ class ProjectUpdate extends ComponentBase
     public function onRun()
     {
         $this->user = User::where('id', Auth::getUser()->id)->with('team')->first();
+
+        $this->segment = $this->dynamicParam('segment');
 
         if ($projectId = $this->dynamicParam('project')) {
             $this->project = Project::find($projectId);
@@ -58,6 +71,13 @@ class ProjectUpdate extends ComponentBase
         }
 
         session()->put('currentProject', $this->project->id);
+
+        $this->initData();
+    }
+
+    public function infoUrl($segment)
+    {
+        return Page::url('project-information') . '/' . $this->project->id . '/' . $this->segments[$segment][0];
     }
 
     public function onUpdateProject()
@@ -71,7 +91,7 @@ class ProjectUpdate extends ComponentBase
             $this->onRun();
 
             return [
-                '#js-project' => $this->renderPartial('@_form', ['formErrors' => session()->get('errors')])
+                '#js-project' => $this->renderPartial('@_update', ['formErrors' => session()->get('errors')])
             ];
         }
 
@@ -166,5 +186,89 @@ class ProjectUpdate extends ComponentBase
         session()->forget('currentProject');
 
         return redirect()->to('/');
+    }
+
+    public function onCreateDocument()
+    {
+        $this->onRun();
+
+        $this->document = $this->project->documents()->create([
+            'title' => post('title'),
+            'creator_id' => Auth::getUser()->id,
+            'last_user_id' => Auth::getUser()->id,
+        ]);
+
+        $this->project->refresh();
+
+        $this->editMode = true;
+
+        return [
+            '#js-information' => $this->renderPartial('@_documentation')
+        ];
+    }
+
+    public function onSaveDocument()
+    {
+        $this->onRun();
+
+        $this->document->update([
+            'content' => post('content'),
+            'last_user_id' => Auth::getUser()->id,
+        ]);
+    }
+
+    public function onChangeDocument()
+    {
+        session()->put('documentation_document', post('document'));
+
+        $this->onRun();
+
+        return [
+            '#js-document' => $this->renderPartial('@__document')
+        ];
+    }
+
+    public function onDeleteDocument()
+    {
+        $this->onRun();
+
+        session()->forget('documentation_document');
+
+        $this->document->delete();
+
+        $this->onRun();
+
+        return [
+            '#js-information' => $this->renderPartial('@_documentation')
+        ];
+    }
+
+    public function onStartEditMode()
+    {
+        $this->onRun();
+
+        $this->editMode = true;
+
+        return [
+            '#js-document' => $this->renderPartial('@__document')
+        ];
+    }
+
+    public function onStopEditMode()
+    {
+        $this->onRun();
+
+        $this->editMode = false;
+
+        return [
+            '#js-document' => $this->renderPartial('@__document')
+        ];
+    }
+
+    protected function initData()
+    {
+        if (!$this->segment || $this->segment == 'documentation') {
+            $this->document = $this->project->documents()->where('id', session()->get('documentation_document'))->first() ?? $this->project->documents->first();
+        }
     }
 }

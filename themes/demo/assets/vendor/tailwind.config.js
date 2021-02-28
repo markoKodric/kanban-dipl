@@ -8,6 +8,15 @@ module.exports = {
             lg: '1024px',
             xl: '1280px',
         },
+        extend: {
+            typography: {
+                DEFAULT: {
+                    css: {
+                        maxWidth: '100%',
+                    },
+                },
+            }
+        },
         colors: {
             transparent: 'transparent',
 
@@ -961,5 +970,8 @@ module.exports = {
         zIndex: ['responsive', 'focus-within', 'focus'],
     },
     corePlugins: {},
-    plugins: [],
+    plugins: [
+        require('@tailwindcss/typography'),
+    ],
 }
+

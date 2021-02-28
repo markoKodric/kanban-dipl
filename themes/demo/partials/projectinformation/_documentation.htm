@@ -1,0 +1,38 @@
+<div class="flex space-x-8 min-h-full h-full">
+    <div>
+        <div class="relative">
+            <button data-target="#js-add-document" class="button button-primary">Create new document</button>
+
+            <div class="background-overlay fixed inset-0 bg-black bg-opacity-50 invisible opacity-0 transition z-40"></div>
+
+            <form id="js-add-document"
+                  data-request="{{ __SELF__ }}::onCreateDocument"
+                  class="absolute p-4 pr-2 top-full-over left-0 bg-white shadow-md rounded-md z-10 transition duration-200 invisible opacity-0 scale-0 z-50 transform flex origin-top-left items-center">
+                <input type="text" name="title" placeholder="Document title..." class="mr-2">
+
+                <button class="button-icon" type="submit"><i class="la la-check"></i></button>
+            </form>
+        </div>
+
+        {% if not __SELF__.project.documents.isEmpty() %}
+        <hr class="my-4 border-gray-300">
+
+        <div class="select bg-white mt-6 rounded-md">
+            <select name="document" class="w-full" id="selectDocument" data-request="{{ __SELF__ }}::onChangeDocument" data-track-input>
+                {% for document in __SELF__.project.documents %}
+                    <option {{ __SELF__.document.id == document.id ? 'selected' }} value="{{ document.id }}">{{ document.title }}</option>
+                {% endfor %}
+            </select>
+            <i class="la la-angle-down"></i>
+        </div>
+        {% endif %}
+
+        {% if __SELF__.document %}
+            <button data-request="{{ __SELF__ }}::onDeleteDocument" class="button button-outline color-custom bg-red-500 text-white hover:shadow-red mt-4">Delete document</button>
+        {% endif %}
+    </div>
+
+    <div id="js-document" class="flex-1 relative min-h-full h-full max-h-full overflow-y-auto">
+        {% partial '@__document' %}
+    </div>
+</div>

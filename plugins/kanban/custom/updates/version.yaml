@@ -60,3 +60,6 @@
 1.0.23:
     - 'Created table kanban_custom_activity_log'
     - builder_table_create_kanban_custom_activity_log.php
+1.0.24:
+    - 'Created table kanban_custom_documentation'
+    - builder_table_create_kanban_custom_documentation.php

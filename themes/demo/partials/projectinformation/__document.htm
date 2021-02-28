@@ -1,0 +1,25 @@
+{% set document = document ?: __SELF__.document %}
+
+{% if document and __SELF__.editMode %}
+    <form data-request="{{ __SELF__ }}::onSaveDocument" class="w-full bg-white h-full">
+        <textarea class="tinymce h-full" name="content">{{ document.content | raw }}</textarea>
+    </form>
+
+    <button data-request="{{ __SELF__ }}::onStopEditMode" class="bg-blue-500 text-white font-semibold rounded-md rounded-tr-none py-1.5 px-3 absolute top-0 right-0 z-10 ml-4">
+        Cancel
+    </button>
+{% else %}
+    <div class="h-full min-h-full bg-white rounded-md p-6 tinymce-preview prose mx-auto max-h-full overflow-auto relative">
+        {% if document %}
+            {{ document.content | raw }}
+        {% else %}
+            <span class="text-6xl text-gray-200 font-bold absolute top-1/2 transform left-1/2 -translate-x-1/2 w-full text-center -translate-y-1/2">No document selected</span>
+        {% endif %}
+    </div>
+
+    {% if document %}
+        <button data-request="{{ __SELF__ }}::onStartEditMode" class="bg-blue-500 text-white font-semibold rounded-md py-1.5 px-3 absolute top-0 right-0">
+            Edit mode
+        </button>
+    {% endif %}
+{% endif %}

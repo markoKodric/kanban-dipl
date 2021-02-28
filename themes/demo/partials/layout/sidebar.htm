@@ -4,7 +4,7 @@
 <div id="projects-sidebar" class="h-screen overflow-y-auto px-6 py-10 flex flex-col border-r border-gray-200 bg-blue-50">
     {% if project %}
         <div id="sidebar-header" class="relative">
-            {% if project.due_date and project.due_date.diffInDays("now"|date) < 7 %}
+            {% if project.due_date and project.due_date.gte("now"|date) and project.due_date.diffInDays("now"|date) < 7 %}
                 <div class="due-date absolute bottom-full opacity-0 invisible scale-0 transform origin-bottom-left transition left-14 bg-red-400 rounded-md rounded-tr-none py-1 px-2 text-xs font-bold text-white">
                     Due in {{ project.due_date.diffInDays("now"|date('Y-m-d')) }} {{ project.due_date.diffInDays("now"|date) == 1 ? 'day' : 'days' }}
                 </div>

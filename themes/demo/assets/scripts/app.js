@@ -10,6 +10,7 @@
         initCC();
         initTimer();
         initNotifications();
+        initTinyMCE();
 
         $('[data-request-blur]').unbind('blur').on('blur', function () {
             if ($(this).attr('data-request')) {
@@ -22,34 +23,36 @@
 
     function initOnce() {
         initSocketIO();
+    }
 
-        /*window.onpopstate = function(event) {
-            const queryString = window.location.search;
-            const urlParams = new URLSearchParams(queryString);
-            console.log(queryString, window.location.hash);
-            if (urlParams.has('ticket')) {
-                const ticket = urlParams.get('ticket');
-                if (ticket && window.location.hash == '#open-ticket-' + ticket) {
-                    $('#ticket-' + ticket).removeAttr('data-popup-attached');
-                    $('#ticketPopup').removeClass('is-active');
-                    $('#ticketPopup *[data-target="#ticketPopup"]').removeClass('is-active');
-                    $('#ticket-' + ticket + ':not([data-popup-attached])').attr('data-popup-attached', true).trigger('click');
-                } else {
-                    $('#ticket-' + ticket).removeAttr('data-popup-attached');
-                    $('#ticketPopup').removeClass('is-active');
-                    $('#ticketPopup *[data-target="#ticketPopup"]').removeClass('is-active');
+    function initTinyMCE()
+    {
+        var useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        $('.tinymce').each(function() {
+            tinymce.init({
+                selector: 'textarea.tinymce',
+                plugins: 'print preview paste importcss searchreplace autolink save directionality code visualblocks visualchars fullscreen image link media codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable charmap quickbars emoticons',
+                imagetools_cors_hosts: ['picsum.photos'],
+                menubar: 'edit view insert format tools table',
+                toolbar: 'save | undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen print | insertfile image media link anchor codesample',
+                toolbar_sticky: true,
+                image_advtab: true,
+                importcss_append: true,
+                height: '100%',
+                image_caption: true,
+                quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+                noneditable_noneditable_class: 'mceNonEditable',
+                toolbar_mode: 'sliding',
+                contextmenu: 'link image imagetools table',
+                skin: useDarkMode ? 'oxide-dark' : 'oxide',
+                content_css: useDarkMode ? 'dark' : 'default',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                save_onsavecallback: function () {
+                    $(this.formElement).request();
                 }
-            } else {
-                $('#ticketPopup').removeClass('is-active');
-                $('#ticketPopup *[data-target="#ticketPopup"]').removeClass('is-active');
-            }
-        };
-
-        if (window.location.hash.startsWith('#open-ticket-')) {
-            let splitHash = window.location.hash.split('-');
-
-            $('#ticket-' + splitHash[splitHash.length - 1] + ':not([data-popup-attached])').attr('data-popup-attached', true).trigger('click');
-        }*/
+            });
+        });
     }
 
     function initSocketIO() {

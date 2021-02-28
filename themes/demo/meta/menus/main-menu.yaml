@@ -39,32 +39,6 @@ items:
             cssClass: 'la la-stream'
             isExternal: '0'
     -
-        title: 'Bug tracking'
-        nesting: null
-        type: url
-        url: /
-        code: ''
-        reference: null
-        cmsPage: null
-        replace: null
-        viewBag:
-            isHidden: '1'
-            cssClass: 'la la-bug'
-            isExternal: '0'
-    -
-        title: VCS
-        nesting: null
-        type: url
-        url: /
-        code: ''
-        reference: null
-        cmsPage: null
-        replace: null
-        viewBag:
-            isHidden: '1'
-            cssClass: 'la la-code-branch'
-            isExternal: '0'
-    -
         title: 'Shared files'
         nesting: 0
         type: static-page

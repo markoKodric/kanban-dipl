@@ -229,6 +229,7 @@
                             <form method="POST"
                                   data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketAddComment"
                                   data-request-success="
+                                      $(this).find('input').val('');
                                       ticketUpdate('#js-ticket-comments', 'ticketsingle/_ticket_comments', {{ ticket.id }});
                                       ticketUpdate('#ticket-{{ ticket.id }}', 'projectsingle/_ticket', {{ ticket.id }});
                                   "
