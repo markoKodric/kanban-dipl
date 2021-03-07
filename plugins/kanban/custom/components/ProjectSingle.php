@@ -638,6 +638,8 @@ class ProjectSingle extends ComponentBase
             'mark_tickets_complete' => $markComplete ?: null,
         ]);
 
+        $this->project->updateSwimlanes();
+
         $this->project->refresh();
 
         return [
