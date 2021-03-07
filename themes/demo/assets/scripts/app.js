@@ -286,6 +286,12 @@
             $(this).parent().removeClass('is-active');
         });
 
+        $('.swimlane-header').unbind().on('click', function () {
+            $(this).next().toggleClass('hidden');
+            $(this).find('.la-plus').toggleClass('hidden');
+            $(this).find('.la-minus').toggleClass('hidden');
+        })
+
         $('.mock-sections').sortable({
             items: ".mock-section:not(.inner-mock-section)",
             cancel: "input",

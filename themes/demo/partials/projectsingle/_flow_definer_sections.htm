@@ -1,5 +1,5 @@
 {% if flow %}
-    {% for section in flow.sections.where('parent_section_id', null).sortBy('sort_order') %}
+    {% for section in flow.sections.where('parent_section_id', null).where('swimlane_id', null).sortBy('sort_order') %}
         <div class="mock-section mx-3 {{ section.subsections.isNotEmpty() ? 'has-children' }}" data-id="{{ section.id }}">
             <div class="section-header">
                 <input type="text" class="custom" value="{{ section.name }}">

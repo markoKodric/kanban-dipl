@@ -1,110 +1,94 @@
 {% if project.flow %}
-    {% set columnWidths = {'0': 'w-22.5 min-w-22.5', '1': 'w-22.5 min-w-22.5', '2': 'w-45 min-w-45', '3': 'w-67.5 min-w-67.5', '4': 'w-90 min-w-90'} %}
-    {% for section in project.flow.sections.where('parent_section_id', null).sortBy('sort_order') %}
-        <div class="relative flow-section py-3 bg-blue-50 rounded-md {{ columnWidths[section.subsections.count()] }}"
-             id="flow-section-{{ section.id }}"
-             data-limit="{{ section.wip_limit }}"
-             data-section-id="{{ section.id }}">
+    {% if project.swimlanes.count() > 0 %}
+        <div class="swimlane-header w-full py-1 mb-3 font-semibold border-t border-b border-gray-300 text-lg cursor-pointer flex items-center">
+            General
+            <i class="ml-2 la la-plus hidden"></i>
+            <i class="ml-2 la la-minus"></i>
+        </div>
+    {% endif %}
 
-            {% if section.mark_tickets_complete %}
-                <div class="bg-green-100 text-xs text-green-700 font-semibold rounded-md rounded-tr-none rounded-bl-none py-0 px-1 absolute bottom-0 right-0 whitespace-nowrap">
-                    Completed tickets
-                </div>
-            {% endif %}
+    <div class="sections flex {{ project.swimlanes.count() > 0 ? 'items-start' }} space-x-3">
+        {% partial '@_sections' sections=project.flow.sections.where('parent_section_id', null).where('swimlane_id', null).sortBy('sort_order') %}
 
-            <div class="section-inner">
-                <div class="section-header flex justify-center items-center w-full px-3 {{ section.subsections.isNotEmpty() ? 'pb-2 border-b border-dashed border-gray-300' : '' }}">
-                    <div id="js-section-header-{{ section.id }}" class="title text-lg text-center font-bold">
-                        {% partial 'projectsingle/_section_header' section=section %}
-                    </div>
-                </div>
+        {% if user().can('board.workflow.edit') %}
+            <div class="pt-1 pr-3">
+                <div class="relative">
+                    <button class="button button-icon" data-tooltip="Add section" data-target="#js-add-section">
+                        <i class="text-2xl la la-plus"></i>
+                        <i class="text-2xl la la-times hidden"></i>
+                    </button>
+                    <div class="background-overlay fixed inset-0 bg-black bg-opacity-50 invisible opacity-0 transition z-40"></div>
+                    <form id="js-add-section"
+                          data-request="{{ __SELF__ }}::onAddSection"
+                          data-request-success="
+                          flowUpdate({{ project.id }}, {{ project.flow.id }});
+                      "
+                          class="absolute p-4 pr-2 top-full-over right-0 ml-2 bg-white shadow-md rounded-md z-10 transition duration-200 invisible opacity-0 scale-0 origin-top-right z-50 transform">
+                        <div class="flex">
+                            <div class="mr-2">
+                                <input id="sectionTitle" required placeholder="Section title..." type="text" name="section_title" class="non-dynamic mb-3">
+                                <input id="sectionWIP" placeholder="WIP limit..." type="number" name="wip_limit" class="non-dynamic w-full">
 
-                {% if not section.subsections.isEmpty() %}
-                    <div class="flex">
-                        {% for subsection in section.subsections %}
-                            <div class="flow-section py-3 bg-blue-50 rounded-md w-1/{{ section.subsections.count() }} {{ not loop.first ? 'border-l border-dashed border-gray-300' : '' }}"
-                                 id="flow-section-{{ subsection.id }}"
-                                 data-section-id="{{ subsection.id }}">
-                                <div class="section-inner">
-                                    <div class="section-header flex items-center justify-center w-full px-3">
-                                        <div id="js-section-header-{{ subsection.id }}" class="title text-lg text-center font-bold">
-                                            {% partial 'projectsingle/_section_header' section=subsection %}
-                                        </div>
-                                    </div>
-
-                                    <div class="section-tickets min-h-lg max-h-md overflow-y-auto px-3">
-                                        <div data-wip-limit="{{ subsection.wip_limit ?: -1 }}"
-                                             id="section-tickets-{{ subsection.id }}"
-                                             class="{{ subsection.wip_limit and subsection.wip_limit <= subsection.tickets.count() ? 'wip-reached' }} pb-0.5 section-tickets-inner min-h-xs {{ loop.parent.first ? 'min-h-sm' : 'min-h-lg' }} {{ user().can('board.tickets.reorder') and not user().restrictions.contains('id', subsection.id) ? 'is-sortable' }}">
-                                            {% partial 'projectsingle/_tickets' section=subsection %}
-                                        </div>
-                                    </div>
-
-                                    {% if loop.parent.first and loop.first and user().can('board.tickets.add') %}
-                                        <div id="section-add-ticket" class="ml-auto mt-4">
-                                            {% partial 'projectsingle/_add_ticket' section=subsection %}
-                                        </div>
-                                    {% endif %}
-                                </div>
+                                {% set radioId = str_random() %}
+                                <label class="w-full flex items-start text-left mt-3" for="markComplete-{{ radioId }}">
+                                    <input type="radio"
+                                           name="markComplete"
+                                           id="markComplete-{{ radioId }}"
+                                           class="mr-2 w-5 h-5 min-w-5">
+                                    <span>Mark tickets complete</span>
+                                </label>
                             </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="section-tickets {{ loop.first and user().can('board.tickets.add') ? 'max-h-md' : 'max-h-lg' }} overflow-y-auto px-3">
-                        <div data-wip-limit="{{ section.wip_limit ?: -1 }}"
-                             id="section-tickets-{{ section.id }}"
-                             class="{{ section.wip_limit and section.wip_limit <= section.tickets.count() ? 'wip-reached' }} pb-1 section-tickets-inner min-h-xs {{ loop.first ? section.tickets.count() > 0 ? 'min-h-xs' : '' : 'min-h-sm' }} {{ user().can('board.tickets.reorder') and not user().restrictions.contains('id', section.id) ? 'is-sortable' }}">
-                            {% partial 'projectsingle/_tickets' section=section %}
-                        </div>
-                    </div>
 
-                    {% if section.subsections.isEmpty() and loop.first and user().can('board.tickets.add') %}
-                        <div id="section-add-ticket" class="ml-auto mt-4">
-                            {% partial 'projectsingle/_add_ticket' section=section %}
+                            <button type="submit" class="button button-icon">
+                                <i class="text-2xl la la-check"></i>
+                            </button>
                         </div>
-                    {% endif %}
-                {% endif %}
+                    </form>
+                </div>
             </div>
+        {% endif %}
+    </div>
+
+    {% for swimlane in project.swimlanes %}
+        <div class="swimlane-header w-full py-1 my-3 font-semibold border-t border-b border-gray-300 text-lg cursor-pointer flex items-center">
+            {{ swimlane.name }}
+            <i class="ml-2 la la-plus hidden"></i>
+            <i class="ml-2 la la-minus"></i>
+        </div>
+
+        <div class="sections flex items-start space-x-3">
+            {% partial '@_sections' sections=swimlane.sections.where('parent_section_id', null).sortBy('sort_order') %}
         </div>
     {% endfor %}
 
-    {% if user().can('board.workflow.edit') %}
-        <div class="pt-1 pr-3">
-            <div class="relative">
-                <button class="button button-icon" data-tooltip="Add section" data-target="#js-add-section">
-                    <i class="text-2xl la la-plus"></i>
-                    <i class="text-2xl la la-times hidden"></i>
-                </button>
-                <div class="background-overlay fixed inset-0 bg-black bg-opacity-50 invisible opacity-0 transition z-40"></div>
-                <form id="js-add-section"
-                      data-request="{{ __SELF__ }}::onAddSection"
-                      data-request-success="
-                          flowUpdate({{ project.id }}, {{ project.flow.id }});
-                      "
-                      class="absolute p-4 pr-2 top-full-over right-0 ml-2 bg-white shadow-md rounded-md z-10 transition duration-200 invisible opacity-0 scale-0 origin-top-right z-50 transform">
-                    <div class="flex">
-                        <div class="mr-2">
-                            <input id="sectionTitle" required placeholder="Section title..." type="text" name="section_title" class="non-dynamic mb-3">
-                            <input id="sectionWIP" placeholder="WIP limit..." type="number" name="wip_limit" class="non-dynamic w-full">
-
-                            {% set radioId = str_random() %}
-                            <label class="w-full flex items-start text-left mt-3" for="markComplete-{{ radioId }}">
-                                <input type="radio"
-                                       name="markComplete"
-                                       id="markComplete-{{ radioId }}"
-                                       class="mr-2 w-5 h-5 min-w-5">
-                                <span>Mark tickets complete</span>
-                            </label>
-                        </div>
-
-                        <button type="submit" class="button button-icon">
-                            <i class="text-2xl la la-check"></i>
-                        </button>
+    {% if user().can('board.worflow.edit') %}
+        <div class="w-full relative -left-14">
+            <button class="button button-icon"
+                    data-target="#js-add-swimlane"
+                    data-tooltip-left
+                    data-tooltip="Add swimlane">
+                <i class="la la-plus text-2xl"></i>
+            </button>
+            <div class="background-overlay fixed inset-0 bg-black bg-opacity-50 invisible opacity-0 transition z-40"></div>
+            <form id="js-add-swimlane"
+                  data-request="{{ __SELF__ }}::onAddSwimlane"
+                  data-request-success="
+                              flowUpdate({{ project.id }}, {{ project.flow.id }});
+                          "
+                  class="absolute p-4 pr-2 bottom-full-over left-0 ml-2 bg-white shadow-md rounded-md z-10 transition duration-200 invisible opacity-0 scale-0 origin-bottom-left z-50 transform">
+                <div class="flex">
+                    <div class="mr-2">
+                        <input id="swimlaneTitle" required placeholder="Swimlane title..." type="text" name="swimlane_title" class="non-dynamic">
                     </div>
-                </form>
-            </div>
+
+                    <button type="submit" class="button button-icon">
+                        <i class="text-2xl la la-check"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     {% endif %}
+
 {% elseif user().can('board.worflow.edit') %}
     <div class="warning text-center w-full flex flex-col items-center justify-center m-auto">
         <h1 class="text-gray-300 text-7xl mb-8">No workflow defined.</h1>

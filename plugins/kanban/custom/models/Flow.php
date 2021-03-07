@@ -30,7 +30,7 @@ class Flow extends Model
     {
         $sections = [];
 
-        $parentSections = $this->sections()->with('subsections')->whereNull('parent_section_id')->get();
+        $parentSections = $this->sections()->with('subsections')->whereNull('parent_section_id')->whereNull('swimlane_id')->get();
 
         foreach ($parentSections as $key => $section) {
             if ($section->subsections->isEmpty()) {

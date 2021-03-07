@@ -4,6 +4,7 @@ use App;
 use Auth;
 use Illuminate\Support\Str;
 use Kanban\Custom\Models\Activity;
+use Kanban\Custom\Models\Swimlane;
 use RainLab\User\Models\User;
 use Cms\Classes\ComponentBase;
 use Kanban\Custom\Models\Flow;
@@ -164,7 +165,7 @@ class ProjectSingle extends ComponentBase
                 return !is_null($item);
             })->all();
 
-        $this->project->flow->sections()->whereNotIn('id', $sectionIds)->get()->each(function ($section) {
+        $this->project->flow->sections()->whereNotIn('id', $sectionIds)->whereNull('swimlane_id')->get()->each(function ($section) {
             $section->tickets->each(function ($ticket) {
                 $ticket->comments()->delete();
                 $ticket->files()->delete();
@@ -329,7 +330,7 @@ class ProjectSingle extends ComponentBase
             'ticket' => $ticket->id,
             'section' => $section->id,
             '#section-tickets-' . post('_section_id') => $this->renderPartial('@_tickets', ['section' => $section]),
-            '#section-add-ticket' => $this->renderPartial('@_add_ticket', ['section' => $section])
+            '#section-add-ticket-' . post('_section_id') => $this->renderPartial('@_add_ticket', ['section' => $section])
         ];
     }
 
@@ -636,6 +637,37 @@ class ProjectSingle extends ComponentBase
         return [
             '#workflow' => $this->renderPartial('@_board', ['project' => $this->project]),
             '#js-flow-update' => $this->renderPartial('@_flow_update', ['project' => $this->project]),
+        ];
+    }
+
+    public function onAddSwimlane()
+    {
+        if (!($swimlane = post('swimlane_title'))) {
+            return;
+        }
+
+        $this->onRun();
+
+        if (!$this->user->can('board.workflow.edit')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
+        $swimlane = Swimlane::create([
+            'project_id' => $this->project->id,
+            'name'       => $swimlane,
+            'sort_order' => 1
+        ]);
+
+        $flowSections = $this->project->flow->sections()->whereNull('parent_section_id')->whereNull('swimlane_id')->get();
+
+        foreach ($flowSections as $section) {
+            $this->project->flow->sections()->create(array_merge(array_except($section->attributes, ['id', 'created_at', 'updated_at']), ['swimlane_id' => $swimlane->id]));
+        }
+
+        return [
+            '#workflow' => $this->renderPartial('@_board', ['project' => $this->project])
         ];
     }
 

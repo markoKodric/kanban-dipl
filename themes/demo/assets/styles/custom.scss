@@ -4,6 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 // Variables
 @import 'partials/jquery-ui/jquery-ui';
 @import 'partials/jquery-ui/jquery-ui.structure';
@@ -463,6 +464,9 @@ form[id^="commentReply"].is-active {
   &.is-active[data-tooltip-alt]::after {
     content: attr(data-tooltip-alt);
   }
+  &[data-tooltip-left]::after {
+    @apply left-0 translate-x-0;
+  }
 }
 
 .is-active [data-tooltip-alt]::after {
@@ -473,6 +477,9 @@ form[id^="commentReply"].is-active {
 }
 
 #js-add-section.is-active {
+  @apply opacity-100 visible scale-100;
+}
+#js-add-swimlane.is-active {
   @apply opacity-100 visible scale-100;
 }
 [data-target="#js-add-section"].is-active {

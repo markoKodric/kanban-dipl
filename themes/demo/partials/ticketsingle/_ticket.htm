@@ -178,7 +178,7 @@
             <div class="flex items-start space-x-10">
                 <div class="w-1/4">
                     <div class="flex justify-between items-center">
-                        <p class="text-xl font-bold mb-2">Checklists</p>
+                        <p class="text-xl font-bold mb-2">Tasks</p>
                     </div>
 
                     {% if user().can('ticket.edit') %}
@@ -193,7 +193,7 @@
                                 <input type="text"
                                        required
                                        name="checklist"
-                                       placeholder="New checklist..."
+                                       placeholder="New list..."
                                        class="custom block flex-1 placeholder-blue-300 py-1 px-6 rounded-md border border-dashed border-blue-300 font-bold">
 
                                 <button type="submit"

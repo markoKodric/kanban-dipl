@@ -28,6 +28,7 @@ class Project extends Model
         'tags'       => Tag::class,
         'activities' => Activity::class,
         'documents'  => Document::class,
+        'swimlanes'  => Swimlane::class,
     ];
 
     public $belongsToMany = [

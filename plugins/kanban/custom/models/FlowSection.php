@@ -10,7 +10,7 @@ class FlowSection extends Model
 
     public $table = 'kanban_custom_flow_sections';
 
-    public $fillable = ['name', 'flow_id', 'parent_section_id', 'sort_order', 'wip_limit', 'mark_tickets_complete'];
+    public $fillable = ['name', 'flow_id', 'parent_section_id', 'sort_order', 'wip_limit', 'mark_tickets_complete', 'swimlane_id'];
 
     public $rules = [];
 

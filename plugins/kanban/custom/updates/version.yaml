@@ -63,3 +63,6 @@
 1.0.24:
     - 'Created table kanban_custom_documentation'
     - builder_table_create_kanban_custom_documentation.php
+1.0.25:
+    - 'Created table kanban_custom_swimlanes'
+    - create_swimlanes_table.php
