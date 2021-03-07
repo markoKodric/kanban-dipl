@@ -664,6 +664,10 @@ class ProjectSingle extends ComponentBase
 
         foreach ($flowSections as $section) {
             $this->project->flow->sections()->create(array_merge(array_except($section->attributes, ['id', 'created_at', 'updated_at']), ['swimlane_id' => $swimlane->id]));
+
+            foreach ($section->subsections as $subsection) {
+                $this->project->flow->sections()->create(array_merge(array_except($subsection->attributes, ['id', 'created_at', 'updated_at']), ['swimlane_id' => $swimlane->id]));
+            }
         }
 
         return [
