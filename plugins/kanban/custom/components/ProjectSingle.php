@@ -512,8 +512,6 @@ class ProjectSingle extends ComponentBase
                 })->unarchived();
         }
 
-        dd($query->first());
-
         $this->activeFilter = post('filter');
 
         return [
