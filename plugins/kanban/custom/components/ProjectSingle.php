@@ -663,10 +663,13 @@ class ProjectSingle extends ComponentBase
         $flowSections = $this->project->flow->sections()->whereNull('parent_section_id')->whereNull('swimlane_id')->get();
 
         foreach ($flowSections as $section) {
-            $this->project->flow->sections()->create(array_merge(array_except($section->attributes, ['id', 'created_at', 'updated_at']), ['swimlane_id' => $swimlane->id]));
+            $newSection = $this->project->flow->sections()->create(array_merge(array_except($section->attributes, ['id', 'created_at', 'updated_at']), ['swimlane_id' => $swimlane->id]));
 
             foreach ($section->subsections as $subsection) {
-                $this->project->flow->sections()->create(array_merge(array_except($subsection->attributes, ['id', 'created_at', 'updated_at']), ['swimlane_id' => $swimlane->id]));
+                $this->project->flow->sections()->create(array_merge(array_except($subsection->attributes, ['id', 'parent_section_id', 'created_at', 'updated_at']), [
+                    'swimlane_id'       => $swimlane->id,
+                    'parent_section_id' => $newSection->id
+                ]));
             }
         }
 
