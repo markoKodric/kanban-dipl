@@ -52,7 +52,7 @@
         <div class="layout-body flex-1">
             <div id="js-board" class="board h-full">
                 <div id="workflow"
-                     class="workflow-{{ project.id }} px-16 w-full pb-8 rounded-md relative overflow-x-auto flex flex-col {{ project.flow and project.flow.sections.isEmpty() ? 'items-center justify-center bg-blue-50' : '' }} {{ not project.flow and project.swimlanes.isEmpty() ? 'h-full' }}">
+                     class="workflow-{{ project.id }} px-16 w-full pb-8 rounded-md relative overflow-x-auto flex flex-col {{ project.flow and project.flow.sections.isEmpty() ? 'items-center justify-center bg-blue-50' : '' }} {{ not project.flow or project.swimlanes.isEmpty() ? 'h-full' }}">
                     {% partial 'projectsingle/_board' project=project %}
                 </div>
             </div>
