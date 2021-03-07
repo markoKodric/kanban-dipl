@@ -14,7 +14,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->update([
             'priority' => $priority,
@@ -32,7 +32,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->update([
             'name' => $title,
@@ -47,7 +47,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->update([
             'description' => post('ticket_description'),
@@ -62,7 +62,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->update([
             'due_date' => empty(post('ticket_due_date')) ? null : post('ticket_due_date'),
@@ -73,7 +73,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->update([
             'time_estimation' => (post('ticket_estimation_hours', 0) * 60 * 60) + (post('ticket_estimation_minutes', 0) * 60)
@@ -107,7 +107,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $checklist = $this->ticket->checklists()->create([
             'title'      => request()->post('checklist') ? request()->post('checklist') : 'Checklist',
@@ -124,7 +124,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $checklist = $this->ticket->checklists()->where('id', post('checklist'))->first();
 
@@ -173,7 +173,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $checklist = $this->ticket->checklists()->where('id', post('checklist'))->first();
 
@@ -199,7 +199,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $checklist = $this->ticket->checklists()->where('id', post('checklist'))->first();
 
@@ -219,7 +219,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         if (request()->file('file')) {
             $fileName = explode('.', request()->file('file')->getClientOriginalName());
@@ -246,7 +246,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $file = $this->ticket->files()->where('id', post('file_id'))->first();
 
@@ -268,7 +268,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         Auth::getUser()->comments()->create([
             'comment'   => $comment,
@@ -289,7 +289,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->comments()
             ->where('parent_id', post('comment_id'))
@@ -306,7 +306,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->comments()->where('id', post('comment_id'))->update([
             'comment' => post('comment'),
@@ -321,7 +321,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->comments()->where('id', post('comment_id'))->first()->replies()->create([
             'user_id'   => Auth::getUser()->id,
@@ -339,7 +339,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.delete')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-delete-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $project = $this->ticket->project;
 
@@ -366,7 +366,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.users.manage')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('ticket-manage-users')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->users()->attach($user);
 
@@ -395,7 +395,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.users.manage')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('ticket-manage-users')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->users()->detach($user);
 
@@ -410,7 +410,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.tags.manage')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('ticket-manage-tags')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->project->tags()->create([
             'title' => post('title', 'New tag'),
@@ -434,7 +434,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.tags.manage')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('ticket-manage-tags')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->project->tags()->where('id', post('tag'))->update([
             'title' => $title,
@@ -477,7 +477,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.tags.manage')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('ticket-manage-tags')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->tags()->attach($tag);
 
@@ -496,7 +496,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.tags.manage')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('ticket-manage-tags')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->tags()->detach($tag);
 
@@ -515,7 +515,7 @@ trait TicketHandler
 
         $this->onRun();
 
-        if (!$this->user->can('ticket.tags.manage')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('ticket-manage-tags')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->project->tickets->each(function ($ticket) use ($tag) {
             $ticket->tags()->detach($tag);
@@ -534,7 +534,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->update([
             'is_archived' => true,
@@ -549,7 +549,7 @@ trait TicketHandler
     {
         $this->onRun();
 
-        if (!$this->user->can('ticket.edit')) return $this->notifyUser('Unauthorized action.');
+        if (!$this->user->can('tickets-edit-ticket')) return $this->notifyUser('Unauthorized action.');
 
         $this->ticket->update([
             'is_archived' => false,

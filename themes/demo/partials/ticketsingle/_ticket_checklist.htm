@@ -6,7 +6,7 @@
         <div class="checklist-header-inner flex items-center justify-between w-full rounded-md bg-blue-50 font-bold py-2 px-4 relative">
             <span class="pr-9 flex-1">{{ checklist.title }}</span>
 
-            {% if user().can('ticket.edit') %}
+            {% if user().can('tickets-edit-ticket') %}
                 <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketDeleteChecklist"
                         data-request-data="checklist: {{ checklist.id }}"
                         data-request-success="
@@ -26,7 +26,7 @@
         {% partial 'ticketsingle/__checklist' checklist=checklist %}
     </div>
 
-    {% if user().can('ticket.edit') %}
+    {% if user().can('tickets-edit-ticket') %}
         <div id="js-add-checklist-item-{{ checklist.id }}">
             {% partial 'ticketsingle/__ticket_add_checklist_item' checklist=checklist %}
         </div>

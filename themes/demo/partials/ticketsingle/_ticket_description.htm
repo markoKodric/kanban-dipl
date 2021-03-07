@@ -1,6 +1,6 @@
 {% set ticket = ticket ?: __SELF__.ticket %}
 
-{% if user().can('ticket.edit') %}
+{% if user().can('tickets-edit-ticket') %}
     <textarea name="ticket_description"
               class="custom w-full {{ ticket.description|length ? 'border-0' : 'border border-gray-300' }} resize-y -ml-2 pl-2"
               rows="{{ max((ticket.description|length ? 2 : 1), min((ticket.description|length) // 64, 6)) }}"

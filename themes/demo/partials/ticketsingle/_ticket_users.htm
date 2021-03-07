@@ -10,7 +10,7 @@
             </div>
         {% endif %}
 
-        {% if user.id != user().id and user().can('ticket.users.manage') %}
+        {% if user.id != user().id and user().can('ticket-manage-users') %}
         <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketRemoveUser"
                 data-request-data="user: {{ user.id }}"
                 data-request-success="

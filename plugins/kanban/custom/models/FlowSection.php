@@ -15,8 +15,9 @@ class FlowSection extends Model
     public $rules = [];
 
     public $belongsTo = [
-        'flow'   => Flow::class,
-        'parent' => [FlowSection::class, 'key' => 'parent_section_id']
+        'flow'     => Flow::class,
+        'swimlane' => Swimlane::class,
+        'parent'   => [FlowSection::class, 'key' => 'parent_section_id']
     ];
 
     public $hasMany = [

@@ -61,7 +61,7 @@ class ProjectList extends ComponentBase
             ];
         }
 
-        if (!Auth::getUser()->can('projects.manage')) {
+        if (!Auth::getUser()->can('projects-manage-projects')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];

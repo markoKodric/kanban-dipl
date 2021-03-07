@@ -1,0 +1,10 @@
+fields:
+    name:
+        label: Name
+        type: text
+        span: full
+    users:
+        label: Users
+        type: partial
+        span: full
+        path: $/kanban/custom/models/_partials/users_field.htm

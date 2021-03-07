@@ -66,3 +66,9 @@
 1.0.25:
     - 'Created table kanban_custom_swimlanes'
     - create_swimlanes_table.php
+1.0.26:
+    - 'Created table kanban_custom_permissions'
+    - builder_table_create_kanban_custom_permissions.php
+1.0.27:
+    - 'Created table kanban_custom_user_permission'
+    - builder_table_create_kanban_custom_user_permission.php

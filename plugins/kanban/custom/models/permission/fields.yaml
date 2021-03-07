@@ -1,0 +1,12 @@
+fields:
+    title:
+        label: Title
+        type: text
+        span: auto
+    code:
+        label: Code
+        type: text
+        span: auto
+        preset:
+            field: title
+            type: slug

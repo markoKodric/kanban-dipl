@@ -1,0 +1,11 @@
+users:
+    label: Users
+    view:
+        list: $/rainlab/user/models/user/columns.yaml
+        toolbarButtons: add|remove
+        recordsPerPage: 10
+        showSearch: true
+    manage:
+        list: $/rainlab/user/models/user/columns.yaml
+        recordsPerPage: 10
+        showSearch: true

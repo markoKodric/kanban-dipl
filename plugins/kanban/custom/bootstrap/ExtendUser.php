@@ -1,5 +1,7 @@
 <?php namespace Kanban\Custom\Bootstrap;
 
+use Backend\Behaviors\RelationController;
+use RainLab\User\Controllers\Users;
 use RainLab\User\Models\User;
 use Kanban\Custom\Models\Team;
 use Kanban\Custom\Models\Timer;
@@ -7,6 +9,7 @@ use Kanban\Custom\Models\Ticket;
 use Kanban\Custom\Models\Comment;
 use Kanban\Custom\Models\Project;
 use Kanban\Custom\Models\Activity;
+use Kanban\Custom\Models\Permission;
 use Kanban\Custom\Models\FlowSection;
 
 class ExtendUser
@@ -16,6 +19,7 @@ class ExtendUser
     public function init()
     {
         $this->extendUserModel();
+        $this->extendUserFields();
     }
 
     protected function extendUserModel()
@@ -28,6 +32,8 @@ class ExtendUser
             $model->belongsToMany['tickets'] = [Ticket::class, 'table' => 'kanban_custom_ticket_user'];
 
             $model->belongsToMany['restrictions'] = [FlowSection::class, 'table' => 'kanban_custom_flow_section_restrictions'];
+
+            $model->belongsToMany['permissions'] = [Permission::class, 'table' => 'kanban_custom_user_permission'];
 
             $model->hasMany['timers'] = [Timer::class];
 
@@ -45,11 +51,11 @@ class ExtendUser
             });
 
             $model->addDynamicMethod('can', function ($permission) use ($model) {
-                if (!$model->permissions || (!is_null($model->permissions) && empty($model->permissions))) {
+                if ($model->permissions()->get()->isEmpty()) {
                     return true;
                 }
 
-                return in_array($permission, $model->permissions);
+                return $model->permissions()->where('code', $permission)->exists();
             });
 
             $model->addDynamicMethod('canManageSection', function ($section) use ($model) {
@@ -77,6 +83,30 @@ class ExtendUser
 
                 return $splitName[0] ?? $model->name;
             });
+        });
+    }
+
+    protected function extendUserFields()
+    {
+        Users::extend(function ($controller) {
+            $controller->relationConfig = '$/kanban/custom/models/extensions/users_relation_config.yaml';
+
+            $controller->implement[] = RelationController::class;
+
+            return $controller;
+        });
+
+        Users::extendFormFields(function ($form, $model, $context) {
+            $form->addTabFields([
+                'permissions' => [
+                    'label' => 'Permissions',
+                    'tab' => 'Permissions',
+                    'type' => 'partial',
+                    'path' => '$/kanban/custom/models/_partials/permissions_field.htm'
+                ]
+            ]);
+
+            return $form;
         });
     }
 }

@@ -6,7 +6,7 @@
              class="tag font-bold px-2 py-1.5 rounded-md mx-1 relative">
             <span>{{ tag.title }}</span>
 
-            {% if user().can('ticket.tags.manage') %}
+            {% if user().can('ticket-manage-tags') %}
                 <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketRemoveTag"
                         data-request-data="tag: {{ tag.id }}"
                         data-request-success="

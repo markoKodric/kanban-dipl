@@ -1,0 +1,10 @@
+name: Permissions
+form: $/kanban/custom/models/permission/fields.yaml
+modelClass: Kanban\Custom\Models\Permission
+defaultRedirect: kanban/custom/permissions
+create:
+    redirect: 'kanban/custom/permissions/update/:id'
+    redirectClose: kanban/custom/permissions
+update:
+    redirect: kanban/custom/permissions
+    redirectClose: kanban/custom/permissions

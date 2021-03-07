@@ -20,7 +20,7 @@
 
             <span class="pr-8">{{ item.description }}</span>
 
-            {% if user().can('ticket.edit') %}
+            {% if user().can('tickets-edit-ticket') %}
                 <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketDeleteChecklistItem"
                         data-request-data="checklist: {{ checklist.id }}, item: {{ item.id }}"
                         data-request-success="

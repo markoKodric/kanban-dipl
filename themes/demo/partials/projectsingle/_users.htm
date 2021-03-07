@@ -10,7 +10,7 @@
             </div>
         {% endif %}
 
-        {% if user().id != user.id and user().can('board.users.manage') %}
+        {% if user().id != user.id and user().can('board-manage-users') %}
         <button data-request="{{ __SELF__ }}::onRemoveUser"
                 data-request-data="user: {{ user.id }}"
                 data-request-success="

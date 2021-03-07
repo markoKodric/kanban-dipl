@@ -23,7 +23,7 @@
                         {% partial 'projectsingle/_users' %}
                     </div>
 
-                    {% if user().can('board.users.manage') %}
+                    {% if user().can('board-manage-users') %}
                         <div id="js-project-add-users" class="non-members absolute top-0 left-full pb-2 ml-2 bg-white shadow-md rounded-md z-10 origin-left transition duration-200 invisible opacity-0 scale-0 origin-top-left z-50 transform">
                             {% partial 'projectsingle/_add_users' %}
                         </div>
@@ -37,7 +37,7 @@
                 </div>
             </div>
 
-            {% if user().can('board.workflow.edit') %}
+            {% if user().can('board-edit-workflow') %}
                 <div id="js-flow-update" class="actions mb-4 mr-4 ml-4">
                     {% if project.flow %}
                         {% partial 'projectsingle/_flow_update' project=project %}

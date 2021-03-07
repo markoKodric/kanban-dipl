@@ -1,0 +1,11 @@
+permissions:
+    label: Permissions
+    view:
+        list: $/kanban/custom/models/permission/columns.yaml
+        toolbarButtons: add|remove
+        recordsPerPage: 10
+        showSearch: true
+    manage:
+        list: $/kanban/custom/models/permission/columns.yaml
+        recordsPerPage: 10
+        showSearch: true

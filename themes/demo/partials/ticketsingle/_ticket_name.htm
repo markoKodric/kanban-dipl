@@ -1,4 +1,4 @@
-{% if user().can('ticket.edit') %}
+{% if user().can('tickets-edit-ticket') %}
     <input type="text"
            style="min-width: 10ch"
            data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdateTicketTitle"

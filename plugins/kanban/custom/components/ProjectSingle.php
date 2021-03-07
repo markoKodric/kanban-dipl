@@ -92,7 +92,7 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
-        if (!$this->user->can('board.workflow.edit')) {
+        if (!$this->user->can('board-edit-workflow')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];
@@ -152,7 +152,7 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
-        if (!$this->user->can('board.workflow.edit')) {
+        if (!$this->user->can('board-edit-workflow')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];
@@ -241,7 +241,7 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
-        if (!$this->user->can('board.workflow.edit')) {
+        if (!$this->user->can('board-edit-workflow')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];
@@ -256,7 +256,7 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
-        if (!$this->user->can('board.workflow.edit')) {
+        if (!$this->user->can('board-edit-workflow')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];
@@ -271,7 +271,7 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
-        if (!$this->user->can('board.tickets.add')) {
+        if (!$this->user->can('board-add-tickets')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];
@@ -332,7 +332,7 @@ class ProjectSingle extends ComponentBase
     {
         $this->onRun();
 
-        if (!$this->user->can('board.tickets.reorder')) {
+        if (!$this->user->can('board-reorder-tickets')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')]),
                 '#workflow' => $this->renderPartial('@_board', ['project' => $this->project]),
@@ -552,7 +552,7 @@ class ProjectSingle extends ComponentBase
 
         $this->onRun();
 
-        if (!$this->user->can('board.users.manage')) {
+        if (!$this->user->can('board-manage-users')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];
@@ -589,7 +589,7 @@ class ProjectSingle extends ComponentBase
 
         $this->onRun();
 
-        if (!$this->user->can('board.users.manage')) {
+        if (!$this->user->can('board-manage-users')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];
@@ -618,7 +618,7 @@ class ProjectSingle extends ComponentBase
 
         $this->onRun();
 
-        if (!$this->user->can('board.workflow.edit')) {
+        if (!$this->user->can('board-edit-workflow')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];
@@ -656,7 +656,7 @@ class ProjectSingle extends ComponentBase
 
         $this->onRun();
 
-        if (!$this->user->can('board.workflow.edit')) {
+        if (!$this->user->can('board-edit-workflow')) {
             return [
                 '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
             ];

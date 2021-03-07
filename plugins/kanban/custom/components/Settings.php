@@ -25,7 +25,7 @@ class Settings extends ComponentBase
     public $settings;
     public $project;
     public $settingSegments = [
-        'permissions' => ['permissions', 'Roles & Permissions', 'la la-users-cog'],
+        'permissions' => ['permissions', 'Permissions', 'la la-users-cog'],
         'projects'    => ['projects', 'Projects', 'la la-list'],
         'general'     => ['general', 'General', 'la la-cogs'],
     ];
@@ -36,20 +36,6 @@ class Settings extends ComponentBase
     public $users;
     public $permissionsUser;
     public $permissionsProject;
-    public $permissionList = [
-        'projects.manage'       => 'Manage projects (create, edit, delete)',
-
-        'board.workflow.edit'   => 'Edit workflow',
-        'board.users.manage'    => 'Manage users',
-        'board.tickets.add'     => 'Add tickets',
-        'board.tickets.reorder' => 'Reorder tickets',
-        //'board.sections.manage' => 'Manage sections',
-
-        'ticket.users.manage'   => 'Manage users',
-        'ticket.tags.manage'    => 'Manage tags',
-        'ticket.edit'           => 'Edit ticket',
-        'ticket.delete'         => 'Delete ticket',
-    ];
 
     /*
      * Projects variables
@@ -80,16 +66,6 @@ class Settings extends ComponentBase
     public function onUpdateUserPermissions()
     {
         $this->onRun();
-
-        $newPermissions = array_keys(request()->except(['permissions_user', 'permissions_project', 'sections']));
-
-        $newPermissions = array_map(function ($item) {
-            return str_replace('_', '.', $item);
-        }, $newPermissions);
-
-        $this->user->team->users()->where('id', post('permissions_user'))->update([
-            'permissions' => !empty($newPermissions) ? json_encode($newPermissions) : null,
-        ]);
 
         if ($this->permissionsProject) {
             $projectSections = array_diff($this->permissionsProject->flow->sections()->doesntHave('subsections')->get()->pluck('id')->all(), post('sections'));

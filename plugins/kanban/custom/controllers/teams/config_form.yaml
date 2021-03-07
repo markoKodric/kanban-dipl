@@ -1,0 +1,10 @@
+name: Teams
+form: $/kanban/custom/models/team/fields.yaml
+modelClass: Kanban\Custom\Models\Team
+defaultRedirect: kanban/custom/teams
+create:
+    redirect: 'kanban/custom/teams/update/:id'
+    redirectClose: kanban/custom/teams
+update:
+    redirect: kanban/custom/teams
+    redirectClose: kanban/custom/teams

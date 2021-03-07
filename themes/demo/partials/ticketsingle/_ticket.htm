@@ -13,7 +13,7 @@
                 </span>
             </h2>
 
-            {% if user().can('ticket.edit') %}
+            {% if user().can('tickets-edit-ticket') %}
                 <form id="updatePriority"
                       data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdatePriority"
                       data-request-success="ticketUpdate('#js-priority', 'ticketsingle/_ticket_priority', {{ ticket.id }});"
@@ -50,7 +50,7 @@
                     {% partial 'ticketsingle/_ticket_users' %}
                 </div>
 
-                {% if user().can('ticket.users.manage') %}
+                {% if user().can('ticket-manage-users') %}
                     <div id="excluded-users"
                          class="non-members absolute top-0 left-full ml-2 bg-white shadow-md rounded-md transition duration-200 invisible opacity-0 scale-0 origin-top-left transform z-50 pb-2">
                         <div class="search-wrapper p-3 relative">
@@ -91,7 +91,7 @@
                 {% partial 'ticketsingle/_ticket_tags' %}
             </div>
 
-            {% if user().can('ticket.tags.manage') %}
+            {% if user().can('ticket-manage-tags') %}
                 <button class="button button-icon add-tags-button shadow-md"
                         data-tooltip="Add tag"
                         data-target="#other-tags">
@@ -181,7 +181,7 @@
                         <p class="text-xl font-bold mb-2">Tasks</p>
                     </div>
 
-                    {% if user().can('ticket.edit') %}
+                    {% if user().can('tickets-edit-ticket') %}
                         <div class="mb-6">
                             <form method="POST"
                                   data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketCreateChecklist"
@@ -224,7 +224,7 @@
                         <p class="text-xl font-bold mb-2">Comments</p>
                     </div>
 
-                    {% if user().can('ticket.edit') %}
+                    {% if user().can('tickets-edit-ticket') %}
                         <div class="mb-4">
                             <form method="POST"
                                   data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketAddComment"
@@ -257,7 +257,7 @@
                         <p class="text-xl font-bold mb-2">Actions</p>
                     </div>
 
-                    {% if user().can('ticket.edit') %}
+                    {% if user().can('tickets-edit-ticket') %}
                         <div class="mb-4">
                             <div class="flex flex-col items-stretch" id="js-ticket-actions">
                                 {% partial 'ticketsingle/_ticket_actions' %}

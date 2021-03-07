@@ -4,3 +4,17 @@ plugin:
     author: Kanban
     icon: oc-icon-adjust
     homepage: ''
+navigation:
+    kanban-menu-item:
+        label: Kanban
+        url: kanban/custom/teams
+        icon: icon-bolt
+        sideMenu:
+            teams-side-menu-item:
+                label: Teams
+                url: kanban/custom/teams
+                icon: icon-users
+            permissions-side-menu-item:
+                label: Permissions
+                url: kanban/custom/permissions
+                icon: icon-cogs

@@ -1,6 +1,6 @@
 {% set ticket = ticket ?: __SELF__.ticket %}
 
-{% if user().can('ticket.edit') %}
+{% if user().can('tickets-edit-ticket') %}
     {% if ticket.is_archived %}
         <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketRestore"
                 data-request-success="
@@ -22,7 +22,7 @@
     {% endif %}
 {% endif %}
 
-{% if user().can('ticket.edit') and user().can('ticket.delete') %}
+{% if user().can('tickets-edit-ticket') and user().can('tickets-delete-ticket') %}
     <button data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketDelete"
             class="custom block flex-1 text-white py-2 px-6 rounded-md border transition border border-red-500 bg-red-500 hover:shadow-red font-bold">
         Delete ticket

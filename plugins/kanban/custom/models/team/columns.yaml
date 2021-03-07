@@ -1,0 +1,5 @@
+columns:
+    name:
+        type: text
+        searchable: true
+        sortable: true

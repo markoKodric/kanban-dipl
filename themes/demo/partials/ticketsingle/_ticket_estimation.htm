@@ -1,6 +1,6 @@
 {% set ticket = ticket ?: __SELF__.ticket %}
 
-{% if user().can('ticket.edit') %}
+{% if user().can('tickets-edit-ticket') %}
     <form data-request="{{ __SELF__ ?: ticketModal() ? 'ticketModal' : 'ticketSingle' }}::onSingleTicketUpdateTicketEstimation"
           data-request-success="
               ticketUpdate('#js-estimation', 'ticketsingle/_ticket_estimation', {{ ticket.id }});
