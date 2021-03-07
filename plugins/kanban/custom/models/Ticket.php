@@ -21,7 +21,7 @@ class Ticket extends Model
     public $dates = ['due_date', 'completed_at'];
 
     public $belongsTo = [
-        'section' => FlowSection::class,
+        'section' => [FlowSection::class, 'key' => 'flow_section_id'],
         'project' => Project::class,
     ];
 

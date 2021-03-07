@@ -124,7 +124,7 @@ class Analytics extends ComponentBase
 
         $timePeriod = CarbonPeriod::create($startDate, $endDate)->toArray();
 
-        $flowSections = $this->project->flow->sections()->doesntHave('subsections')->with(['parent'])->get();
+        $flowSections = $this->project->flow->sections()->doesntHave('subsections')->whereNull('swimlane_id')->with(['parent'])->get();
 
         $cfdData = [];
 
@@ -195,9 +195,11 @@ class Analytics extends ComponentBase
 
         $timePeriod = CarbonPeriod::create($startDate, $endDate)->toArray();
 
-        $flowSections = $this->project->flow->sections()->with(['parent', 'subsections'])->get();
+        $flowSections = $this->project->flow->sections()->with(['parent', 'subsections'])->whereNull('swimlane_id')->get();
 
-        $ticketsDone = $this->project->tickets()->whereNotNull('completed_at')->get();
+        $ticketsDone = $this->project->tickets()->whereHas('section', function ($query) {
+            $query->whereNull('swimlane_id');
+        })->whereNotNull('completed_at')->get();
 
         $ccData = $ticketsDone->map(function ($item) {
             $ticketCompletedDate = round($item->completed_at->startOfDay()->format('Uu') / pow(10, 6 - 3));
