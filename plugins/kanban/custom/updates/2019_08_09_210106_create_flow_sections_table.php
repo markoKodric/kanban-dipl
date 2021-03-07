@@ -15,7 +15,8 @@ class CreateFlowSectionsTable extends Migration
         Schema::create('kanban_custom_flow_sections', function ($table) {
             $table->bigIncrements('id');
             $table->integer('flow_id');
-            $table->integer('swimlane_id');
+            $table->integer('swimlane_id')->nullable();
+            $table->integer('original_section_id')->nullable();
             $table->integer('parent_section_id')->nullable();
             $table->string('name');
             $table->integer('wip_limit')->nullable();
