@@ -31,10 +31,10 @@
                                     </div>
                                 </div>
 
-                                <div class="section-tickets min-h-lg max-h-md overflow-y-auto px-3">
+                                <div class="section-tickets min-h-xs max-h-md overflow-y-auto px-3">
                                     <div data-wip-limit="{{ subsection.wip_limit ?: -1 }}"
                                          id="section-tickets-{{ subsection.id }}"
-                                         class="{{ subsection.wip_limit and subsection.wip_limit <= subsection.tickets.count() ? 'wip-reached' }} pb-0.5 section-tickets-inner min-h-xs {{ loop.parent.first ? 'min-h-sm' : 'min-h-lg' }} {{ user().can('board.tickets.reorder') and not user().restrictions.contains('id', subsection.id) ? 'is-sortable' }}">
+                                         class="{{ subsection.wip_limit and subsection.wip_limit <= subsection.tickets.count() ? 'wip-reached' }} pb-0.5 section-tickets-inner min-h-xs {{ user().can('board.tickets.reorder') and not user().restrictions.contains('id', subsection.id) ? 'is-sortable' }}">
                                         {% partial 'projectsingle/_tickets' section=subsection %}
                                     </div>
                                 </div>
