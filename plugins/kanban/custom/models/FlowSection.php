@@ -44,4 +44,23 @@ class FlowSection extends Model
 
         return $columnWidths[$this->subsections()->count()];
     }
+
+    public function cleanDelete()
+    {
+        $this->tickets->each(function ($ticket) {
+            $ticket->comments()->delete();
+            $ticket->files()->delete();
+            $ticket->checklists->each(function($checklist) {
+                $checklist->items()->delete();
+            });
+            $ticket->checklists()->delete();
+            $ticket->timers()->delete();
+            $ticket->users()->detach();
+            $ticket->tags()->detach();
+
+            $ticket->delete();
+        });
+
+        $this->delete();
+    }
 }

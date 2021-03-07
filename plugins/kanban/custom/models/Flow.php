@@ -37,8 +37,8 @@ class Flow extends Model
                 $sections[] = [
                     'id'           => $section->id,
                     'title'        => $section->name,
-                    'wipLimit'     => $subsection->wip_limit ?? '-',
-                    'markComplete' => $subsection->mark_tickets_complete ?? false,
+                    'wipLimit'     => $section->wip_limit ?? '-',
+                    'markComplete' => !! $section->mark_tickets_complete,
                     'subsections'  => [],
                 ];
             } else {
@@ -49,14 +49,14 @@ class Flow extends Model
                         'id'           => $section->id,
                         'title'        => $section->name,
                         'wipLimit'     => $subsection->wip_limit ?? '-',
-                        'markComplete' => $subsection->mark_tickets_complete ?? false,
+                        'markComplete' => !! $subsection->mark_tickets_complete,
                     ];
                 }
 
                 $sections[] = [
                     'id'           => $section->id,
                     'title'        => $section->name,
-                    'markComplete' => $section->mark_tickets_complete ?? false,
+                    'markComplete' => !! $section->mark_tickets_complete,
                     'subsections'  => $subsections,
                 ];
             }

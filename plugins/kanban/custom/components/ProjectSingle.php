@@ -128,6 +128,14 @@ class ProjectSingle extends ComponentBase
             }
         }
 
+        $flow->refresh();
+
+        if (!$flow->sections()->where('mark_tickets_complete', true)->exists()) {
+            $flow->sections->last()->update([
+                'mark_tickets_complete' => true,
+            ]);
+        }
+
         if (post('default_template')) {
             $this->user->team()->update([
                 'settings' => $sections
@@ -165,23 +173,12 @@ class ProjectSingle extends ComponentBase
                 return !is_null($item);
             })->all();
 
-        $this->project->flow->sections()->whereNotIn('id', $sectionIds)->whereNull('swimlane_id')->get()->each(function ($section) {
-            $section->tickets->each(function ($ticket) {
-                $ticket->comments()->delete();
-                $ticket->files()->delete();
-                $ticket->checklists->each(function($checklist) {
-                    $checklist->items()->delete();
-                });
-                $ticket->checklists()->delete();
-                $ticket->timers()->delete();
-                $ticket->users()->detach();
-                $ticket->tags()->detach();
-
-                $ticket->delete();
+        $this->project->flow->sections()
+            ->whereNotIn('id', $sectionIds)
+            ->whereNull('swimlane_id')
+            ->each(function ($section) {
+                $section->cleanDelete();
             });
-
-            $section->delete();
-        });
 
         foreach ($sections as $key => $section) {
             if (isset($section['id'])) {
@@ -193,6 +190,21 @@ class ProjectSingle extends ComponentBase
                     'wip_limit'             => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null,
                     'mark_tickets_complete' => $section['markComplete'] ?? false,
                 ]);
+
+                $sectionModel->refresh();
+
+                $this->project->swimlanes->each(function ($swimlane) use ($key, $section, $sectionModel) {
+                    // Update corresponding swimlane sections
+                    $swimlane->sections()
+                        ->whereNull('parent_section_id')
+                        ->where('sort_order', $sectionModel->sort_order)
+                        ->update([
+                            'name'                  => $section['title'],
+                            'sort_order'            => $key + 1,
+                            'wip_limit'             => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null,
+                            'mark_tickets_complete' => $section['markComplete'] ?? false,
+                        ]);
+                });
             } else {
                 $sectionModel = $this->project->flow->sections()->create([
                     'name'                  => $section['title'],
@@ -200,17 +212,46 @@ class ProjectSingle extends ComponentBase
                     'wip_limit'             => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null,
                     'mark_tickets_complete' => $section['markComplete'] ?? false,
                 ]);
+
+                $this->project->swimlanes->each(function ($swimlane) use ($section, $key) {
+                    $swimlane->sections()->create([
+                        'name'                  => $section['title'],
+                        'sort_order'            => $key + 1,
+                        'wip_limit'             => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null,
+                        'mark_tickets_complete' => $section['markComplete'] ?? false,
+                    ]);
+                });
             }
 
             foreach ($section['subsections'] as $subkey => $subsection) {
                 if (isset($subsection['id'])) {
-                    $sectionModel->subsections()->where('id', $subsection['id'])->update([
+                    $subsectionModel = $sectionModel->subsections()->where('id', $subsection['id'])->first();
+
+                    $subsectionModel->update([
                         'flow_id'               => $this->project->flow->id,
                         'name'                  => $subsection['title'],
                         'sort_order'            => $subkey + 1,
                         'wip_limit'             => is_numeric($subsection['wipLimit']) ? $subsection['wipLimit'] : null,
                         'mark_tickets_complete' => $subsection['markComplete'] ?? false,
                     ]);
+
+                    $subsectionModel->refresh();
+
+                    $this->project->swimlanes->each(function ($swimlane) use ($subkey, $subsection, $sectionModel, $subsectionModel) {
+                        // Update corresponding swimlane sections
+                        $swimlane->sections()
+                            ->whereNull('parent_section_id')
+                            ->where('sort_order', $sectionModel->sort_order)
+                            ->first()
+                            ->subsections()
+                            ->where('sort_order', $subsectionModel->sort_order)
+                            ->update([
+                                'name'                  => $subsection['title'],
+                                'sort_order'            => $subkey + 1,
+                                'wip_limit'             => isset($section['wipLimit']) && is_numeric($section['wipLimit']) ? $section['wipLimit'] : null,
+                                'mark_tickets_complete' => $section['markComplete'] ?? false,
+                            ]);
+                    });
                 } else {
                     $sectionModel->subsections()->create([
                         'flow_id'               => $this->project->flow->id,
@@ -219,6 +260,21 @@ class ProjectSingle extends ComponentBase
                         'wip_limit'             => is_numeric($subsection['wipLimit']) ? $subsection['wipLimit'] : null,
                         'mark_tickets_complete' => $subsection['markComplete'] ?? false,
                     ]);
+
+                    $this->project->flow->sections()
+                        ->whereNotNull('swimlane_id')
+                        ->whereNull('parent_section_id')
+                        ->where('sort_order', $sectionModel->sort_order)
+                        ->get()
+                        ->each(function ($swimlaneSection) use ($subsection, $subkey) {
+                            $swimlaneSection->subsections()->create([
+                                'flow_id'               => $this->project->flow->id,
+                                'name'                  => $subsection['title'],
+                                'sort_order'            => $subkey + 1,
+                                'wip_limit'             => is_numeric($subsection['wipLimit']) ? $subsection['wipLimit'] : null,
+                                'mark_tickets_complete' => $subsection['markComplete'] ?? false,
+                            ]);
+                        });
                 }
             }
         }

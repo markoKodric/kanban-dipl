@@ -1,7 +1,6 @@
 (function ($) {
     function init() {
         initToggle();
-        initWorkflow();
         initWorkflowScroll();
         initTicketSorting();
         initFileInput();
@@ -11,6 +10,7 @@
         initTimer();
         initNotifications();
         initTinyMCE();
+        initWorkflow();
 
         $('[data-request-blur]').unbind('blur').on('blur', function () {
             if ($(this).attr('data-request')) {
@@ -116,7 +116,7 @@
             __handleDynamicInput($(this));
         });
         
-        dynamicInputs.unbind().on('input', function() {
+        dynamicInputs.on('input', function() {
             __handleDynamicInput($(this));
         });
         
@@ -310,6 +310,24 @@
             }
         });
 
+        $('.section-body').sortable({
+            items: ".inner-mock-section",
+            cancel: "input",
+            placeholder: "ui-state-highlight",
+            tolerance: 'pointer',
+            cursor: 'move',
+            start: function (event, ui) {
+                $(".ui-state-highlight").css({
+                    'width': $(ui.item).css('width'),
+                    'height': $(ui.item).css('height'),
+                    'margin-top': 0
+                });
+            },
+            stop: function (event, ui) {
+                $('[name="sections"]').val(__parseSections());
+            }
+        });
+
         let radioId = '_' + Math.random().toString(36).substr(2, 9);
 
         let mockSectionTemplate =
@@ -384,11 +402,15 @@
         
         let mockSections = $('.mock-section');
 
-        mockSections.find('.section-header').children('input').on('input keyup paste', function () {
+        mockSections.find('.section-header').children('input').on('input keyup paste change', function () {
             $('[name="sections"]').val(__parseSections());
         });
 
-        mockSections.find('.section-body').find('input[type="text"]', 'input[type="radio"]').on('input keyup paste change', function () {
+        mockSections.find('.section-body').find('input[type="text"]').on('input keyup paste change', function () {
+            $('[name="sections"]').val(__parseSections());
+        });
+
+        mockSections.find('.section-body').find('input[type="radio"]').on('change', function () {
             $('[name="sections"]').val(__parseSections());
         });
     }
