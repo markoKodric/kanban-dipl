@@ -447,6 +447,18 @@ class ProjectSingle extends ComponentBase
                                 ->orWhere('description', 'like', '%' . $searchQuery . '%');
                         })->unarchived()->orderBy('priority');
                     },
+                    'swimlanes.sections.tickets' => function ($query) use ($searchQuery) {
+                        $query->where(function ($subquery) use ($searchQuery) {
+                            $subquery->where('name', 'like', '%' . $searchQuery . '%')
+                                ->orWhere('description', 'like', '%' . $searchQuery . '%');
+                        })->unarchived()->orderBy('priority');
+                    },
+                    'swimlanes.sections.subsections.tickets' => function ($query) use ($searchQuery) {
+                        $query->where(function ($subquery) use ($searchQuery) {
+                            $subquery->where('name', 'like', '%' . $searchQuery . '%')
+                                ->orWhere('description', 'like', '%' . $searchQuery . '%');
+                        })->unarchived()->orderBy('priority');
+                    },
                 ]
             )->first();
 
@@ -499,6 +511,8 @@ class ProjectSingle extends ComponentBase
                     $query->orderBy('priority');
                 })->unarchived();
         }
+
+        dd($query->first());
 
         $this->activeFilter = post('filter');
 

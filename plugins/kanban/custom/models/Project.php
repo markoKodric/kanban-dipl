@@ -98,7 +98,9 @@ class Project extends Model
     {
         $query->with([
             'flow.sections.tickets' => $closure,
-            'flow.sections.subsections.tickets' => $closure
+            'flow.sections.subsections.tickets' => $closure,
+            'swimlanes.sections.tickets' => $closure,
+            'swimlanes.sections.subsections.tickets' => $closure,
         ]);
     }
 
