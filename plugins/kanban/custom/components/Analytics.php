@@ -275,7 +275,7 @@ class Analytics extends ComponentBase
 
             $squaredData = pow($item['y'] - $ccAverage, 2);
 
-            $variance = sqrt(1 / $squaredData);
+            $variance = sqrt(1 / ($squaredData ?: 1));
 
             $ucl = $dataMean + (3 * $variance);
 
