@@ -2,6 +2,7 @@
 
 use App;
 use Auth;
+use Kanban\Custom\Classes\Notification;
 use System\Models\File;
 use Illuminate\Support\Str;
 use RainLab\User\Models\User;
@@ -192,6 +193,12 @@ class ProjectInformation extends ComponentBase
     {
         $this->onRun();
 
+        if (!$this->user->can('projects-manage-projects')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
         $this->document = $this->project->documents()->create([
             'title' => post('title'),
             'creator_id' => Auth::getUser()->id,
@@ -211,6 +218,12 @@ class ProjectInformation extends ComponentBase
     {
         $this->onRun();
 
+        if (!$this->user->can('projects-manage-projects')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
         $this->document->update([
             'content' => post('content'),
             'last_user_id' => Auth::getUser()->id,
@@ -219,6 +232,14 @@ class ProjectInformation extends ComponentBase
 
     public function onChangeDocument()
     {
+        $this->onRun();
+
+        if (!$this->user->can('projects-manage-projects')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
         session()->put('documentation_document', post('document'));
 
         $this->onRun();
@@ -231,6 +252,12 @@ class ProjectInformation extends ComponentBase
     public function onDeleteDocument()
     {
         $this->onRun();
+
+        if (!$this->user->can('projects-manage-projects')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
 
         session()->forget('documentation_document');
 
@@ -247,6 +274,22 @@ class ProjectInformation extends ComponentBase
     {
         $this->onRun();
 
+        if (!$this->user->can('projects-manage-projects')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
+        if (!is_null($this->document->editing_user_id)) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('User ' . User::find($this->document->editing_user_id)->name . ' is already editing this document.')])
+            ];
+        }
+
+        $this->document->update([
+            'editing_user_id' => Auth::getUser()->id,
+        ]);
+
         $this->editMode = true;
 
         return [
@@ -257,6 +300,16 @@ class ProjectInformation extends ComponentBase
     public function onStopEditMode()
     {
         $this->onRun();
+
+        if (!$this->user->can('projects-manage-projects')) {
+            return [
+                '@#js-notifications' => $this->renderPartial('snippets/notification', ['item' => Notification::error('Unauthorized action.')])
+            ];
+        }
+
+        $this->document->update([
+            'editing_user_id' => null,
+        ]);
 
         $this->editMode = false;
 

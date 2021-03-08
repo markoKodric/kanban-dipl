@@ -1,12 +1,12 @@
 {% set document = document ?: __SELF__.document %}
 
-{% if document and __SELF__.editMode %}
+{% if document and (__SELF__.editMode or document.editing_user_id == user().id) %}
     <form data-request="{{ __SELF__ }}::onSaveDocument" class="w-full bg-white h-full">
         <textarea class="tinymce h-full" name="content">{{ document.content | raw }}</textarea>
     </form>
 
     <button data-request="{{ __SELF__ }}::onStopEditMode" class="bg-blue-500 text-white font-semibold rounded-md rounded-tr-none py-1.5 px-3 absolute top-0 right-0 z-10 ml-4">
-        Cancel
+        Stop edit mode
     </button>
 {% else %}
     <div class="h-full min-h-full bg-white rounded-md p-6 tinymce-preview prose mx-auto max-h-full overflow-auto relative">

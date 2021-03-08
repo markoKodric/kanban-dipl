@@ -16,6 +16,7 @@ class BuilderTableCreateKanbanCustomDocumentation extends Migration
             $table->mediumText('content')->nullable();
             $table->integer('creator_id');
             $table->integer('last_user_id');
+            $table->integer('editing_user_id')->nullable();
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
         });

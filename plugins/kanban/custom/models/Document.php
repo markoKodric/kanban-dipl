@@ -10,7 +10,7 @@ class Document extends Model
 
     public $table = 'kb_documentation';
 
-    public $fillable = ['creator_id', 'last_user_id', 'title', 'content'];
+    public $fillable = ['creator_id', 'last_user_id', 'title', 'content', 'editing_user_id'];
 
     public $rules = [];
 
