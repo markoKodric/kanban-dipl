@@ -7,7 +7,7 @@ class BuilderTableCreateKanbanCustomFlowSectionRestrictions extends Migration
 {
     public function up()
     {
-        Schema::create('kanban_custom_flow_section_restrictions', function($table)
+        Schema::create('kb_flow_section_restrictions', function($table)
         {
             $table->engine = 'InnoDB';
             $table->integer('user_id')->unsigned();
@@ -18,6 +18,6 @@ class BuilderTableCreateKanbanCustomFlowSectionRestrictions extends Migration
     
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_flow_section_restrictions');
+        Schema::dropIfExists('kb_flow_section_restrictions');
     }
 }

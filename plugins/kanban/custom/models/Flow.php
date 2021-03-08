@@ -7,7 +7,7 @@ class Flow extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_flows';
+    public $table = 'kb_flows';
 
     public $fillable = ['name', 'project_id'];
 

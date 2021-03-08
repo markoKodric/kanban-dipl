@@ -12,7 +12,7 @@ class CreateFlowSectionUpdates extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_flow_section_updates', function ($table) {
+        Schema::create('kb_flow_section_updates', function ($table) {
             $table->bigIncrements('id');
             $table->integer('ticket_id');
             $table->integer('flow_section_id');
@@ -31,6 +31,6 @@ class CreateFlowSectionUpdates extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_flow_section_updates');
+        Schema::dropIfExists('kb_flow_section_updates');
     }
 }

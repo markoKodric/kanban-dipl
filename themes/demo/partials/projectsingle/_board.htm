@@ -1,4 +1,12 @@
 {% if project.flow %}
+    {% if project.swimlanes.count() > 0 %}
+        <div class="swimlane-header w-full py-1 mb-3 font-semibold border-t border-b border-gray-300 text-lg cursor-pointer flex items-center">
+            General
+            <i class="ml-2 la la-plus hidden"></i>
+            <i class="ml-2 la la-minus"></i>
+        </div>
+    {% endif %}
+
     <div class="sections flex {{ project.swimlanes.count() > 0 ? 'items-start' }} space-x-3">
         {% partial '@_sections' sections=project.flow.sections.where('parent_section_id', null).where('swimlane_id', null).sortBy('sort_order') %}
 

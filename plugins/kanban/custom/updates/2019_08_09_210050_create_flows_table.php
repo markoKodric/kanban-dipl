@@ -12,7 +12,7 @@ class CreateFlowsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_flows', function ($table) {
+        Schema::create('kb_flows', function ($table) {
             $table->bigIncrements('id');
             $table->integer('project_id');
             $table->string('name');
@@ -27,6 +27,6 @@ class CreateFlowsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_flows');
+        Schema::dropIfExists('kb_flows');
     }
 }

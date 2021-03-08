@@ -12,7 +12,7 @@ class CreateTicketsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_tickets', function ($table) {
+        Schema::create('kb_tickets', function ($table) {
             $table->bigIncrements('id');
             $table->integer('flow_section_id')->nullable();
             $table->integer('project_id');
@@ -36,6 +36,6 @@ class CreateTicketsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_tickets');
+        Schema::dropIfExists('kb_tickets');
     }
 }

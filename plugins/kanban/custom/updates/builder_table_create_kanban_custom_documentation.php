@@ -7,7 +7,7 @@ class BuilderTableCreateKanbanCustomDocumentation extends Migration
 {
     public function up()
     {
-        Schema::create('kanban_custom_documentation', function($table)
+        Schema::create('kb_documentation', function($table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
@@ -23,6 +23,6 @@ class BuilderTableCreateKanbanCustomDocumentation extends Migration
     
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_documentation');
+        Schema::dropIfExists('kb_documentation');
     }
 }

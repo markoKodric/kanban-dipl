@@ -12,7 +12,7 @@ class CreateTimersTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_timers', function ($table) {
+        Schema::create('kb_timers', function ($table) {
             $table->bigIncrements('id');
             $table->integer('user_id');
             $table->integer('timeable_id');
@@ -30,6 +30,6 @@ class CreateTimersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_timers');
+        Schema::dropIfExists('kb_timers');
     }
 }

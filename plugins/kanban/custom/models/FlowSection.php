@@ -8,7 +8,7 @@ class FlowSection extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_flow_sections';
+    public $table = 'kb_flow_sections';
 
     public $fillable = ['name', 'flow_id', 'parent_section_id', 'sort_order', 'wip_limit', 'mark_tickets_complete', 'swimlane_id', 'original_section_id'];
 
@@ -26,7 +26,7 @@ class FlowSection extends Model
     ];
 
     public $belongsToMany = [
-        'restrictions' => [User::class, 'table' => 'kanban_custom_flow_section_restrictions']
+        'restrictions' => [User::class, 'table' => 'kb_flow_section_restrictions']
     ];
 
     public function scopeParents($query)

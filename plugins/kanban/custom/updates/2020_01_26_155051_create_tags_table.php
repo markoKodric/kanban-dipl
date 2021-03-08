@@ -12,7 +12,7 @@ class CreateTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_tags', function ($table) {
+        Schema::create('kb_tags', function ($table) {
             $table->bigIncrements('id');
             $table->integer('project_id');
             $table->string('title');
@@ -28,6 +28,6 @@ class CreateTagsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_tags');
+        Schema::dropIfExists('kb_tags');
     }
 }

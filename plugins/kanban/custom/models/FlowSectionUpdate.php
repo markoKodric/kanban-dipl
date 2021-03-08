@@ -7,7 +7,7 @@ class FlowSectionUpdate extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_flow_section_updates';
+    public $table = 'kb_flow_section_updates';
 
     public $rules = [];
 

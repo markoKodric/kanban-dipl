@@ -12,7 +12,7 @@ class CreateTicketUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_ticket_user', function ($table) {
+        Schema::create('kb_ticket_user', function ($table) {
             $table->integer('ticket_id');
             $table->integer('user_id');
         });
@@ -25,6 +25,6 @@ class CreateTicketUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_ticket_user');
+        Schema::dropIfExists('kb_ticket_user');
     }
 }

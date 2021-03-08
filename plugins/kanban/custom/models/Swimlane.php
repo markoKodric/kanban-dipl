@@ -8,7 +8,7 @@ class Swimlane extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_swimlanes';
+    public $table = 'kb_swimlanes';
 
     public $fillable = ['name', 'project_id', 'sort_order'];
 

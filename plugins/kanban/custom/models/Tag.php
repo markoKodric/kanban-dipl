@@ -7,7 +7,7 @@ class Tag extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_tags';
+    public $table = 'kb_tags';
 
     public $fillable = ['code', 'title', 'color'];
 
@@ -18,6 +18,6 @@ class Tag extends Model
     ];
 
     public $belongsToMany = [
-        'tickets' => [Ticket::class, 'table' => 'kanban_custom_tickets_tags'],
+        'tickets' => [Ticket::class, 'table' => 'kb_tickets_tags'],
     ];
 }

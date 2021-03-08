@@ -12,7 +12,7 @@ class CreateTeamsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_teams', function ($table) {
+        Schema::create('kb_teams', function ($table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('avatar')->nullable();
@@ -28,6 +28,6 @@ class CreateTeamsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_teams');
+        Schema::dropIfExists('kb_teams');
     }
 }

@@ -12,7 +12,7 @@ class CreateProjectUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_project_user', function ($table) {
+        Schema::create('kb_project_user', function ($table) {
             $table->integer('user_id');
             $table->integer('project_id');
         });
@@ -25,6 +25,6 @@ class CreateProjectUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_project_user');
+        Schema::dropIfExists('kb_project_user');
     }
 }

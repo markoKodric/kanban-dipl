@@ -9,7 +9,7 @@ class Timer extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_timers';
+    public $table = 'kb_timers';
 
     public $timestamps = false;
 

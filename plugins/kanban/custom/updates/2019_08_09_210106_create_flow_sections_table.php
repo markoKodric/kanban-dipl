@@ -12,7 +12,7 @@ class CreateFlowSectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_flow_sections', function ($table) {
+        Schema::create('kb_flow_sections', function ($table) {
             $table->bigIncrements('id');
             $table->integer('flow_id');
             $table->integer('swimlane_id')->nullable();
@@ -33,6 +33,6 @@ class CreateFlowSectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_flow_sections');
+        Schema::dropIfExists('kb_flow_sections');
     }
 }

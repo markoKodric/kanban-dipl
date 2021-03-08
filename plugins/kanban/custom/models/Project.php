@@ -11,7 +11,7 @@ class Project extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_projects';
+    public $table = 'kb_projects';
 
     public $rules = [];
 
@@ -32,7 +32,7 @@ class Project extends Model
     ];
 
     public $belongsToMany = [
-        'users' => [User::class, 'table' => 'kanban_custom_project_user'],
+        'users' => [User::class, 'table' => 'kb_project_user'],
     ];
 
     public $attachOne = [

@@ -8,7 +8,7 @@ class Permission extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_permissions';
+    public $table = 'kb_permissions';
 
     public $fillable = ['title'];
 

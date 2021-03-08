@@ -12,7 +12,7 @@ class CreateTicketChecklistItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_ticket_checklist_items', function ($table) {
+        Schema::create('kb_ticket_checklist_items', function ($table) {
             $table->bigIncrements('id');
             $table->integer('ticket_checklist_id');
             $table->text('description');
@@ -29,6 +29,6 @@ class CreateTicketChecklistItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_ticket_checklist_items');
+        Schema::dropIfExists('kb_ticket_checklist_items');
     }
 }

@@ -7,7 +7,7 @@ class ChecklistItem extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_ticket_checklist_items';
+    public $table = 'kb_ticket_checklist_items';
 
     public $fillable = ['description', 'is_done', 'sort_order'];
 

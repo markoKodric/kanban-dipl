@@ -12,7 +12,7 @@ class Ticket extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_tickets';
+    public $table = 'kb_tickets';
 
     public $fillable = ['flow_section_id', 'project_id', 'name', 'description', 'priority', 'sort_order', 'time_estimation', 'due_date', 'is_archived', 'color', 'completed_at'];
 
@@ -35,8 +35,8 @@ class Ticket extends Model
     ];
 
     public $belongsToMany = [
-        'users' => [User::class, 'table' => 'kanban_custom_ticket_user'],
-        'tags'  => [Tag::class, 'table' => 'kanban_custom_tickets_tags'],
+        'users' => [User::class, 'table' => 'kb_ticket_user'],
+        'tags'  => [Tag::class, 'table' => 'kb_tickets_tags'],
     ];
 
     public $attachMany = [

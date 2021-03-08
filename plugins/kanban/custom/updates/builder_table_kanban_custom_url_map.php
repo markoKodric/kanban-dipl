@@ -7,7 +7,7 @@ class BuilderTableKanbanCustomUrlMap extends Migration
 {
     public function up()
     {
-        Schema::create('kanban_custom_url_map', function($table)
+        Schema::create('kb_url_map', function($table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
@@ -22,6 +22,6 @@ class BuilderTableKanbanCustomUrlMap extends Migration
     
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_url_map');
+        Schema::dropIfExists('kb_url_map');
     }
 }

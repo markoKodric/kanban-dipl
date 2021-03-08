@@ -8,7 +8,7 @@ class Activity extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_activity_log';
+    public $table = 'kb_activity_log';
 
     public $fillable = ['description', 'data', 'user_id', 'project_id'];
 

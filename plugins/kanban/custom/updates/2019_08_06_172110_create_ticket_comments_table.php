@@ -12,7 +12,7 @@ class CreateTicketCommentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_ticket_comments', function ($table) {
+        Schema::create('kb_ticket_comments', function ($table) {
             $table->bigIncrements('id');
             $table->integer('ticket_id');
             $table->integer('user_id');
@@ -29,6 +29,6 @@ class CreateTicketCommentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_ticket_comments');
+        Schema::dropIfExists('kb_ticket_comments');
     }
 }

@@ -12,7 +12,7 @@ class CreateProjectsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_projects', function ($table) {
+        Schema::create('kb_projects', function ($table) {
             $table->bigIncrements('id');
             $table->integer('team_id');
             $table->string('title');
@@ -41,6 +41,6 @@ class CreateProjectsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_projects');
+        Schema::dropIfExists('kb_projects');
     }
 }

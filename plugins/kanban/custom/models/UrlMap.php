@@ -15,7 +15,7 @@ class UrlMap extends Model
 
     protected static $mapCache = null;
 
-    public $table = 'kanban_custom_url_map';
+    public $table = 'kb_url_map';
 
     public $rules = [
         'source_url' => 'required',

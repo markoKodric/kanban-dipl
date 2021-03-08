@@ -8,7 +8,7 @@ class Team extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_teams';
+    public $table = 'kb_teams';
 
     public $rules = [];
 

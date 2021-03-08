@@ -7,7 +7,7 @@ class BuilderTableCreateKanbanCustomUserPermission extends Migration
 {
     public function up()
     {
-        Schema::create('kanban_custom_user_permission', function($table)
+        Schema::create('kb_user_permission', function($table)
         {
             $table->engine = 'InnoDB';
             $table->integer('user_id')->unsigned();
@@ -17,6 +17,6 @@ class BuilderTableCreateKanbanCustomUserPermission extends Migration
     
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_user_permission');
+        Schema::dropIfExists('kb_user_permission');
     }
 }

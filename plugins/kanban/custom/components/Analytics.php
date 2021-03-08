@@ -270,31 +270,19 @@ class Analytics extends ComponentBase
             ->values()
             ->toArray();
 
-        $dataMean = collect($ccData)->average(function ($item) {
-            return $item['y'];
-        });
+        foreach ($rollingData as $item) {
+            $dataMean = $item['y'];
 
-        $squaredData = collect($ccData)->map(function ($item) use ($dataMean) {
-            return pow($item['y'] - $dataMean, 2);
-        });
+            $squaredData = pow($item['y'] - $ccAverage, 2);
 
-        $variance = sqrt((1 / ($squaredData->count() > 0 ? $squaredData->count() : 1)) * $squaredData->average());
+            $variance = sqrt(1 / $squaredData);
 
-        $ucl = $ccAverage + (3 * $variance);
+            $ucl = $dataMean + (3 * $variance);
 
-        $lcl = $ccAverage - (3 * $variance);
+            $lcl = $dataMean - (3 * $variance);
 
-        $standardDeviationArea = [];
-
-        $timePeriodFromFirstTicket = collect($timePeriod)->filter(function ($item) use ($flowUpdates, $flowSections, $ticketsDone) {
-            if ($ticketsDone->isEmpty()) return false;
-
-            return $item->startOfDay()->greaterThanOrEqualTo($ticketsDone->sortBy('completed_at')->first()->completed_at->startOfDay());
-        });
-
-        foreach ($timePeriodFromFirstTicket as $item) {
             $standardDeviationArea[] = [
-                round($item->startOfDay()->format('Uu') / pow(10, 6 - 3)),
+                $item['x'],
                 $lcl,
                 $ucl,
             ];

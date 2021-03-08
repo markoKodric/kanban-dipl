@@ -12,7 +12,7 @@ class CreateSwimlanesTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_swimlanes', function ($table) {
+        Schema::create('kb_swimlanes', function ($table) {
             $table->bigIncrements('id');
             $table->integer('project_id');
             $table->string('name');
@@ -28,6 +28,6 @@ class CreateSwimlanesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_swimlanes');
+        Schema::dropIfExists('kb_swimlanes');
     }
 }

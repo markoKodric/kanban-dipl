@@ -7,7 +7,7 @@ class BuilderTableCreateKanbanCustomActivityLog extends Migration
 {
     public function up()
     {
-        Schema::create('kanban_custom_activity_log', function($table)
+        Schema::create('kb_activity_log', function($table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
@@ -22,6 +22,6 @@ class BuilderTableCreateKanbanCustomActivityLog extends Migration
     
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_activity_log');
+        Schema::dropIfExists('kb_activity_log');
     }
 }

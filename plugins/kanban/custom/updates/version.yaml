@@ -53,22 +53,22 @@
     - seeder1020.php
 1.0.21:
     - 'Create url map updates table'
-    - builder_table_kanban_custom_url_map.php
+    - builder_table_kb_url_map.php
 1.0.22:
-    - 'Created table kanban_custom_flow_section_restrictions'
-    - builder_table_create_kanban_custom_flow_section_restrictions.php
+    - 'Created table kb_flow_section_restrictions'
+    - builder_table_create_kb_flow_section_restrictions.php
 1.0.23:
-    - 'Created table kanban_custom_activity_log'
-    - builder_table_create_kanban_custom_activity_log.php
+    - 'Created table kb_activity_log'
+    - builder_table_create_kb_activity_log.php
 1.0.24:
-    - 'Created table kanban_custom_documentation'
-    - builder_table_create_kanban_custom_documentation.php
+    - 'Created table kb_documentation'
+    - builder_table_create_kb_documentation.php
 1.0.25:
-    - 'Created table kanban_custom_swimlanes'
+    - 'Created table kb_swimlanes'
     - create_swimlanes_table.php
 1.0.26:
-    - 'Created table kanban_custom_permissions'
-    - builder_table_create_kanban_custom_permissions.php
+    - 'Created table kb_permissions'
+    - builder_table_create_kb_permissions.php
 1.0.27:
-    - 'Created table kanban_custom_user_permission'
-    - builder_table_create_kanban_custom_user_permission.php
+    - 'Created table kb_user_permission'
+    - builder_table_create_kb_user_permission.php

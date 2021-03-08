@@ -12,7 +12,7 @@ class CreateNotificationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_notifications', function ($table) {
+        Schema::create('kb_notifications', function ($table) {
             $table->uuid('id')->primary();
             $table->string('type');
             $table->morphs('notifiable');
@@ -29,6 +29,6 @@ class CreateNotificationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_notifications');
+        Schema::dropIfExists('kb_notifications');
     }
 }

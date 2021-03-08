@@ -27,13 +27,13 @@ class ExtendUser
         User::extend(function ($model) {
             $model->belongsTo['team'] = [Team::class];
 
-            $model->belongsToMany['projects'] = [Project::class, 'table' => 'kanban_custom_project_user'];
+            $model->belongsToMany['projects'] = [Project::class, 'table' => 'kb_project_user'];
 
-            $model->belongsToMany['tickets'] = [Ticket::class, 'table' => 'kanban_custom_ticket_user'];
+            $model->belongsToMany['tickets'] = [Ticket::class, 'table' => 'kb_ticket_user'];
 
-            $model->belongsToMany['restrictions'] = [FlowSection::class, 'table' => 'kanban_custom_flow_section_restrictions'];
+            $model->belongsToMany['restrictions'] = [FlowSection::class, 'table' => 'kb_flow_section_restrictions'];
 
-            $model->belongsToMany['permissions'] = [Permission::class, 'table' => 'kanban_custom_user_permission'];
+            $model->belongsToMany['permissions'] = [Permission::class, 'table' => 'kb_user_permission'];
 
             $model->hasMany['timers'] = [Timer::class];
 

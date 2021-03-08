@@ -9,7 +9,7 @@ class Comment extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_ticket_comments';
+    public $table = 'kb_ticket_comments';
 
     public $fillable = ['comment', 'ticket_id', 'parent_id', 'user_id'];
 

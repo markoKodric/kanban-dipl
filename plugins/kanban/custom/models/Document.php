@@ -8,7 +8,7 @@ class Document extends Model
 {
     use Validation;
 
-    public $table = 'kanban_custom_documentation';
+    public $table = 'kb_documentation';
 
     public $fillable = ['creator_id', 'last_user_id', 'title', 'content'];
 

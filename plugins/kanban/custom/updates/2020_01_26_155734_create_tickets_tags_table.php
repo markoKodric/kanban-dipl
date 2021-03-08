@@ -12,7 +12,7 @@ class CreateTicketsTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('kanban_custom_tickets_tags', function ($table) {
+        Schema::create('kb_tickets_tags', function ($table) {
             $table->integer('ticket_id');
             $table->integer('tag_id');
         });
@@ -25,6 +25,6 @@ class CreateTicketsTagsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kanban_custom_tickets_tags');
+        Schema::dropIfExists('kb_tickets_tags');
     }
 }
