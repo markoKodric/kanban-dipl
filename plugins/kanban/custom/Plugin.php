@@ -27,6 +27,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Plugin extends PluginBase
 {
+    public $require = ['Rainlab.User'];
+
     public function register()
     {
         require_once __DIR__ . '/helpers.php';

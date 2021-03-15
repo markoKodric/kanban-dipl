@@ -3,7 +3,7 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class BuilderTableKanbanCustomUrlMap extends Migration
+class BuilderTableKbUrlMap extends Migration
 {
     public function up()
     {

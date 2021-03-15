@@ -3,7 +3,7 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class BuilderTableCreateKanbanCustomFlowSectionRestrictions extends Migration
+class BuilderTableCreateKbFlowSectionRestrictions extends Migration
 {
     public function up()
     {

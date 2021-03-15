@@ -4,7 +4,7 @@ use Kanban\Custom\Models\Permission;
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class BuilderTableCreateKanbanCustomPermissions extends Migration
+class BuilderTableCreateKbPermissions extends Migration
 {
     public function up()
     {

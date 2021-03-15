@@ -48,9 +48,6 @@
 1.0.19:
     - 'Update users table'
     - migration1019.php
-1.0.20:
-    - 'DB seeder'
-    - seeder1020.php
 1.0.21:
     - 'Create url map updates table'
     - builder_table_kb_url_map.php

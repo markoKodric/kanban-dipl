@@ -1,19 +1,6 @@
-# Installation wizard for October
-
-The wizard installation is the recommended way to install October for **non-technical users**. It is simpler than the command-line installation and doesn't require any special skills.
-
-> **Note:** If you are a developer, we recommend that you install via Composer instead: https://octobercms.com/docs/console/commands#console-install-composer
-
-1. Prepare a directory on your server that is empty. It can be a sub-directory, domain root or a sub-domain.
-1. [Download the installer archive file](https://github.com/octobercms/install/archive/master.zip).
-1. Unpack the installer archive to the prepared directory.
-1. Grant writing permissions on the installation directory and all its subdirectories and files.
-1. Navigate to the install.php script in your web browser.
-1. Follow the installation instructions.
+# Installation instructions
 
 ## Minimum System Requirements
-
-October CMS has a few system requirements:
 
 * PHP version 7.2 or higher
 * PDO PHP Extension (and relevant driver for the database you want to connect to)
@@ -32,3 +19,35 @@ When using Ubuntu, the following command can be run to install all required exte
 sudo apt-get update &&
 sudo apt-get install php php-ctype php-curl php-xml php-fileinfo php-gd php-json php-mbstring php-mysql php-sqlite3 php-zip
 ```
+
+--
+
+## Application setup
+
+1. Create new database on your server.
+2. Clone this repository to your local device.
+    ```bash
+    git clone https://github.com/markoKodric/kanban-dipl.git
+    ```
+3. Copy .env.example file to .env file and edit environment variables.
+    - Set APP_URL to your hosting url
+    - Set DB_HOST to url of your hosting environment
+    - Set DB_NAME to database name that you created in the first step
+    - Set DB_USER and DB_PASS to your database username and password
+
+4. Install dependencies by running command (you must have composer install on your system)
+    ```bash
+    composer install
+    ```
+5. Run DB migrations
+    ```bash
+    php artisan october:up
+    ```
+    ```bash
+    php artisan plugin:refresh Kanban.Custom
+    ```
+    
+## Information
+
+- Admin panel is accessible on url {APP_URL}/admin (user:admin, password:admin)
+- Application is accessible on url {APP_URL}

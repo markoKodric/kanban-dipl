@@ -3,7 +3,7 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class BuilderTableCreateKanbanCustomActivityLog extends Migration
+class BuilderTableCreateKbActivityLog extends Migration
 {
     public function up()
     {

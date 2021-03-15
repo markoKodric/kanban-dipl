@@ -3,7 +3,7 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class BuilderTableCreateKanbanCustomDocumentation extends Migration
+class BuilderTableCreateKbDocumentation extends Migration
 {
     public function up()
     {
