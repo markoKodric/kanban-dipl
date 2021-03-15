@@ -283,7 +283,7 @@ class Analytics extends ComponentBase
 
             $standardDeviationArea[] = [
                 $item['x'],
-                $lcl,
+                max($lcl, 0),
                 $ucl,
             ];
         }
