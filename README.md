@@ -47,6 +47,9 @@ sudo apt-get install php php-ctype php-curl php-xml php-fileinfo php-gd php-json
     php artisan plugin:refresh Kanban.Custom
     ```
     
+6. Setup NodeJS server for real time updates inside application. Instructions can be found on <https://github.com/markoKodric/kanban-dipl-node>.
+   After installation change environment variable {SOCKET_IO_URL} in your .env file.
+    
 ## Information
 
 - Admin panel is accessible on url {APP_URL}/admin (user:admin, password:admin)
