@@ -1,6 +1,7 @@
 /bootstrap/compiled.php
 /vendor
 /public
+/storage
 composer.phar
 .DS_Store
 .idea

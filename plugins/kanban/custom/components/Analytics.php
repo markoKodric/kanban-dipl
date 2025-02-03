@@ -288,7 +288,7 @@ class Analytics extends ComponentBase
             ];
         }
 
-        $standardDeviationArea = collect($standardDeviationArea)
+        $standardDeviationArea = collect($standardDeviationArea ?? [])
             ->unique(function ($item) {
                 return $item[0];
             })
