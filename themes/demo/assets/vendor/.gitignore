@@ -10,3 +10,15 @@ node_modules/*
 !node_modules/lg-video/
 !node_modules/slick-carousel/
 !node_modules/jquery-lazy/
+!node_modules/aos
+!node_modules/highcharts
+!node_modules/highcharts-broken-axis
+!node_modules/highcharts-exporting
+!node_modules/highcharts-more
+!node_modules/jquery-ui-dist
+!node_modules/lg-video
+!node_modules/lightgallery
+!node_modules/rfs
+!node_modules/slick-carousel
+!node_modules/slideout
+!node_modules/socket.io

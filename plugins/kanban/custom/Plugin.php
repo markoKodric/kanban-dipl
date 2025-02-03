@@ -159,7 +159,7 @@ class Plugin extends PluginBase
                     $components = Controller::getController()->getPage()->components;
 
                     foreach ($components as $key => $component) {
-                        if (get_class($component) == 'Kanban\\Custom\\Components\\Analytics') {
+                        if (get_class($component) == Analytics::class) {
                             return true;
                         }
                     }
