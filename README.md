@@ -2,7 +2,7 @@
 
 ## Minimum System Requirements
 
-* PHP version 7.2 or higher
+* PHP version 7.3 or higher
 * PDO PHP Extension (and relevant driver for the database you want to connect to)
 * cURL PHP Extension
 * OpenSSL PHP Extension
