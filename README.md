@@ -32,8 +32,8 @@ sudo apt-get install php php-ctype php-curl php-xml php-fileinfo php-gd php-json
 3. Copy .env.example file to .env file and edit environment variables.
     - Set APP_URL to your hosting url
     - Set DB_HOST to url of your hosting environment
-    - Set DB_NAME to database name that you created in the first step
-    - Set DB_USER and DB_PASS to your database username and password
+    - Set DB_DATABASE to database name that you created in the first step
+    - Set DB_USERNAME and DB_PASSWORD to your database username and password
 
 4. Install dependencies by running command (you must have composer install on your system)
     ```bash
