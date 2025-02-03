@@ -11,9 +11,11 @@
             {% endif %}
 
             <div class="header-content flex items-center relative cursor-pointer pr-7" data-target=".sidebar-dropdown">
-                <div class="img-wrapper" style="flex-basis: 40px; min-width: 40px;">
-                    <img class="transform translate-z-0" src="{{ project.getPicture()|resize(40) }}" width="40" alt="{{ project.title }}">
-                </div>
+                {% if project.getPicture() != 'broken.jpg' %}
+                    <div class="img-wrapper" style="flex-basis: 40px; min-width: 40px;">
+                        <img class="transform translate-z-0" src="{{ project.getPicture()|resize(40) }}" width="40" alt="{{ project.title }}">
+                    </div>
+                {% endif %}
                 <div class="content pl-4">
                     <p class="text-sm leading-snug text-gray-900 font-semibold tracking-wide">
                         <strong class="font-extrabold text-lg">{{ project.title }}</strong>

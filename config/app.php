@@ -142,7 +142,6 @@ return [
         // 'Illuminate\Html\HtmlServiceProvider', // Example
 
         'System\ServiceProvider',
-        Barryvdh\Debugbar\ServiceProvider::class,
     ]),
 
     /*
